@@ -117,8 +117,8 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-const server = app.listen(PORT, "127.0.0.1", () => {
-    console.log(`WEB STARTED http://127.0.0.1:${PORT}`);
+const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`WEB STARTED http://0.0.0.0:${PORT}`);
 });
 server.on("error", err => {
     console.error("WEB SERVER ERROR", err);
