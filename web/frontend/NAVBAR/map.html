@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Клубы</title>
+  <style>
+    :root{--bg:#000;--muted:rgba(255,255,255,0.58);--accent:#fff}
+    html,body{height:100%;margin:0}
+    body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:12px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
+    .tab-btn{appearance:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:all .35s cubic-bezier(0.22,1,0.36,1)}
+    .tab-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+    .tab-btn:active{transform:translateY(0)}
+    .tab-btn[aria-selected="true"]{background:#fff;color:#000;border-color:#fff}
+.content{padding-bottom:0}
+.tab-panels{padding:0}
+    .panel{display:none}
+    .panel.is-active{display:block}
+    iframe{display:block;width:100%;height:calc(100dvh - 60px);margin-top:60px;border:0;border-radius:0;background:rgba(0,0,0,.35)}
+    .booking-contacts{position:fixed;left:50%;bottom:86px;z-index:9998;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 10px;width:min(92vw,560px);box-sizing:border-box;padding:9px 10px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,.28);transform:translateX(-50%)}
+    .booking-contacts-title{color:var(--muted);font-size:12px;font-weight:700;line-height:1}
+    .booking-contacts a{display:inline-flex;align-items:center;min-height:30px;box-sizing:border-box;padding:0 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.35);color:#fff;font-size:13px;font-weight:700;line-height:1;text-decoration:none;white-space:nowrap;transition:background .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .booking-contacts a:hover{border-color:#fff;background:#fff;color:#000;transform:translateY(-1px)}
+    .booking-contacts a:active{transform:translateY(0) scale(.98)}
+
+    .map-legend{position:fixed;left:50%;bottom:194px;transform:translateX(-50%);z-index:9998;display:grid;gap:10px;width:min(92vw,380px);padding:12px 14px;border-radius:18px;background:rgba(5,6,12,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 40px rgba(0,0,0,.35)}
+    .legend-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c8d2ec}
+    .legend-grid{display:grid;gap:8px}
+    .legend-item{display:flex;align-items:center;gap:10px;color:#e8ebf2;font-size:13px;line-height:1.3}
+    .legend-swatch{width:14px;height:14px;border-radius:999px;display:inline-block;flex-shrink:0;border:1px solid rgba(255,255,255,.16)}
+    .legend-login{background:#FF9800}
+    .legend-check{background:#F20D0D}
+    .legend-booked{background:#d2c91c}
+    .legend-maintenance{background:#585859}
+    .legend-free{background:#4CAF50}
+    .legend-offline{background:#A9A9AA}
+
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
+    .bottom-nav *{pointer-events:auto}
+    .nav-item{display:grid;grid-template-rows:28px 14px;gap:5px;justify-items:center;align-content:center;width:100%;height:54px;min-width:0;padding:0 2px;box-sizing:border-box;color:var(--muted);text-decoration:none;font-size:10px;line-height:1;transition:color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .nav-item:hover{color:var(--accent);transform:translateY(-1px)}
+    .nav-item:active{transform:translateY(0) scale(.96)}
+    .nav-item.active{color:var(--accent)}
+    .nav-item svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .nav-item span{display:block;width:100%;line-height:14px;text-align:center;white-space:nowrap;overflow:hidden}
+    @supports not (height: 100dvh) {
+      iframe{height:calc(100vh - 60px);margin-top:60px}
+    }
+    @media (max-width:420px){
+      .booking-contacts{bottom:84px;width:min(94vw,360px);gap:7px;padding:8px}
+      .booking-contacts-title,.booking-contacts a{font-size:12px}
+      iframe{height:calc(100dvh - 120px) !important}
+    }
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.expand();
+    }
+
+    // Force cache busting for Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      const currentVersion = '20260605-4';
+      const storedVersion = localStorage.getItem('mapAppVersion');
+
+      if (storedVersion !== currentVersion) {
+        localStorage.setItem('mapAppVersion', currentVersion);
+        // Force reload to ensure latest version
+        if (window.location.href.includes('map.html')) {
+          window.location.reload(true);
+        }
+      }
+    }
+
+    // Mobile viewport fix
+    function fixMobileViewport() {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Set viewport height correctly for mobile devices
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+        // Adjust iframe height for mobile
+        const iframe = document.querySelector('iframe');
+        if (iframe) {
+          iframe.style.height = `calc(100vh - 120px)`;
+        }
+      }
+    }
+
+    // Run on load and resize
+    window.addEventListener('load', fixMobileViewport);
+    window.addEventListener('resize', fixMobileViewport);
+    window.addEventListener('orientationchange', fixMobileViewport);
+  </script>
+</head>
+<body>
+  <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0a0a0a"/>
+        <stop offset="50%" stop-color="#111111"/>
+        <stop offset="100%" stop-color="#0d0d0d"/>
+      </linearGradient>
+      <radialGradient id="redGlow" cx="50%" cy="30%" r="45%">
+        <stop offset="0%" stop-color="#c0392b" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bottomGlow" cx="50%" cy="90%" r="40%">
+        <stop offset="0%" stop-color="#c0392b" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="gridFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="white" stop-opacity="0"/>
+        <stop offset="30%" stop-color="white" stop-opacity="0.5"/>
+        <stop offset="60%" stop-color="white" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="gridMask">
+        <rect width="450" height="800" fill="url(#gridFade)"/>
+      </mask>
+      <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noiseOut"/>
+        <feColorMatrix type="saturate" values="0" in="noiseOut" result="grayNoise"/>
+        <feBlend in="SourceGraphic" in2="grayNoise" mode="overlay" result="blended"/>
+        <feComposite in="blended" in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+    <rect width="450" height="800" fill="url(#bgGrad)"/>
+    <rect width="450" height="800" fill="url(#redGlow)"/>
+    <rect width="450" height="800" fill="url(#bottomGlow)"/>
+    <g mask="url(#gridMask)" opacity="0.18">
+      <line x1="225" y1="320" x2="-60" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="30" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="110" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="170" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="225" y2="800" stroke="#cc2222" stroke-width="0.8"/>
+      <line x1="225" y1="320" x2="280" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="340" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="420" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="510" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="0" y1="400" x2="450" y2="400" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="460" x2="450" y2="460" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="510" x2="450" y2="510" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="555" x2="450" y2="555" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="595" x2="450" y2="595" stroke="#cc2222" stroke-width="0.4"/>
+      <line x1="0" y1="630" x2="450" y2="630" stroke="#cc2222" stroke-width="0.4"/>
+      <line x1="0" y1="662" x2="450" y2="662" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="690" x2="450" y2="690" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="715" x2="450" y2="715" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="738" x2="450" y2="738" stroke="#cc2222" stroke-width="0.2"/>
+      <line x1="0" y1="758" x2="450" y2="758" stroke="#cc2222" stroke-width="0.2"/>
+      <line x1="0" y1="776" x2="450" y2="776" stroke="#cc2222" stroke-width="0.2"/>
+    </g>
+    <g opacity="0.35">
+      <line x1="60" y1="160" x2="130" y2="310" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="76" y1="160" x2="146" y2="310" stroke="#cc2222" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <g opacity="0.35">
+      <line x1="390" y1="160" x2="320" y2="310" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="374" y1="160" x2="304" y2="310" stroke="#cc2222" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <line x1="80" y1="72" x2="370" y2="72" stroke="#cc2222" stroke-width="0.8" opacity="0.4"/>
+    <line x1="0" y1="728" x2="450" y2="728" stroke="#cc2222" stroke-width="0.8" opacity="0.25"/>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.5">
+      <polyline points="18,18 18,48 48,48"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.5">
+      <polyline points="432,18 432,48 402,48"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.3">
+      <polyline points="18,782 18,752 48,752"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.3">
+      <polyline points="432,782 432,752 402,752"/>
+    </g>
+    <rect width="450" height="800" fill="#1a1a1a" opacity="0.04" filter="url(#noise)"/>
+  </svg>
+
+  <div class="tabs" role="tablist" aria-label="Клубы">
+    <button class="tab-btn" type="button" role="tab" aria-selected="true" aria-controls="panel-ar" id="tab-ar">ARNAU</button>
+    <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="panel-tr" id="tab-tr">TRIUMP</button>
+  </div>
+
+  <div class="content">
+    <div class="tab-panels">
+      <section class="panel is-active" id="panel-ar" role="tabpanel" aria-labelledby="tab-ar">
+        <iframe src="./ARNAU/ARNAU.html?v=20260605-1" title="ARNAU"></iframe>
+      </section>
+      <section class="panel" id="panel-tr" role="tabpanel" aria-labelledby="tab-tr">
+        <iframe src="./TRIUMPH/TRIUMPH.html?v=20260531-2" title="TRIUMPH"></iframe>
+      </section>
+    </div>
+  </div>
+
+  <div class="map-legend" aria-label="Легенда карты">
+    <div class="legend-title">Легенда</div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="legend-swatch legend-login"></span><span>Занят по логину</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-check"></span><span>Занят по чеку</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-booked"></span><span>Забронирован</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-maintenance"></span><span>Тех. обслуживание</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-free"></span><span>Свободен</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-offline"></span><span>Выключен(Свободен)</span></div>
+    </div>
+  </div>
+
+  <section class="booking-contacts" aria-label="Контакты для брони">
+    <span class="booking-contacts-title">Контакты для брони</span>
+    <a href="tel:+77011000608" aria-label="Позвонить +7 701 100 06 08" onclick="window.location.href='tel:+77011000608'" rel="nofollow noopener">+7 701 100 06 08 Арнау</a>
+    <a href="tel:+77028880066" aria-label="Позвонить +7 702 888 00 66" onclick="window.location.href='tel:+77028880066'" rel="nofollow noopener">+7 702 888 00 66 Триумф</a>
+  </section>
+
+  <nav class="bottom-nav" aria-label="Главное меню">
+    <a class="nav-item" href="../index.html" aria-label="Главная">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Главная</span>
+    </a>
+    <a class="nav-item" href="https://senet.id/sign-in" aria-label="Senet ID">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+      <span>Senet ID</span>
+    </a>
+    <a class="nav-item active" href="map.html" aria-label="Клубы" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <span>Клубы</span>
+    </a>
+    <a class="nav-item" href="chars.html" aria-label="Характеристики">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+      <span>Хар-ки</span>
+    </a>
+    <a class="nav-item" href="codes.html" aria-label="Коды клубов">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
+      <span>Коды</span>
+    </a>
+  </nav>
+
+  <script>
+    (function() {
+      const tabAr = document.getElementById('tab-ar');
+      const tabTr = document.getElementById('tab-tr');
+      const panelAr = document.getElementById('panel-ar');
+      const panelTr = document.getElementById('panel-tr');
+
+      function setActive(which) {
+        const isAr = which === 'ar';
+        tabAr.setAttribute('aria-selected', String(isAr));
+        tabTr.setAttribute('aria-selected', String(!isAr));
+        panelAr.classList.toggle('is-active', isAr);
+        panelTr.classList.toggle('is-active', !isAr);
+      }
+
+      tabAr.addEventListener('click', () => setActive('ar'));
+      tabTr.addEventListener('click', () => setActive('tr'));
+    })();
+  </script>
+</body>
+</html>

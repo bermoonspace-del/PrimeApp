@@ -1,0 +1,13 @@
+.logo {
+    width: 200px;
+    height: auto;
+
+}
+
+/* Ensure PC markers are readable on mobile devices */
+@media (max-width: 480px) {
+    #pcs {
+        transform: scale(0.6);
+        transform-origin: top left;
+    }
+}
