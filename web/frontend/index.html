@@ -307,12 +307,12 @@
                     </div>
                 </div>
             </section>
-            <a class="price-button" href="https://primekz.taplink.ws/?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGn8bSEi76SyoPcQiE7u5k4d5GtVImMSyrD69EH0t2m9irsBtUMGRwISiZu1HU_aem_8q-6gxOmIbtuEisHe0LlOg" target="_blank" rel="noopener noreferrer">Прайс тут</a>
+            <a class="price-button" href="NAVBAR/price.html" target="_blank" rel="noopener noreferrer">Прайс тут</a>
         </div>
     </div>
 
         <nav class="bottom-nav" aria-label="Главное меню" id="bottom-nav">
-        <a class="nav-item active" href="" aria-label="Главная" id="nav-home" aria-current="page">
+        <a class="nav-item active" href="index.html" aria-label="Главная" id="nav-home" aria-current="page">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
             <span>Главная</span>
         </a>
@@ -342,6 +342,14 @@
             const mainContent = document.getElementById('main-content');
             const bottomNav = document.getElementById('bottom-nav');
             const helpQuestions = document.querySelectorAll('.help-question');
+
+            // Check if we're coming from any internal navigation (chars, price, codes, sen, map)
+            const isInternalNavigation = document.referrer &&
+                (document.referrer.includes('NAVBAR/price.html') ||
+                 document.referrer.includes('NAVBAR/chars.html') ||
+                 document.referrer.includes('NAVBAR/codes.html') ||
+                 document.referrer.includes('NAVBAR/sen.html') ||
+                 document.referrer.includes('NAVBAR/map.html'));
 
             helpQuestions.forEach((question) => {
                 question.addEventListener('click', () => {
@@ -376,7 +384,8 @@
                 }, 800);
             }
 
-            if (sessionStorage.getItem(introPlayedKey) === '1') {
+            // Skip animation if coming from internal navigation or if already played
+            if (sessionStorage.getItem(introPlayedKey) === '1' || isInternalNavigation) {
                 showMainContent(true);
                 return;
             }

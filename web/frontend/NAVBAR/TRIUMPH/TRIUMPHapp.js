@@ -3,7 +3,7 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com"; // Set to your Render URL for production, empty for local development
+const BACKEND_URL = ""; // Set to your Render URL for production, empty for local development
 
 const API_URL =
     `/api/map?office_id=1&limit=9999`;
@@ -471,7 +471,7 @@ function getStatusInfo(pc) {
         return {
             id: 'reserved',
             name: 'Забронирован',
-            color: '#9C27B0',
+            color: '#d2c91c',
             kind: 'reserved'
         };
     }

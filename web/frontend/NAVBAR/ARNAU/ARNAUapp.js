@@ -4,7 +4,7 @@ tg?.expand();
 
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com"; // Set to your Render URL for production, empty for local development
+const BACKEND_URL = ""; // Empty for local development, set to your Render URL for production
 
 const API_URL =
     `/api/map?office_id=1114&limit=9999`;
