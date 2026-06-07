@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Характеристики</title>
+  <style>
+    :root{--bg:#000;--muted:rgba(255,255,255,0.58);--accent:#fff}
+    html,body{height:100%;margin:0}
+    body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    .page-shell{position:relative;transition:opacity .35s ease,transform .35s ease;will-change:opacity,transform}
+    .page-shell.page-enter{opacity:0;transform:translateY(12px)}
+    .page-shell.page-exit{opacity:0;transform:translateY(-12px)}
+    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .content{min-height:100%;box-sizing:border-box;padding:20px 16px 88px}
+    h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
+    .zone-switcher{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 auto 16px;max-width:520px}
+    .club-switcher{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:0 auto 24px;max-width:520px;padding:10px;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.04)}
+    .zone-button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:var(--accent);padding:10px 14px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600;transition:background .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
+    .club-button{border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:var(--accent);padding:12px 18px;border-radius:18px;cursor:pointer;font-size:15px;font-weight:700;min-width:120px;transition:background .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .zone-button:hover{background:rgba(255,255,255,.12)}
+    .club-button:hover{background:rgba(255,255,255,.18);transform:translateY(-1px)}
+    .zone-button.active{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+    .club-button.active{background:#fff;color:#000;border-color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .club-panel{
+      display:block;
+      opacity:0;
+      visibility:hidden;
+      max-height:0;
+      overflow:hidden;
+      transform:translateY(12px);
+      transition:opacity .35s ease,transform .35s ease,max-height .35s ease;
+    }
+    .club-panel.active{
+      opacity:1;
+      visibility:visible;
+      max-height:2500px;
+      transform:translateY(0);
+    }
+    .spec-card{
+      max-width:520px;
+      margin:16px auto 0;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:12px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      opacity:0;
+      max-height:0;
+      transform:translateY(10px);
+      transition:opacity .3s ease,transform .3s ease,max-height .35s ease;
+      pointer-events:none;
+    }
+    .spec-card.active{
+      opacity:1;
+      max-height:2000px;
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+    .spec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .spec-title{margin:0;font-size:18px;font-weight:700;line-height:1.2}
+    .spec-badge{flex:0 0 auto;border-radius:999px;background:#fff;color:#000;padding:6px 10px;font-size:12px;font-weight:700;line-height:1}
+    .spec-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.1)}
+    .spec-item{display:grid;gap:6px;min-height:72px;padding:14px;background:#050505}
+    .spec-label{color:var(--muted);font-size:12px;line-height:1}
+    .spec-value{font-size:15px;font-weight:600;line-height:1.25}
+    @media (max-width:460px){
+      .spec-head{align-items:flex-start;flex-direction:column}
+      .spec-list{grid-template-columns:1fr}
+    }
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
+    .bottom-nav *{pointer-events:auto}
+    .nav-item{display:grid;grid-template-rows:28px 14px;gap:5px;justify-items:center;align-content:center;width:100%;height:54px;min-width:0;padding:0 2px;box-sizing:border-box;color:var(--muted);text-decoration:none;font-size:10px;line-height:1;transition:color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .nav-item:hover{color:var(--accent);transform:translateY(-1px)}
+    .nav-item:active{transform:translateY(0) scale(.96)}
+    .nav-item.active{color:var(--accent)}
+    .nav-item svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .nav-item span{display:block;width:100%;line-height:14px;text-align:center;white-space:nowrap;overflow:hidden}
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.expand();
+    }
+  </script>
+</head>
+<body>
+  <div class="page-shell page-enter">
+    <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0a0a0a"/>
+        <stop offset="50%" stop-color="#111111"/>
+        <stop offset="100%" stop-color="#0d0d0d"/>
+      </linearGradient>
+      <radialGradient id="redGlow" cx="50%" cy="30%" r="45%">
+        <stop offset="0%" stop-color="#c0392b" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bottomGlow" cx="50%" cy="90%" r="40%">
+        <stop offset="0%" stop-color="#c0392b" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="gridFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="white" stop-opacity="0"/>
+        <stop offset="30%" stop-color="white" stop-opacity="0.5"/>
+        <stop offset="60%" stop-color="white" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="gridMask">
+        <rect width="450" height="800" fill="url(#gridFade)"/>
+      </mask>
+      <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noiseOut"/>
+        <feColorMatrix type="saturate" values="0" in="noiseOut" result="grayNoise"/>
+        <feBlend in="SourceGraphic" in2="grayNoise" mode="overlay" result="blended"/>
+        <feComposite in="blended" in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+    <rect width="450" height="800" fill="url(#bgGrad)"/>
+    <rect width="450" height="800" fill="url(#redGlow)"/>
+    <rect width="450" height="800" fill="url(#bottomGlow)"/>
+    <g mask="url(#gridMask)" opacity="0.18">
+      <line x1="225" y1="320" x2="-60" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="30" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="110" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="170" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="225" y2="800" stroke="#cc2222" stroke-width="0.8"/>
+      <line x1="225" y1="320" x2="280" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="340" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="420" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="510" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="0" y1="400" x2="450" y2="400" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="460" x2="450" y2="460" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="510" x2="450" y2="510" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="555" x2="450" y2="555" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="595" x2="450" y2="595" stroke="#cc2222" stroke-width="0.4"/>
+      <line x1="0" y1="630" x2="450" y2="630" stroke="#cc2222" stroke-width="0.4"/>
+      <line x1="0" y1="662" x2="450" y2="662" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="690" x2="450" y2="690" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="715" x2="450" y2="715" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="738" x2="450" y2="738" stroke="#cc2222" stroke-width="0.2"/>
+      <line x1="0" y1="758" x2="450" y2="758" stroke="#cc2222" stroke-width="0.2"/>
+      <line x1="0" y1="776" x2="450" y2="776" stroke="#cc2222" stroke-width="0.2"/>
+    </g>
+    <g opacity="0.35">
+      <line x1="60" y1="160" x2="130" y2="310" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="76" y1="160" x2="146" y2="310" stroke="#cc2222" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <g opacity="0.35">
+      <line x1="390" y1="160" x2="320" y2="310" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="374" y1="160" x2="304" y2="310" stroke="#cc2222" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <line x1="80" y1="72" x2="370" y2="72" stroke="#cc2222" stroke-width="0.8" opacity="0.4"/>
+    <line x1="0" y1="728" x2="450" y2="728" stroke="#cc2222" stroke-width="0.8" opacity="0.25"/>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.5">
+      <polyline points="18,18 18,48 48,48"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.5">
+      <polyline points="432,18 432,48 402,48"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.3">
+      <polyline points="18,782 18,752 48,752"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.3">
+      <polyline points="432,782 432,752 402,752"/>
+    </g>
+    <rect width="450" height="800" fill="#1a1a1a" opacity="0.04" filter="url(#noise)"/>
+  </svg>
+  <main class="content">
+    <h1>Характеристики</h1>
+    <div class="club-switcher" role="tablist" aria-label="Выбор клуба">
+      <button class="club-button active" data-club="arnau" type="button">ARNAU</button>
+      <button class="club-button" data-club="triumph" type="button">TRIUMPH</button>
+    </div>
+
+    <div class="club-panel active" id="club-arnau">
+      <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба ARNAU">
+        <button class="zone-button active" data-zone="standard1" type="button">Standart 1</button>
+        <button class="zone-button" data-zone="standard2" type="button">Standart 2</button>
+        <button class="zone-button" data-zone="vip1" type="button">VIP 1</button>
+        <button class="zone-button" data-zone="vip2" type="button">VIP 2</button>
+        <button class="zone-button" data-zone="vip3" type="button">VIP 3</button>
+        <button class="zone-button" data-zone="streamRoom" type="button">Stream Room</button>
+      </div>
+
+    <section class="spec-card active" id="standard1" aria-label="Standart 1 — начальный уровень">
+      <div class="spec-head">
+        <h2 class="spec-title">Standart 1</h2>
+        <span class="spec-badge">280Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i5-13400f</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4060 8 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR4 3200 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">27" Asus 280Hz</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - HyperX Origin Core, Мышка - Mchose Ultra K7, Наушники - HyperX Cloud II</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="standard2" aria-label="Standart 2 — средний уровень">
+      <div class="spec-head">
+        <h2 class="spec-title">Standart 2</h2>
+        <span class="spec-badge">360Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i7-12700F</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4060Ti</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR4</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">27" AGON 360Hz</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - HyperX Origin Core, Мышка - Logitech Superlight, Наушники - HyperX Cloud II</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="vip1" aria-label="VIP 1 — продвинутый уровень">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 1</h2>
+        <span class="spec-badge">360Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i9-14900Kf</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4060</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR4</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">24'5" ASUS 360 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - Varmilo Panda R2, Мышка - Logitech Superlight II, Наушники - HyperX Cloud III Wireless</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="vip2" aria-label="VIP 2 — высокий уровень">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 2</h2>
+        <span class="spec-badge">540Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">AMD Ryzen 7 9800X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4060</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 60000 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">24'5" ASUS 540 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - Varmilo CMYK, Мышка - Logitech Superlight II, Наушники - HyperX Cloud III Wireless</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="vip3" aria-label="VIP 3 — максимальный VIP уровень">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 3</h2>
+        <span class="spec-badge">600Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">AMD Ryzen 7 9800X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4080 Super</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 6000 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">24'5" BENQ ZOWIE 600 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - ATK RS7 PRO RGB, Мышка - Logitech Superlight II, Наушники - HyperX Cloud III Wireless S</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="streamRoom" aria-label="Stream Room — стрим-комната ARNAU">
+      <div class="spec-head">
+        <h2 class="spec-title">Stream Room</h2>
+        <span class="spec-badge">STREAM</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">AMD Ryzen 9 9950X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 5090 24 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 6000 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">24'5" BENQ ZOWIE 600 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Гарнитура</span>
+          <span class="spec-value">Logitech G Pro X</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Клавиатура</span>
+          <span class="spec-value">ATK RS7 PRO RGB</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Мышка</span>
+          <span class="spec-value">Logitech Superlight II Superstrike</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Дополнительный монитор</span>
+          <span class="spec-value">HyperX Armada 240Hz</span>
+        </div>  
+        <div class="spec-item">
+          <span class="spec-label">Микрофон</span>
+          <span class="spec-value">HyperX Procast</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Контроллер захвата</span>
+          <span class="spec-value">Elgato Stream Deck XL</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Веб-камера</span>
+          <span class="spec-value">Logitech Brio Stream 4K</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Микшер</span>
+          <span class="spec-value">HyperX Audio Mixer Streamer Edition</span>
+        </div>  
+        <div class="spec-item">
+          <span class="spec-label">Игровой стол</span>
+          <span class="spec-value">DxtRacer с регулировкой высоты</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="club-panel" id="club-triumph">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба TRIUMPH">
+      <button class="zone-button active" data-zone="standard1" type="button">Standart 1</button>
+      <button class="zone-button" data-zone="standard2" type="button">Standart 2</button>
+      <button class="zone-button" data-zone="vip1" type="button">VIP 1</button>
+      <button class="zone-button" data-zone="vip2" type="button">VIP 2</button>
+      <button class="zone-button" data-zone="vip3" type="button">VIP 3</button>
+      <button class="zone-button" data-zone="private" type="button">Private</button>
+      <button class="zone-button" data-zone="solo" type="button">Solo</button>
+    </div>
+
+    <section class="spec-card active" id="standard1" aria-label="Standart 1 — базовый зал">
+      <div class="spec-head">
+        <h2 class="spec-title">Standart 1</h2>
+        <span class="spec-badge">280Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i5-12400F</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">GIGABYTE RTX 3060 12 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR4 3600 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">ASUS 280Hz (27")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - HyperX origins Core, Мышка - Logitech Superlight, Наушники - HyperX Cloud III Wireless</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="standard2" aria-label="Standart 2 — продвинутый зал">
+      <div class="spec-head">
+        <h2 class="spec-title">Standart 2</h2>
+        <span class="spec-badge">280Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i7-10700</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">GIGABYTE RTX 3080 Ti 12 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR4 3600 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">ASUS 280Hz (27")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - HyperX Origins Core, Мышка - Logitech Superlight, Наушники - HyperX Cloud II</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="vip1" aria-label="VIP 1 — премиум зал">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 1</h2>
+        <span class="spec-badge">400Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">AMD Ryzen 7 9800X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">ASUS RTX 5070</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 5600 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">BENQ 400Hz (24.1")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - Varmilo Summit R1, Мышка - Logitech Superlight II, Наушники - HyperX Cloud III Wireless</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="vip2" aria-label="VIP 2 — топ зал">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 2</h2>
+        <span class="spec-badge">500Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">AMD Ryzen 7 9800X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">GIGABYTE 4080 SUPER</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 5600 МГц SUPER</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">ALIENWARE 500Hz (24.5")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - ATK RS7 PRO RGB, Мышка - Logitech Superlight II Dex, Наушники - HyperX Cloud IIIS Wireless</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="vip3" aria-label="VIP 3 — элитный зал">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 3</h2>
+        <span class="spec-badge">360Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i9-14900KF</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">ASUS RTX 5070</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR4 3600 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">BENQ 360Hz (24.5")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - Varmilo Summit R2, Мышка - Logitech Superlight, Наушники - HyperX Cloud III Wireless</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="private" aria-label="Private — приватный зал">
+      <div class="spec-head">
+        <h2 class="spec-title">Private</h2>
+        <span class="spec-badge">600Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">AMD Ryzen 7 9800X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">GIGABYTE 5070Ti/80 24 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 6000 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">BENQ 600Hz (24.1")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - ATK RS7 PRO RGB, Мышка - Logitech Superlight II, Наушники - HyperX Cloud III Wirelesss</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="solo" aria-label="Solo — одиночный режим">
+      <div class="spec-head">
+        <h2 class="spec-title">Solo</h2>
+        <span class="spec-badge">600Hz</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Ryzen 9 9900X3D</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">GIGABYTE 5090 24 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">64 ГБ DDR5 6000 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">BENQ 600Hz (24.1")</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - ATK RS7 PRO RGB, Мышка - Logitech Superlight IIc, Наушники - HyperX Cloud II</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+    <section class="spec-card" id="trio" aria-label="Trio — режим на троих">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 1</h2>
+        <span class="spec-badge">TRIO</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i7-13700KF</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 3070 Ti 8 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">48 ГБ DDR5 5200 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">27" WQHD 165 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Клавиатура - ATK RS7 PRO RGB, Мышка - Logitech Superlight IIс, Наушники - HyperX Cloud II</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="squad" aria-label="Squad — режим для отряда">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 2</h2>
+        <span class="spec-badge">SQUAD</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i9-13900KF</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4080 16 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">64 ГБ DDR5 6000 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">32" WQHD 165 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Сет из клавиатур и мышей для команды</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="bootcamp" aria-label="Bootcamp — учебный режим">
+      <div class="spec-head">
+        <h2 class="spec-title">Private</h2>
+        <span class="spec-badge">BOOTCAMP</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item">
+          <span class="spec-label">Процессор</span>
+          <span class="spec-value">Intel Core i7-13700</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Видеокарта</span>
+          <span class="spec-value">NVIDIA RTX 4060 8 ГБ</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Оперативная память</span>
+          <span class="spec-value">32 ГБ DDR5 5200 МГц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Монитор</span>
+          <span class="spec-value">27" Full HD 144 Гц</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Периферия</span>
+          <span class="spec-value">Обучающий комплект</span>
+        </div>
+      </div>
+    </section>
+  </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const clubButtons = document.querySelectorAll('.club-button');
+      const clubPanels = document.querySelectorAll('.club-panel');
+      const zoneButtons = document.querySelectorAll('.zone-button');
+
+      function activateZone(panel, zoneId) {
+        const buttons = panel.querySelectorAll('.zone-button');
+        const cards = panel.querySelectorAll('.spec-card');
+
+        buttons.forEach((btn) => btn.classList.toggle('active', btn.dataset.zone === zoneId));
+        cards.forEach((card) => card.classList.toggle('active', card.id === zoneId));
+      }
+
+      clubButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+          const selectedClub = this.dataset.club;
+          const targetPanel = document.getElementById(`club-${selectedClub}`);
+
+          clubButtons.forEach((btn) => btn.classList.toggle('active', btn === this));
+          clubPanels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
+
+          if (targetPanel) {
+            const firstZone = targetPanel.querySelector('.zone-button');
+            if (firstZone) {
+              activateZone(targetPanel, firstZone.dataset.zone);
+            }
+          }
+        });
+      });
+
+      zoneButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+          const panel = this.closest('.club-panel');
+          if (!panel) return;
+          activateZone(panel, this.dataset.zone);
+        });
+      });
+
+      const pageShell = document.querySelector('.page-shell');
+      requestAnimationFrame(() => pageShell.classList.remove('page-enter'));
+
+      const pageLinks = document.querySelectorAll('a[href]:not([href^="#"]):not([target="_blank"])');
+      let isNavigating = false;
+
+      pageLinks.forEach((link) => {
+        const url = new URL(link.href, location.href);
+        if (url.origin !== location.origin) return;
+        if (url.pathname === location.pathname && url.hash) return;
+
+        link.addEventListener('click', function (event) {
+          if (isNavigating) return;
+          isNavigating = true;
+          event.preventDefault();
+
+          const destination = this.href;
+          pageShell.classList.add('page-exit');
+
+          const handleTransitionEnd = (evt) => {
+            if (evt.target !== pageShell || evt.propertyName !== 'opacity') return;
+            pageShell.removeEventListener('transitionend', handleTransitionEnd);
+            window.location.href = destination;
+          };
+
+          pageShell.addEventListener('transitionend', handleTransitionEnd);
+          setTimeout(() => {
+            if (isNavigating) {
+              window.location.href = destination;
+            }
+          }, 450);
+        });
+      });
+    });
+  </script>
+
+  </div>
+
+  <nav class="bottom-nav" aria-label="Главное меню">
+    <a class="nav-item" href="../index.html" aria-label="Главная">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Главная</span>
+    </a>    
+    <a class="nav-item active" href="chars.html" aria-label="Характеристики" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+      <span>Хар-ки</span>
+    </a>
+    <a class="nav-item" href="map.html?v=20260601-5" aria-label="Клубы">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <span>Клубы</span>
+    </a>
+    <a class="nav-item" href="codes.html" aria-label="Коды клубов">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
+      <span>Коды</span>
+    </a>    
+    <a class="nav-item" href="sen.html" aria-label="Senet ID">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+      <span>Senet ID</span>
+    </a>
+  </nav>
+</body>
+</html>

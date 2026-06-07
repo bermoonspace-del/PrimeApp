@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Коды клубов</title>
+  <style>
+    :root{--bg:#000;--muted:rgba(255,255,255,0.58);--accent:#fff}
+    html,body{height:100%;margin:0}
+    body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .content{min-height:100%;box-sizing:border-box;padding:20px 16px 160px}
+    h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
+    .codes-list{display:grid;gap:10px;max-width:420px;margin:0 auto;padding-top:16px}
+    .club-button{appearance:none;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;width:100%;min-height:58px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;padding:12px 14px;font:inherit;cursor:pointer;text-align:left;transition:background .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
+    .club-button:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+    .club-button:active{transform:translateY(0) scale(.98)}
+    .club-button.is-open{background:#fff;color:#000;border-color:#fff}
+    .club-button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .club-name{font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .club-code{display:none;font-size:15px;font-weight:700;line-height:1;letter-spacing:1.5px}
+    .club-button.is-open .club-code{display:block}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
+    .bottom-nav *{pointer-events:auto}
+    .nav-item{display:grid;grid-template-rows:28px 14px;gap:5px;justify-items:center;align-content:center;width:100%;height:54px;min-width:0;padding:0 2px;box-sizing:border-box;color:var(--muted);text-decoration:none;font-size:10px;line-height:1;transition:color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .nav-item:hover{color:var(--accent);transform:translateY(-1px)}
+    .nav-item:active{transform:translateY(0) scale(.96)}
+    .nav-item.active{color:var(--accent)}
+    .nav-item svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .nav-item span{display:block;width:100%;line-height:14px;text-align:center;white-space:nowrap;overflow:hidden}
+    .contact-footer{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;z-index:10000;width:calc(min(420px,100% - 32px));padding:12px 16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));box-shadow:0 8px 20px rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+    .contact-footer .contact-title{font-weight:700;margin-bottom:8px;color:#fff;text-align:center}
+    .contact-footer .contact-list{display:grid;gap:8px}
+    .contact-footer .contact-item{display:block;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);color:#fff;text-decoration:none;font-weight:700;text-align:center}
+    @media (max-width:420px){.contact-footer{bottom:82px;padding:10px}}
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.expand();
+    }
+  </script>
+</head>
+<body>
+  <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0a0a0a"/>
+        <stop offset="50%" stop-color="#111111"/>
+        <stop offset="100%" stop-color="#0d0d0d"/>
+      </linearGradient>
+      <radialGradient id="redGlow" cx="50%" cy="30%" r="45%">
+        <stop offset="0%" stop-color="#c0392b" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="bottomGlow" cx="50%" cy="90%" r="40%">
+        <stop offset="0%" stop-color="#c0392b" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="gridFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="white" stop-opacity="0"/>
+        <stop offset="30%" stop-color="white" stop-opacity="0.5"/>
+        <stop offset="60%" stop-color="white" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="gridMask">
+        <rect width="450" height="800" fill="url(#gridFade)"/>
+      </mask>
+      <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noiseOut"/>
+        <feColorMatrix type="saturate" values="0" in="noiseOut" result="grayNoise"/>
+        <feBlend in="SourceGraphic" in2="grayNoise" mode="overlay" result="blended"/>
+        <feComposite in="blended" in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+    <rect width="450" height="800" fill="url(#bgGrad)"/>
+    <rect width="450" height="800" fill="url(#redGlow)"/>
+    <rect width="450" height="800" fill="url(#bottomGlow)"/>
+    <g mask="url(#gridMask)" opacity="0.18">
+      <line x1="225" y1="320" x2="-60" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="30" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="110" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="170" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="225" y2="800" stroke="#cc2222" stroke-width="0.8"/>
+      <line x1="225" y1="320" x2="280" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="340" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="420" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="225" y1="320" x2="510" y2="800" stroke="#cc2222" stroke-width="0.6"/>
+      <line x1="0" y1="400" x2="450" y2="400" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="460" x2="450" y2="460" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="510" x2="450" y2="510" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="555" x2="450" y2="555" stroke="#cc2222" stroke-width="0.5"/>
+      <line x1="0" y1="595" x2="450" y2="595" stroke="#cc2222" stroke-width="0.4"/>
+      <line x1="0" y1="630" x2="450" y2="630" stroke="#cc2222" stroke-width="0.4"/>
+      <line x1="0" y1="662" x2="450" y2="662" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="690" x2="450" y2="690" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="715" x2="450" y2="715" stroke="#cc2222" stroke-width="0.3"/>
+      <line x1="0" y1="738" x2="450" y2="738" stroke="#cc2222" stroke-width="0.2"/>
+      <line x1="0" y1="758" x2="450" y2="758" stroke="#cc2222" stroke-width="0.2"/>
+      <line x1="0" y1="776" x2="450" y2="776" stroke="#cc2222" stroke-width="0.2"/>
+    </g>
+    <g opacity="0.35">
+      <line x1="60" y1="160" x2="130" y2="310" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="76" y1="160" x2="146" y2="310" stroke="#cc2222" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <g opacity="0.35">
+      <line x1="390" y1="160" x2="320" y2="310" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="374" y1="160" x2="304" y2="310" stroke="#cc2222" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <line x1="80" y1="72" x2="370" y2="72" stroke="#cc2222" stroke-width="0.8" opacity="0.4"/>
+    <line x1="0" y1="728" x2="450" y2="728" stroke="#cc2222" stroke-width="0.8" opacity="0.25"/>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.5">
+      <polyline points="18,18 18,48 48,48"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.5">
+      <polyline points="432,18 432,48 402,48"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.3">
+      <polyline points="18,782 18,752 48,752"/>
+    </g>
+    <g stroke="#cc2222" stroke-width="1.2" fill="none" opacity="0.3">
+      <polyline points="432,782 432,752 402,752"/>
+    </g>
+    <rect width="450" height="800" fill="#1a1a1a" opacity="0.04" filter="url(#noise)"/>
+  </svg>
+  <main class="content">
+    <h1>Коды клубов</h1>
+    <section class="codes-list" aria-label="Коды клубов">
+      <button class="club-button" type="button" id="baitursynovaBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Байтурсынова</span>
+        <span class="club-code" id="baitursynovaCode" aria-live="polite">W51TC</span>
+      </button>
+      <button class="club-button" type="button" id="moldagaliyevaBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Кумысбекова</span>
+        <span class="club-code" id="moldagaliyevaCode" aria-live="polite">ZITKD</span>
+      </button>      
+      <button class="club-button" type="button" id="koshkarbayevaBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Кошкарбаева</span>
+        <span class="club-code" id="koshkarbayevaCode" aria-live="polite">J9J4Q</span>
+      </button>
+      <button class="club-button" type="button" id="kereyZhanibekBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Керей Жанибек</span>
+        <span class="club-code" id="kereyZhanibekCode" aria-live="polite">Пока что кода нет</span>
+      </button>
+      <button class="club-button" type="button" id="kabanbayBatyrBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Кабанбай Батыра</span>
+        <span class="club-code" id="kabanbayBatyrCode" aria-live="polite">Пока что кода нет</span>
+      </button>
+      <button class="club-button" type="button" id="saptaevaBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Саптаева</span>
+        <span class="club-code" id="saptaevaCode" aria-live="polite">Пока что кода нет</span>
+      </button>
+      <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Мухамедханова</span>
+        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
+      </button>
+      <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Сауран</span>
+        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
+      </button>
+       <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Кенесары</span>
+        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
+      </button>
+        <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        <span class="club-name">Асфендиярова</span>
+        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
+      </button>
+    </section>
+  </main>
+
+  
+  <nav class="bottom-nav" aria-label="Главное меню">
+    <a class="nav-item" href="../index.html" aria-label="Главная">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Главная</span>
+    </a>    
+    <a class="nav-item" href="chars.html" aria-label="Характеристики">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+      <span>Хар-ки</span>
+    </a>
+    <a class="nav-item" href="map.html?v=20260601-5" aria-label="Клубы">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <span>Клубы</span>
+    </a>
+    <a class="nav-item active" href="codes.html" aria-label="Коды клубов" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
+      <span>Коды</span>
+    </a>    
+    <a class="nav-item" href="sen.html" aria-label="Senet ID">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+      <span>Senet ID</span>
+    </a>
+  </nav>
+  <script>
+      const clubButtons = document.querySelectorAll('.club-button');
+
+    clubButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        clubButtons.forEach((btn) => {
+          btn.classList.remove('is-open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+
+        button.classList.add('is-open');
+        button.setAttribute('aria-expanded', 'true');
+      });
+    });
+  </script>
+</body>
+</html>

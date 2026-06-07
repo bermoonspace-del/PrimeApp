@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 945 1680" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="center" cx="50%" cy="38%" r="62%">
+      <stop offset="0" stop-color="#1a1a1a"/>
+      <stop offset="0.58" stop-color="#080808"/>
+      <stop offset="1" stop-color="#000"/>
+    </radialGradient>
+    <linearGradient id="edge" x1="0" x2="1">
+      <stop offset="0" stop-color="#020202"/>
+      <stop offset="0.45" stop-color="#151515"/>
+      <stop offset="1" stop-color="#030303"/>
+    </linearGradient>
+    <filter id="redGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+
+  <rect width="945" height="1680" fill="#000"/>
+  <rect x="0" y="0" width="945" height="1680" fill="url(#center)"/>
+
+  <g opacity="0.98" filter="url(#softShadow)">
+    <path d="M18 0h190l-88 96v126l-102 102z" fill="url(#edge)"/>
+    <path d="M927 0H737l88 96v126l102 102z" fill="url(#edge)"/>
+    <path d="M0 330l86 92v220L0 736z" fill="#070707"/>
+    <path d="M945 330l-86 92v220l86 94z" fill="#070707"/>
+    <path d="M0 942l86-92v-220L0 536z" fill="#050505" opacity="0.75"/>
+    <path d="M945 942l-86-92v-220l86-94z" fill="#050505" opacity="0.75"/>
+    <path d="M0 1270h222l90 95v206H0z" fill="#080808"/>
+    <path d="M945 1270H723l-90 95v206h312z" fill="#080808"/>
+    <path d="M206 0h533l-58 78H264z" fill="#111"/>
+    <path d="M0 1540h945v140H0z" fill="#030303"/>
+  </g>
+
+  <g fill="none" stroke="#242424" stroke-width="2" opacity="0.95">
+    <path d="M86 70l86 90v126"/>
+    <path d="M859 70l-86 90v126"/>
+    <path d="M86 426v296l110 116"/>
+    <path d="M859 426v296L749 838"/>
+    <path d="M112 392l54 58v244"/>
+    <path d="M833 392l-54 58v244"/>
+    <path d="M221 64l72 76h359l72-76"/>
+    <path d="M86 1375h190l68 72"/>
+    <path d="M859 1375H669l-68 72"/>
+  </g>
+
+  <g fill="none" stroke="#111" stroke-width="18" opacity="0.8">
+    <path d="M20 1180l190 200h120"/>
+    <path d="M925 1180L735 1380H615"/>
+    <path d="M0 268l160 170"/>
+    <path d="M945 268L785 438"/>
+  </g>
+
+  <g filter="url(#redGlow)" fill="none" stroke="#ff2638" stroke-linecap="square">
+    <path d="M24 82l122 134v62" stroke-width="3"/>
+    <path d="M921 82L799 216v62" stroke-width="3"/>
+    <path d="M98 755l28 30" stroke-width="3"/>
+    <path d="M847 755l-28 30" stroke-width="3"/>
+    <path d="M110 1322l70 74" stroke-width="2.5"/>
+    <path d="M835 1322l-70 74" stroke-width="2.5"/>
+    <path d="M156 1604h144" stroke-width="2"/>
+    <path d="M789 1604H645" stroke-width="2"/>
+  </g>
+
+  <g fill="none" stroke="#707070" stroke-width="2" opacity="0.7">
+    <path d="M187 82l98 106"/>
+    <path d="M758 82L660 188"/>
+  </g>
+
+  <g opacity="0.16">
+    <path d="M0 1470h945" stroke="#fff" stroke-width="1"/>
+    <path d="M0 1515h945" stroke="#fff" stroke-width="1"/>
+    <path d="M0 1560h945" stroke="#fff" stroke-width="1"/>
+  </g>
+</svg>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>PRIME ARNAU MAP</title>
+
+    <link rel="stylesheet" href="style.css?v=20260605-11">
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.expand();
+            window.Telegram.WebApp.disableVerticalSwipes();
+        }
+    </script>
+</head>
+
+<body>
+
+
+
+<div class="container">
+
+
+    <div class="map-container">
+
+        <div class="map-wrapper">
+        <!-- SVG map removed per request -->
+        <div id="pcs"></div>
+        <div id="map-message" class="map-message" hidden></div>
+        </div>
+
+
+
+    </div>
+
+</div>
+
+
+    
+
+
+<div class="map-legend" aria-label="Легенда карты">
+    <div class="legend-title">Легенда</div>
+    <div class="legend-grid">
+        <div class="legend-item"><span class="legend-swatch legend-login"></span><span>Занят по логину</span></div>
+        <div class="legend-item"><span class="legend-swatch legend-check"></span><span>Занят по чеку</span></div>
+        <div class="legend-item"><span class="legend-swatch legend-booked"></span><span>Забронирован</span></div>
+        <div class="legend-item"><span class="legend-swatch legend-free"></span><span>Свободен</span></div>
+        <div class="legend-item"><span class="legend-swatch legend-offline"></span><span>Выключен(Свободен)</span></div>
+    </div>
+</div>
+
+<section class="booking-contacts" aria-label="Контакты для брони">
+    <span class="booking-contacts-title">Контакты для брони</span>
+    <a href="tel:+77011000608" aria-label="Позвонить +7 701 100 06 08" onclick="window.location.href='tel:+77011000608'" rel="nofollow noopener">+7 701 100 06 08 Арнау</a>
+</section>
+
+<section class="soon-bar" aria-label="Скоро освободятся">
+    <div class="soon-bar-title">Скоро<br>освободятся</div>
+    <div class="soon-card is-empty" data-soon="0"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="1"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="2"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="3"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="4"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+</section>
+
+<script>
+(function(){
+const OFFICE_ID=1114;
+const USER_INFO_URL_PREFIX="https://strongastana.app.enes.tech/api/v2/map/";
+const TOKEN_STORAGE_KEY="strongastana.map.capToken.v2";
+const TOKEN_REFRESH_MS=10*24*60*60*1000;
+const REFRESH_INTERVAL_MS=30000;
+const cards=Array.from(document.querySelectorAll('.soon-card[data-soon]'));
+const releaseDates=new Array(cards.length).fill(null);
+let cachedToken=null;
+let cachedTokenAt=0;
+let inFlight=false;
+function getNestedField(source,path){return path.split('.').reduce((v,k)=>v?.[k],source);}
+function getNumberField(source,keys){for(const key of keys){const value=getNestedField(source,key);if(value!=null&&value!==''&&!Number.isNaN(Number(value)))return Number(value);}return null;}
+function parseApiDate(value){if(value==null||value==='')return null;if(typeof value==='number'||/^\d+$/.test(String(value))){const ts=Number(value);const date=new Date(ts<10000000000?ts*1000:ts);return Number.isNaN(date.getTime())?null:date;}const normalized=String(value).includes('T')?String(value):String(value).replace(' ','T');const date=new Date(normalized);return Number.isNaN(date.getTime())?null:date;}
+function getReleaseDate(pc){const dateKeys=["end_time","ends_at","finish_time","finished_at","expires_at","expired_at","paid_to","time_end","session_end_time","session_ends_at","session_finish_time","current_session.end_time","current_session.ends_at","current_session.expires_at"];for(const key of dateKeys){const d=parseApiDate(getNestedField(pc,key));if(d)return d;}const secondsLeft=getNumberField(pc,["seconds_left","remaining_seconds","session_seconds_left","current_session.seconds_left","current_session.remaining_seconds"]);if(secondsLeft!=null&&secondsLeft>0)return new Date(Date.now()+secondsLeft*1000);const minutesLeft=getNumberField(pc,["minutes_left","remaining_minutes","time_left","session_minutes_left","current_session.minutes_left","current_session.remaining_minutes"]);if(minutesLeft!=null&&minutesLeft>0)return new Date(Date.now()+minutesLeft*60*1000);const spent=getNumberField(pc,["spent_minutes"]);const total=getNumberField(pc,["total_minutes"]);if(spent!=null&&total!=null&&total>spent)return new Date(Date.now()+(total-spent)*60*1000);return null;}
+function formatTimeRemaining(releaseDate){if(!releaseDate)return "—";const diffMs=releaseDate.getTime()-Date.now();if(diffMs<=0)return "Сейчас";const totalSec=Math.floor(diffMs/1000);if(totalSec<60)return totalSec+" сек";const totalMin=Math.floor(totalSec/60);if(totalMin<60)return totalMin+" мин";const h=Math.floor(totalMin/60);const m=totalMin%60;return m===0?(h+" ч"):(h+" ч "+m+" мин");}
+function cardClass(remaining){if(!remaining||remaining==="—")return "is-empty";if(remaining==="Сейчас")return "is-now";const m=remaining.match(/^(\d+)\s*мин/);if(m&&Number(m[1])<=5)return "is-urgent";return "";}
+function isBusy(pc){const statusId=Number(pc.dic_workstation_status_id);return [1,2,3,4].includes(statusId);}
+const BACKEND_URL="";
+async function getToken(){const now=Date.now();if(cachedToken&&(now-cachedTokenAt)<TOKEN_REFRESH_MS)return cachedToken;try{const stored=localStorage.getItem(TOKEN_STORAGE_KEY);if(stored){const parsed=JSON.parse(stored);if(parsed?.token&&parsed?.createdAt&&(now-parsed.createdAt)<TOKEN_REFRESH_MS){cachedToken=parsed.token;cachedTokenAt=parsed.createdAt;return cachedToken;}}}catch{}try{const res=await fetch(BACKEND_URL+'/api/token',{method:'GET'});if(!res.ok)throw new Error('token HTTP '+res.status);const json=await res.json();const token=json?.token;if(!token)throw new Error('no token in response');cachedToken=token;cachedTokenAt=now;try{localStorage.setItem(TOKEN_STORAGE_KEY,JSON.stringify({token,createdAt:now}));}catch{}return token;}catch(err){console.warn('getToken failed:',err);return null;}}
+async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
+async function fetchUserInfo(pcId,token){if(!pcId||!token)return null;try{const res=await fetch(USER_INFO_URL_PREFIX+pcId+'/user_info/',{method:'GET',headers:{'Content-Type':'application/json','Authorization':'Token '+token}});if(!res.ok)return null;return await res.json();}catch{return null;}}
+function renderCard(index,item){const card=cards[index];if(!card)return;if(item){const num=String(item.pc.num??item.pc.device_name??'?');card.className='soon-card '+cardClass(formatTimeRemaining(item.releaseDate));card.querySelector('.soon-card-num').textContent=num;card.querySelector('.soon-card-time').textContent=formatTimeRemaining(item.releaseDate);}else{card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent='—';card.querySelector('.soon-card-time').textContent='—';}}
+async function refreshSoon(){if(inFlight)return;inFlight=true;try{let pcs=[];try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);}const busy=pcs.filter(isBusy);const token=await getToken();const withDates=(await Promise.all(busy.map(async pc=>{const ui=await fetchUserInfo(pc.id,token);const releaseDate=getReleaseDate({...pc,...ui,current_session:ui});return {pc,releaseDate};}))).filter(x=>x.releaseDate).sort((a,b)=>a.releaseDate-b.releaseDate).slice(0,5);for(let i=0;i<cards.length;i++){releaseDates[i]=withDates[i]?withDates[i].releaseDate:null;renderCard(i,withDates[i]);}}finally{inFlight=false;}}
+function tickTimers(){for(let i=0;i<cards.length;i++){if(!releaseDates[i])continue;const card=cards[i];if(card.classList.contains('is-empty'))continue;const remaining=formatTimeRemaining(releaseDates[i]);card.querySelector('.soon-card-time').textContent=remaining;card.className='soon-card '+cardClass(remaining);}}
+refreshSoon();
+setInterval(refreshSoon,REFRESH_INTERVAL_MS);
+setInterval(tickTimers,1000);
+})();
+</script>
+
+<script src="ARNAUapp.js?v=20260605-11"></script>
+</body>
+
+</html>
