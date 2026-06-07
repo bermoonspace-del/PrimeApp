@@ -31,6 +31,10 @@
         .help-answer strong{display:block;font-weight:700;margin-bottom:6px;color:#fff}
         .help-answer.is-open{max-height:160px;padding:12px 14px 12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09)}
 
+        .price-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:20px;margin:16px auto 0;max-width:300px;padding:12px 18px;border:1px solid #fff;border-radius:12px;background:#fff;color:#000;font:inherit;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:background .25s ease,transform .25s ease,color .25s ease}
+        .price-button:hover{background:#fff;color:#cc2222;border-color:#cc2222;transform:translateY(-1px)}
+        .price-button:active{transform:translateY(0) scale(.98)}
+
         /* Video intro overlay */
         #video-overlay {
             position: fixed;
@@ -141,6 +145,7 @@
     <script>
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.expand();
+            window.Telegram.WebApp.disableVerticalSwipes();
         }
     </script>
 </head>
@@ -302,6 +307,7 @@
                     </div>
                 </div>
             </section>
+            <a class="price-button" href="https://primekz.taplink.ws/?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGn8bSEi76SyoPcQiE7u5k4d5GtVImMSyrD69EH0t2m9irsBtUMGRwISiZu1HU_aem_8q-6gxOmIbtuEisHe0LlOg" target="_blank" rel="noopener noreferrer">Прайс тут</a>
         </div>
     </div>
 
@@ -310,21 +316,21 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
             <span>Главная</span>
         </a>
-        <a class="nav-item" href="NAVBAR/sen.html" aria-label="Senet ID">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
-            <span>Senet ID</span>
-        </a>
+        <a class="nav-item" href="NAVBAR/chars.html" aria-label="Характеристики">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+            <span>Хар-ки</span>
+        </a>   
         <a class="nav-item" href="NAVBAR/map.html?v=20260605-5" aria-label="Клубы">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
             <span>Клубы</span>
         </a>
-        <a class="nav-item" href="NAVBAR/chars.html" aria-label="Характеристики">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
-            <span>Хар-ки</span>
-        </a>
         <a class="nav-item" href="NAVBAR/codes.html" aria-label="Коды клубов">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
             <span>Коды</span>
+        </a>        
+        <a class="nav-item" href="NAVBAR/sen.html" aria-label="Senet ID">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+            <span>Senet ID</span>
         </a>
     </nav>
 

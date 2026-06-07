@@ -4,7 +4,7 @@ tg?.expand();
 
 
 // Configuration for local backend
-const BACKEND_URL = ""; // Empty for local development, set to your Render URL for production
+const BACKEND_URL = "https://primeapp-2.onrender.com"; // Set to your Render URL for production, empty for local development
 
 const API_URL =
     `/api/map?office_id=1114&limit=9999`;
@@ -23,14 +23,89 @@ const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
 let currentPCs = [];
 let memoryTokenCache = null;
 
-const VIEWBOX_WIDTH = 2100;
-const VIEWBOX_HEIGHT = 1330;
+const VIEWBOX_WIDTH = 2000;
+const VIEWBOX_HEIGHT = 1230;
 const GRID_UNIT = 70;
 
 const WALL_X = 50;
 const WALL_Y = 50;
 const WALL_WIDTH = 2000;
 const WALL_HEIGHT = 1240;
+
+const LAYOUT_AUTORUN = false;
+
+const PC_POSITIONS = new Map();
+const POSITIONS_URL = new URL('positions.json', document.currentScript ? document.currentScript.src : location.href).toString();
+let PC_POSITIONS_LOADED = false;
+
+async function loadPositions() {
+    try {
+        const res = await fetch(POSITIONS_URL, { cache: 'no-store' });
+        if (!res.ok) {
+            throw new Error('positions.json HTTP ' + res.status);
+        }
+        const data = await res.json();
+        PC_POSITIONS.clear();
+        let outerOrigin = [0, 0];
+        let blocksData = data;
+        const topKeys = Object.keys(data);
+        if (topKeys.length === 1) {
+            const top = data[topKeys[0]];
+            if (top && typeof top === 'object' && !Array.isArray(top) && top.blocks && typeof top.blocks === 'object' && Array.isArray(top.origin)) {
+                outerOrigin = [Number(top.origin[0]) || 0, Number(top.origin[1]) || 0];
+                blocksData = top.blocks;
+            }
+        }
+        for (const blockName of Object.keys(blocksData)) {
+            const block = blocksData[blockName] || {};
+            if (Array.isArray(block.origin) && block.pcs && typeof block.pcs === 'object') {
+                const ox = Number(block.origin[0]) + outerOrigin[0];
+                const oy = Number(block.origin[1]) + outerOrigin[1];
+                const step = Number(block.step);
+                const stepYRaw = block.stepY;
+                const stepY = (stepYRaw != null && Number.isFinite(Number(stepYRaw)) && Number(stepYRaw) > 0) ? Number(stepYRaw) : step;
+                if (!Number.isFinite(ox) || !Number.isFinite(oy) || !Number.isFinite(step) || step <= 0) continue;
+                for (const key of Object.keys(block.pcs)) {
+                    const num = Number(key);
+                    if (!Number.isFinite(num)) continue;
+                    const cell = block.pcs[key];
+                    if (cell && typeof cell === 'object' && !Array.isArray(cell) && Array.isArray(cell.override) && cell.override.length >= 2) {
+                        const ox2 = Number(cell.override[0]);
+                        const oy2 = Number(cell.override[1]);
+                        if (Number.isFinite(ox2) && Number.isFinite(oy2)) {
+                            PC_POSITIONS.set(num, [ox2, oy2]);
+                        }
+                        continue;
+                    }
+                    if (!Array.isArray(cell) || cell.length < 2) continue;
+                    const col = Number(cell[0]);
+                    const row = Number(cell[1]);
+                    if (!Number.isFinite(col) || !Number.isFinite(row)) continue;
+                    PC_POSITIONS.set(num, [ox + col * step, oy + row * stepY]);
+                }
+                continue;
+            }
+            for (const key of Object.keys(block)) {
+                const num = Number(key);
+                const pair = block[key];
+                if (!Number.isFinite(num) || !Array.isArray(pair) || pair.length < 2) continue;
+                const x = Number(pair[0]);
+                const y = Number(pair[1]);
+                if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+                PC_POSITIONS.set(num, [x, y]);
+            }
+        }
+        PC_POSITIONS_LOADED = true;
+        if (Array.isArray(currentPCs) && currentPCs.length) {
+            renderPCs(currentPCs);
+        }
+        return true;
+    } catch (err) {
+        console.warn('loadPositions failed:', err);
+        PC_POSITIONS_LOADED = false;
+        return false;
+    }
+}
 
 const STATUS_BY_ID = {
     "-5": {
@@ -80,7 +155,7 @@ const STATUS_BY_ID = {
     },
     "5": {
         name: "Забронирован",
-        color: "#9C27B0",
+        color: "#d2c91c",
         kind: "reserved"
     },
     "6": {
@@ -96,6 +171,10 @@ function getComputerState(pc) {
     }
 
     const rawState = String(pc.status || pc.state || pc.machine_status || pc.map_status || '').toLowerCase();
+
+    if (Number(pc.work_mode) === 1) {
+        return 'reserved';
+    }
 
     if ([pc.is_in_maintenance, pc.in_maintenance, pc.maintenance, pc.tech_service, pc.is_maintenance].some(Boolean) || rawState.includes('maintenance') || rawState.includes('tech')) {
         return 'maintenance';
@@ -139,8 +218,6 @@ async function loadPCs() {
 
         renderPCs(pcs);
 
-        await renderSoonList(pcs);
-
         if (pcs.length === 0) {
             showMapMessage("Компьютеры не найдены. Проверьте ответ API или координаты рабочих мест.");
         } else {
@@ -156,7 +233,6 @@ async function loadPCs() {
 
         currentPCs = [];
         renderPCs([]);
-        renderSoonList([]);
         showMapMessage(getLoadErrorMessage(err));
     }
 }
@@ -299,7 +375,8 @@ function clearTokenCache() {
 }
 
 async function fetchJson(url, options = {}) {
-    const response = await fetch(url, options);
+    const fullUrl = (BACKEND_URL && url.startsWith("/")) ? BACKEND_URL + url : url;
+    const response = await fetch(fullUrl, options);
     const text = await response.text();
     let body = null;
 
@@ -396,7 +473,7 @@ function getStatusInfo(pc) {
         return {
             id: 'reserved',
             name: 'Забронирован',
-            color: '#9C27B0',
+            color: '#d2c91c',
             kind: 'reserved'
         };
     }
@@ -460,18 +537,12 @@ function renderPCs(pcs) {
             el.classList.add("vip");
         }
 
-        // Position markers in the SVG viewBox coordinate system.
-        const clampedPoint = {
-            x: clamp(point.x, WALL_X, WALL_X + WALL_WIDTH),
-            y: clamp(point.y, WALL_Y, WALL_Y + WALL_HEIGHT)
-        };
-
-        // position markers using percentages relative to the SVG viewBox
-        const leftPercent = clamp((clampedPoint.x / VIEWBOX_WIDTH) * 100, 0, 100);
-        const topPercent = clamp((clampedPoint.y / VIEWBOX_HEIGHT) * 100, 0, 100);
+        const leftPercent = (point.x / VIEWBOX_WIDTH) * 100;
+        const topPercent = (point.y / VIEWBOX_HEIGHT) * 100;
 
         el.style.left = leftPercent + "%";
         el.style.top = topPercent + "%";
+        el.dataset.y = String(point.y);
 
         const label = (pc.num != null && pc.num !== '') ? pc.num : (pc.device_name || pc.id || '');
         el.innerText = label;
@@ -742,8 +813,10 @@ function renderPCs(pcs) {
                     });
                 };
 
-                positionGroupAsBlock(1, 52, 2, 40, 4, 46);
-                positionGroupAsBlock(53, 107, 60, 98, 44, 86);
+                if (LAYOUT_AUTORUN) {
+                    positionGroupAsBlock(1, 52, 2, 40, 4, 46);
+                    positionGroupAsBlock(53, 107, 60, 98, 44, 86);
+                }
 
                 const stretchGroupYAxis = (start, end, factor, topBound, bottomBound) => {
                     const group = getGroupEls(start, end);
@@ -766,7 +839,140 @@ function renderPCs(pcs) {
                     });
                 };
 
-                stretchGroupYAxis(53, 107, 1.15, 44, 86);
+                const distributeGroupYAxis = (start, end, topBound, bottomBound) => {
+                    const group = getGroupEls(start, end);
+                    if (group.length === 0) return;
+
+                    const rowsMap = new Map();
+                    group.forEach(el => {
+                        const rowKey = el.dataset.y || "0";
+                        if (!rowsMap.has(rowKey)) rowsMap.set(rowKey, []);
+                        rowsMap.get(rowKey).push(el);
+                    });
+
+                    const rows = Array.from(rowsMap.entries())
+                        .sort((a, b) => Number(a[0]) - Number(b[0]));
+
+                    const step = rows.length > 1
+                        ? (bottomBound - topBound) / (rows.length - 1)
+                        : 0;
+
+                    rows.forEach(([rowKey, els], idx) => {
+                        const rowTop = clamp(topBound + step * idx, topBound, bottomBound);
+                        els.forEach(el => {
+                            el.style.top = rowTop + "%";
+                        });
+                    });
+                };
+
+                const separateRangesYAxis = (startA, endA, startB, endB, minGap) => {
+                    const groupA = getGroupEls(startA, endA);
+                    const groupB = getGroupEls(startB, endB);
+                    if (groupA.length === 0 || groupB.length === 0) return;
+
+                    const readTop = el => parseFloat(String(el.style.top).replace('%','')) || 0;
+                    const avgTop = els => els.reduce((sum, el) => sum + readTop(el), 0) / els.length;
+
+                    const aTop = avgTop(groupA);
+                    const bTop = avgTop(groupB);
+                    const currentGap = Math.abs(bTop - aTop);
+
+                    if (currentGap >= minGap) return;
+
+                    const shift = (minGap - currentGap) / 2;
+                    const aUp = aTop < bTop;
+
+                    groupA.forEach(el => {
+                        el.style.top = clamp(readTop(el) + (aUp ? -shift : shift), 0, 100) + "%";
+                    });
+                    groupB.forEach(el => {
+                        el.style.top = clamp(readTop(el) + (aUp ? shift : -shift), 0, 100) + "%";
+                    });
+                };
+
+                const separateAdjacentRowsYAxis = (start, end, minGap) => {
+                    const group = getGroupEls(start, end);
+                    if (group.length === 0) return;
+
+                    const rowsMap = new Map();
+                    group.forEach(el => {
+                        const rowKey = el.dataset.y || "0";
+                        if (!rowsMap.has(rowKey)) rowsMap.set(rowKey, []);
+                        rowsMap.get(rowKey).push(el);
+                    });
+
+                    const rows = Array.from(rowsMap.entries())
+                        .sort((a, b) => Number(a[0]) - Number(b[0]))
+                        .map(([_, els]) => {
+                            const nums = els
+                                .map(el => Number(el.dataset.num) || 0)
+                                .filter(n => n);
+                            return {
+                                els,
+                                numMin: nums.length ? Math.min(...nums) : 0,
+                                numMax: nums.length ? Math.max(...nums) : 0
+                            };
+                        });
+
+                    for (let i = 0; i < rows.length - 1; i++) {
+                        const a = rows[i];
+                        const b = rows[i + 1];
+                        separateRangesYAxis(a.numMin, a.numMax, b.numMin, b.numMax, minGap);
+                    }
+                };
+
+                const pinRowAndStackYAxis = (anchorStart, anchorEnd, start, end, pxGap) => {
+                    const containerEl = document.getElementById('pcs');
+                    if (!containerEl) return;
+
+                    const containerHeight = containerEl.getBoundingClientRect().height;
+                    if (!containerHeight) return;
+
+                    const group = getGroupEls(start, end);
+                    if (group.length === 0) return;
+
+                    const rowsMap = new Map();
+                    group.forEach(el => {
+                        const rowKey = el.dataset.y || "0";
+                        if (!rowsMap.has(rowKey)) rowsMap.set(rowKey, []);
+                        rowsMap.get(rowKey).push(el);
+                    });
+
+                    const rows = Array.from(rowsMap.values())
+                        .map(els => ({
+                            els,
+                            topPercent: parseFloat(String(els[0].style.top).replace('%','')) || 0
+                        }))
+                        .sort((a, b) => a.topPercent - b.topPercent);
+
+                    const anchorIdx = rows.findIndex(row => {
+                        const nums = row.els.map(el => Number(el.dataset.num) || 0);
+                        return nums.includes(anchorStart) || nums.includes(anchorEnd);
+                    });
+
+                    if (anchorIdx === -1) return;
+
+                    const anchorTopPercent = rows[anchorIdx].topPercent;
+                    const anchorTopPx = (anchorTopPercent / 100) * containerHeight;
+
+                    rows[anchorIdx].els.forEach(el => {
+                        el.style.top = anchorTopPercent + "%";
+                    });
+
+                    for (let i = anchorIdx + 1; i < rows.length; i++) {
+                        const offsetPx = pxGap * (i - anchorIdx);
+                        const newTopPercent = clamp(((anchorTopPx + offsetPx) / containerHeight) * 100, 0, 100);
+                        rows[i].els.forEach(el => {
+                            el.style.top = newTopPercent + "%";
+                        });
+                    }
+                };
+
+                if (LAYOUT_AUTORUN) {
+                    distributeGroupYAxis(53, 107, 44, 86);
+                    pinRowAndStackYAxis(53, 61, 53, 107, 10);
+                    pinRowAndStackYAxis(62, 66, 67, 107, 10);
+                }
             }
         } catch (e) {
             console.warn('Range separation failed', e);
@@ -840,6 +1046,12 @@ function getMapPoint(pc, coordinateMode) {
 }
 
 function getRawCoordinates(pc) {
+    const num = Number(pc.num);
+    if (Number.isFinite(num) && PC_POSITIONS.has(num)) {
+        const pair = PC_POSITIONS.get(num);
+        return { x: pair[0], y: pair[1] };
+    }
+
     const x = getNumberField(pc, [
         "map_x",
         "x",
@@ -1161,263 +1373,19 @@ function escapeHtml(value) {
         .replace(/'/g, "&#039;");
 }
 
-function getReleaseDate(pc) {
-    const dateKeys = [
-        "end_time",
-        "ends_at",
-        "finish_time",
-        "finished_at",
-        "expires_at",
-        "expired_at",
-        "paid_to",
-        "time_end",
-        "session_end_time",
-        "session_ends_at",
-        "session_finish_time",
-        "current_session.end_time",
-        "current_session.ends_at",
-        "current_session.expires_at"
-    ];
-
-    for (const key of dateKeys) {
-        const date = parseApiDate(getNestedField(pc, key));
-
-        if (date) {
-            return date;
-        }
-    }
-
-    const secondsLeft = getNumberField(pc, [
-        "seconds_left",
-        "remaining_seconds",
-        "session_seconds_left",
-        "current_session.seconds_left",
-        "current_session.remaining_seconds"
-    ]);
-
-    if (secondsLeft != null && secondsLeft > 0) {
-        return new Date(Date.now() + secondsLeft * 1000);
-    }
-
-    const minutesLeft = getNumberField(pc, [
-        "minutes_left",
-        "remaining_minutes",
-        "time_left",
-        "session_minutes_left",
-        "current_session.minutes_left",
-        "current_session.remaining_minutes"
-    ]);
-
-    if (minutesLeft != null && minutesLeft > 0) {
-        return new Date(Date.now() + minutesLeft * 60 * 1000);
-    }
-
-    const spentMinutes = getNumberField(pc, ["spent_minutes"]);
-    const totalMinutes = getNumberField(pc, ["total_minutes"]);
-
-    if (spentMinutes != null && totalMinutes != null && totalMinutes > spentMinutes) {
-        return new Date(Date.now() + (totalMinutes - spentMinutes) * 60 * 1000);
-    }
-
-    return null;
-}
-
 function getNestedField(source, path) {
     return path
         .split(".")
         .reduce((value, key) => value?.[key], source);
 }
-
-function parseApiDate(value) {
-    if (value == null || value === "") {
-        return null;
-    }
-
-    if (typeof value === "number" || /^\d+$/.test(String(value))) {
-        const timestamp = Number(value);
-        const date = new Date(timestamp < 10000000000 ? timestamp * 1000 : timestamp);
-
-        return Number.isNaN(date.getTime()) ? null : date;
-    }
-
-    const normalizedValue = String(value).includes("T")
-        ? String(value)
-        : String(value).replace(" ", "T");
-    const date = new Date(normalizedValue);
-
-    return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function formatReleaseTime(date) {
-    if (!date) {
-        return "Время не указано";
-    }
-
-    return `Освободится в ${date.toLocaleTimeString("ru-RU", {
-        hour: "2-digit",
-        minute: "2-digit"
-    })}`;
-}
-
-function formatSessionProgress(userInfo) {
-    const spentMinutes = getNumberField(userInfo, ["spent_minutes"]);
-    const totalMinutes = getNumberField(userInfo, ["total_minutes"]);
-
-    if (spentMinutes != null && totalMinutes != null) {
-        return `${spentMinutes} из ${totalMinutes} мин`;
-    }
-
-    if (spentMinutes != null) {
-        return `Играет ${spentMinutes} мин`;
-    }
-
-    return "";
-}
-
-async function fetchPCUserInfo(pc, token) {
-    if (!pc?.id) {
-        return null;
-    }
-
-    try {
-        return await fetchJson(`${USER_INFO_URL_PREFIX}${pc.id}/user_info/`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Token ${token}`
-            }
-        });
-    } catch (err) {
-        console.warn(`Не удалось получить user_info для ПК ${getPcLabel(pc)}`, err);
-        return null;
-    }
-}
-
-async function getSoonPCs(pcs) {
-    const busyPCs = pcs.filter(pc =>
-        getStatus(pc) === "busy"
-    );
-
-    if (busyPCs.length === 0) {
-        return [];
-    }
-
-    const token = await getAuthToken();
-    const pcsWithInfo = await Promise.all(
-        busyPCs.map(async pc => {
-            const userInfo = await fetchPCUserInfo(pc, token);
-            const releaseDate = getReleaseDate({
-                ...pc,
-                ...userInfo,
-                current_session: userInfo
-            });
-
-            return {
-                pc,
-                userInfo,
-                releaseDate
-            };
-        })
-    );
-
-    return pcsWithInfo
-        .filter(item => item.releaseDate)
-        .sort((a, b) => a.releaseDate - b.releaseDate)
-        .slice(0, 10);
-}
-
-async function renderSoonList(pcs) {
-
-    const container =
-        document.getElementById(
-            "soon-list"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    container.innerHTML = `
-        <div class="soon-item">
-            Проверяем время освобождения...
-        </div>
-    `;
-
-    const busyPCs = await getSoonPCs(pcs);
-
-    if (busyPCs.length === 0) {
-        container.innerHTML = `
-            <div class="soon-item">
-                Нет компьютеров, которые освободятся скоро.
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = "";
-
-    busyPCs.forEach(({ pc, userInfo, releaseDate }) => {
-
-        const el =
-            document.createElement("div");
-
-        el.className = "soon-item";
-        const progress = formatSessionProgress(userInfo);
-
-        el.innerHTML = `
-            <div>
-                ${escapeHtml(pc.device_name || getPcLabel(pc))}
-            </div>
-
-            <div class="soon-time">
-                ${escapeHtml(formatReleaseTime(releaseDate))}
-            </div>
-
-            ${progress
-                ? `<div class="soon-progress">${escapeHtml(progress)}</div>`
-                : ""}
-        `;
-
-        container.appendChild(el);
-    });
-}
-
-function initSoonPanel() {
-    const toggle = document.getElementById("soon-toggle");
-    const panel = document.getElementById("soon-panel");
-    const closeBtn = document.getElementById("soon-close");
-
-    if (!toggle || !panel || !closeBtn) {
-        return;
-    }
-
-    toggle.onclick = () => {
-        panel.classList.toggle("open");
-    };
-
-    closeBtn.onclick = () => {
-        panel.classList.remove("open");
-    };
-
-    panel.onclick = (event) => {
-        if (event.target === panel) {
-            panel.classList.remove("open");
-        }
-    };
-}
-
-initSoonPanel();
 clearLegacyTokenCaches();
 
 window.addEventListener('resize', debounce(() => {
     renderPCs(currentPCs);
 }, 100));
 
-loadPCs();
-
-setInterval(
-    loadPCs,
-    180000
-);
+(async () => {
+    await loadPositions();
+    loadPCs();
+    setInterval(loadPCs, 180000);
+})();

@@ -3,7 +3,7 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = ""; // Empty for local development, set to your Render URL for production
+const BACKEND_URL = "https://primeapp-2.onrender.com"; // Set to your Render URL for production, empty for local development
 
 const API_URL =
     `/api/map?office_id=1&limit=9999`;
@@ -23,14 +23,89 @@ const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
 let currentPCs = [];
 let memoryTokenCache = null;
 
-const VIEWBOX_WIDTH = 2100;
-const VIEWBOX_HEIGHT = 1330;
+const VIEWBOX_WIDTH = 1440;
+const VIEWBOX_HEIGHT = 725;
 const GRID_UNIT = 70;
 
 const WALL_X = 50;
 const WALL_Y = 50;
-const WALL_WIDTH = 2000;
-const WALL_HEIGHT = 1240;
+const WALL_WIDTH = 1390;
+const WALL_HEIGHT = 625;
+
+// Static PC positions loaded from positions.json (viewBox 1440x725)
+// Edit positions in: /web/frontend/NAVBAR/TRIUMPH/positions.json
+const PC_POSITIONS = new Map();
+const POSITIONS_URL = new URL('positions.json', document.currentScript ? document.currentScript.src : location.href).toString();
+let PC_POSITIONS_LOADED = false;
+
+async function loadPositions() {
+    try {
+        const res = await fetch(POSITIONS_URL, { cache: 'no-store' });
+        if (!res.ok) {
+            throw new Error('positions.json HTTP ' + res.status);
+        }
+        const data = await res.json();
+        PC_POSITIONS.clear();
+        let outerOrigin = [0, 0];
+        let blocksData = data;
+        const topKeys = Object.keys(data);
+        if (topKeys.length === 1) {
+            const top = data[topKeys[0]];
+            if (top && typeof top === 'object' && !Array.isArray(top) && top.blocks && typeof top.blocks === 'object' && Array.isArray(top.origin)) {
+                outerOrigin = [Number(top.origin[0]) || 0, Number(top.origin[1]) || 0];
+                blocksData = top.blocks;
+            }
+        }
+        for (const blockName of Object.keys(blocksData)) {
+            const block = blocksData[blockName] || {};
+            if (Array.isArray(block.origin) && block.pcs && typeof block.pcs === 'object') {
+                const ox = Number(block.origin[0]) + outerOrigin[0];
+                const oy = Number(block.origin[1]) + outerOrigin[1];
+                const step = Number(block.step);
+                const stepYRaw = block.stepY;
+                const stepY = (stepYRaw != null && Number.isFinite(Number(stepYRaw)) && Number(stepYRaw) > 0) ? Number(stepYRaw) : step;
+                if (!Number.isFinite(ox) || !Number.isFinite(oy) || !Number.isFinite(step) || step <= 0) continue;
+                for (const key of Object.keys(block.pcs)) {
+                    const num = Number(key);
+                    if (!Number.isFinite(num)) continue;
+                    const cell = block.pcs[key];
+                    if (cell && typeof cell === 'object' && !Array.isArray(cell) && Array.isArray(cell.override) && cell.override.length >= 2) {
+                        const ox2 = Number(cell.override[0]) + outerOrigin[0];
+                        const oy2 = Number(cell.override[1]) + outerOrigin[1];
+                        if (Number.isFinite(ox2) && Number.isFinite(oy2)) {
+                            PC_POSITIONS.set(num, [ox2, oy2]);
+                        }
+                        continue;
+                    }
+                    if (!Array.isArray(cell) || cell.length < 2) continue;
+                    const col = Number(cell[0]);
+                    const row = Number(cell[1]);
+                    if (!Number.isFinite(col) || !Number.isFinite(row)) continue;
+                    PC_POSITIONS.set(num, [ox + col * step, oy + row * stepY]);
+                }
+                continue;
+            }
+            for (const key of Object.keys(block)) {
+                const num = Number(key);
+                const pair = block[key];
+                if (!Number.isFinite(num) || !Array.isArray(pair) || pair.length < 2) continue;
+                const x = Number(pair[0]);
+                const y = Number(pair[1]);
+                if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+                PC_POSITIONS.set(num, [x, y]);
+            }
+        }
+        PC_POSITIONS_LOADED = true;
+        if (Array.isArray(currentPCs) && currentPCs.length) {
+            renderPCs(currentPCs);
+        }
+        return true;
+    } catch (err) {
+        console.warn('loadPositions failed:', err);
+        PC_POSITIONS_LOADED = false;
+        return false;
+    }
+}
 
 const STATUS_BY_ID = {
     "-5": {
@@ -96,6 +171,10 @@ function getComputerState(pc) {
     }
 
     const rawState = String(pc.status || pc.state || pc.machine_status || pc.map_status || '').toLowerCase();
+
+    if (Number(pc.work_mode) === 1) {
+        return 'reserved';
+    }
 
     if ([pc.is_in_maintenance, pc.in_maintenance, pc.maintenance, pc.tech_service, pc.is_maintenance].some(Boolean) || rawState.includes('maintenance') || rawState.includes('tech')) {
         return 'maintenance';
@@ -298,7 +377,8 @@ function clearTokenCache() {
 }
 
 async function fetchJson(url, options = {}) {
-    const response = await fetch(url, options);
+    const fullUrl = (BACKEND_URL && url.startsWith("/")) ? BACKEND_URL + url : url;
+    const response = await fetch(fullUrl, options);
     const text = await response.text();
     let body = null;
 
@@ -736,8 +816,8 @@ function renderPCs(pcs) {
                     });
                 };
 
-                positionGroupAsBlock(1, 52, 2, 40, 4, 46);
-                positionGroupAsBlock(53, 107, 60, 98, 44, 86);
+                positionGroupAsBlock(0, -1, 0, 0, 0, 0);
+                positionGroupAsBlock(0, -1, 0, 0, 0, 0);
 
                 const stretchGroupYAxis = (start, end, factor, topBound, bottomBound) => {
                     const group = getGroupEls(start, end);
@@ -760,7 +840,27 @@ function renderPCs(pcs) {
                     });
                 };
 
-                stretchGroupYAxis(53, 107, 1.15, 44, 86);
+                const distributeGroupYAxis = (start, end, topBound, bottomBound) => {
+                    const group = getGroupEls(start, end);
+                    if (group.length === 0) return;
+
+                    const items = group
+                        .map(el => ({
+                            el,
+                            num: Number(el.dataset.num) || 0
+                        }))
+                        .sort((a, b) => a.num - b.num);
+
+                    const step = items.length > 1
+                        ? (bottomBound - topBound) / (items.length - 1)
+                        : 0;
+
+                    items.forEach((item, idx) => {
+                        item.el.style.top = clamp(topBound + step * idx, topBound, bottomBound) + "%";
+                    });
+                };
+
+                distributeGroupYAxis(0, -1, 0, 0);
             }
         } catch (e) {
             console.warn('Range separation failed', e);
@@ -834,6 +934,12 @@ function getMapPoint(pc, coordinateMode) {
 }
 
 function getRawCoordinates(pc) {
+    const num = Number(pc.num);
+    if (Number.isFinite(num) && PC_POSITIONS.has(num)) {
+        const pair = PC_POSITIONS.get(num);
+        return { x: pair[0], y: pair[1] };
+    }
+
     const x = getNumberField(pc, [
         "map_x",
         "x",
@@ -1408,9 +1514,8 @@ window.addEventListener('resize', debounce(() => {
     renderPCs(currentPCs);
 }, 100));
 
-loadPCs();
-
-setInterval(
-    loadPCs,
-    180000
-);
+(async () => {
+    await loadPositions();
+    loadPCs();
+    setInterval(loadPCs, 180000);
+})();
