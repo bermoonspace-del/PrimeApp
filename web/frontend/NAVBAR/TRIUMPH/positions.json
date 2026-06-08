@@ -2,7 +2,7 @@
     "layout": {
         "origin": [
             -5,
-            0
+            120
         ],
         "blocks": {
             "left_wall_2x9": {

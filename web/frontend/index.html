@@ -13,14 +13,15 @@
         .content{flex:1;padding-bottom:78px}
         .brand{position:fixed;left:50%;transform:translateX(-50%);bottom:92px;color:var(--muted);font-size:12px}
         .logo{display:block;
-            margin:8vh auto 4vh;
+            margin:18vh auto 4vh;
             width: 120px;
             height: 120px;
             max-width:56%;
             height:auto;
             filter:drop-shadow(0 6px 12px rgba(0,0,0,.6))
         }
-        .help-block{display:grid;gap:10px;max-width:420px;margin:0 auto;padding:0 16px}
+        .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
+        .help-block{display:grid;gap:10px;max-width:420px;margin:8vh auto 0;padding:0 16px}
         .help-item{display:grid;gap:0}
         .help-question{appearance:none;display:grid;grid-template-columns:1fr 24px;align-items:center;gap:12px;width:100%;min-height:58px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;padding:12px 14px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;text-align:left;transition:background .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
         .help-question:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
@@ -137,9 +138,9 @@
         }
 
         @media (max-aspect-ratio: 9/16), (orientation: portrait){
-            .logo{margin-top:6vh;max-width:68%}
+            .logo{margin-top:18vh;max-width:68%}
             .brand{bottom:92px;font-size:13px}
-            .help-block{max-width:none}
+            .help-block{max-width:none;margin-top:8vh}
         }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -248,6 +249,10 @@
             Ваш браузер не поддерживает видео.
         </video>
     </div>
+
+      <div class="tabs" role="tablist" aria-label="Клубы">
+
+  </div>
 
     <!-- Main Content -->
     <div id="main-content">

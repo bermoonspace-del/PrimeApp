@@ -136,7 +136,7 @@
   <script>
     const iframe = document.getElementById('senet-frame');
     const fallback = document.getElementById('senet-fallback');
-    const timer = setTimeout(() => fallback.classList.add('visible'), 2500);
+    const timer = setTimeout(() => fallback.classList.add('visible'), 5500);
     iframe.addEventListener('load', () => {
       clearTimeout(timer);
       fallback.classList.remove('visible');
