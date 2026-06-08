@@ -7,6 +7,9 @@ body {
     height: 100dvh;
     position: relative;
 }
+body.tg-app {
+    padding-top: 48px;
+}
 
 .background-svg {
     position: fixed;

@@ -8,6 +8,7 @@
     :root{--bg:#000;--muted:rgba(255,255,255,0.58);--accent:#fff}
     html,body{height:100%;margin:0}
     body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    body.tg-app{padding-top:48px}
     .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
     .content{min-height:100%;box-sizing:border-box;padding:20px 16px 160px}
     h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
@@ -38,6 +39,7 @@
   <script>
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.expand();
+      document.body.classList.add('tg-app');
     }
   </script>
 </head>
