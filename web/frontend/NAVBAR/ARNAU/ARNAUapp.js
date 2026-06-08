@@ -4,7 +4,7 @@ tg?.expand();
 
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com"; // Empty for local development, set to your Render URL for production
+const BACKEND_URL = ""; // Empty for local development, set to your Render URL for production
 
 const API_URL =
     `/api/map?office_id=1114&limit=9999`;
@@ -732,21 +732,23 @@ function renderPCs(pcs) {
         }
 
         // User requested tighter vertical packing — apply a stronger compression.
-        try {
-            if (typeof window.compressPCsAxis === 'function') {
-                window.compressPCsAxis('y', 0.8);
-            }
-        } catch (e) {
-            console.warn('compressPCsAxis failed', e);
-        }
+        // Disabled to keep origin at top-left
+        // try {
+        //     if (typeof window.compressPCsAxis === 'function') {
+        //         window.compressPCsAxis('y', 0.8);
+        //     }
+        // } catch (e) {
+        //     console.warn('compressPCsAxis failed', e);
+        // }
         // Compress the PC distribution along the X axis so markers occupy less horizontal space.
-        try {
-            if (typeof window.compressPCsAxis === 'function') {
-                window.compressPCsAxis('x', 0.72);
-            }
-        } catch (e) {
-            console.warn('horizontal compressPCsAxis failed', e);
-        }
+        // Disabled to keep origin at top-left
+        // try {
+        //     if (typeof window.compressPCsAxis === 'function') {
+        //         window.compressPCsAxis('x', 0.72);
+        //     }
+        // } catch (e) {
+        //     console.warn('horizontal compressPCsAxis failed', e);
+        // }
 
         // Targeted separation: increase X-distance between groups 45..52 and 85..91
         try {

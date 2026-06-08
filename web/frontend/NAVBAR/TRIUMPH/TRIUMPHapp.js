@@ -3,7 +3,7 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com"; // Set to your Render URL for production, empty for local development
+const BACKEND_URL = ""; // Set to your Render URL for production, empty for local development
 
 const API_URL =
     `/api/map?office_id=1&limit=9999`;
@@ -35,7 +35,8 @@ const WALL_HEIGHT = 625;
 // Static PC positions loaded from positions.json (viewBox 1440x725)
 // Edit positions in: /web/frontend/NAVBAR/TRIUMPH/positions.json
 const PC_POSITIONS = new Map();
-const POSITIONS_URL = new URL('positions.json', document.currentScript ? document.currentScript.src : location.href).toString();
+// Add version parameter to force reload and bypass any caching issues
+const POSITIONS_URL = new URL('positions.json?v=' + Date.now(), document.currentScript ? document.currentScript.src : location.href).toString();
 let PC_POSITIONS_LOADED = false;
 
 async function loadPositions() {
@@ -54,6 +55,7 @@ async function loadPositions() {
             if (top && typeof top === 'object' && !Array.isArray(top) && top.blocks && typeof top.blocks === 'object' && Array.isArray(top.origin)) {
                 outerOrigin = [Number(top.origin[0]) || 0, Number(top.origin[1]) || 0];
                 blocksData = top.blocks;
+                console.log('Layout origin applied:', outerOrigin, 'from layout:', top.origin);
             }
         }
         for (const blockName of Object.keys(blocksData)) {
@@ -735,21 +737,23 @@ function renderPCs(pcs) {
         }
 
         // User requested tighter vertical packing — apply a stronger compression.
-        try {
-            if (typeof window.compressPCsAxis === 'function') {
-                window.compressPCsAxis('y', 0.8);
-            }
-        } catch (e) {
-            console.warn('compressPCsAxis failed', e);
-        }
+        // Disabled to keep origin at top-left
+        // try {
+        //     if (typeof window.compressPCsAxis === 'function') {
+        //         window.compressPCsAxis('y', 0.8);
+        //     }
+        // } catch (e) {
+        //     console.warn('compressPCsAxis failed', e);
+        // }
         // Compress the PC distribution along the X axis so markers occupy less horizontal space.
-        try {
-            if (typeof window.compressPCsAxis === 'function') {
-                window.compressPCsAxis('x', 0.72);
-            }
-        } catch (e) {
-            console.warn('horizontal compressPCsAxis failed', e);
-        }
+        // Disabled to keep origin at top-left
+        // try {
+        //     if (typeof window.compressPCsAxis === 'function') {
+        //         window.compressPCsAxis('x', 0.72);
+        //     }
+        // } catch (e) {
+        //     console.warn('horizontal compressPCsAxis failed', e);
+        // }
 
         // Targeted separation: increase X-distance between groups 45..52 and 85..91
         try {
