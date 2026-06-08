@@ -9,11 +9,12 @@
     html,body{height:100%;margin:0}
     body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
     body.tg-app{padding-top:120px}
+    .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
     .page-shell{position:relative;transition:opacity .35s ease,transform .35s ease;will-change:opacity,transform}
     .page-shell.page-enter{opacity:0;transform:translateY(12px)}
     .page-shell.page-exit{opacity:0;transform:translateY(-12px)}
     .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
-    .content{min-height:100%;box-sizing:border-box;padding:20px 16px 88px}
+    .content{min-height:100%;box-sizing:border-box;padding:110px 16px 88px}
     h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
     .zone-switcher{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 auto 16px;max-width:520px}
     .club-switcher{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:0 auto 24px;max-width:520px;padding:10px;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.04)}
@@ -86,6 +87,11 @@
   </script>
 </head>
 <body>
+  
+          <div class="tabs" role="tablist" aria-label="Клубы">
+
+  </div>
+
   <div class="page-shell page-enter">
     <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
     <defs>
@@ -184,6 +190,8 @@
         <button class="zone-button" data-zone="vip3" type="button">VIP 3</button>
         <button class="zone-button" data-zone="streamRoom" type="button">Stream Room</button>
       </div>
+
+ 
 
     <section class="spec-card active" id="standard1" aria-label="Standart 1 — начальный уровень">
       <div class="spec-head">

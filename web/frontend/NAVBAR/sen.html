@@ -9,6 +9,7 @@
     html,body{min-height:100%;min-height:100dvh;margin:0}
     body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
     body.tg-app{padding-top:120px}
+    .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
     .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
     .content{position:absolute;inset:0 0 70px;box-sizing:border-box;padding:0;z-index:1}
     .sen-frame{display:block;width:100%;height:100%;min-height:100%;border:0;background:#000}
@@ -142,6 +143,10 @@
       fallback.classList.remove('visible');
     });
   </script>
+  
+        <div class="tabs" role="tablist" aria-label="Клубы">
+
+  </div>
 
   <nav class="bottom-nav" aria-label="Главное меню">
     <a class="nav-item" href="../index.html" aria-label="Главная">

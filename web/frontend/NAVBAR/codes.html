@@ -9,8 +9,9 @@
     html,body{height:100%;margin:0}
     body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
     body.tg-app{padding-top:120px}
+    .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
     .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
-    .content{min-height:100%;box-sizing:border-box;padding:20px 16px 160px}
+    .content{min-height:100%;box-sizing:border-box;padding:110px 16px 160px}
     h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
     .codes-list{display:grid;gap:10px;max-width:420px;margin:0 auto;padding-top:16px}
     .club-button{appearance:none;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;width:100%;min-height:58px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;padding:12px 14px;font:inherit;cursor:pointer;text-align:left;transition:background .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
@@ -181,7 +182,10 @@
     </section>
   </main>
 
-  
+        <div class="tabs" role="tablist" aria-label="Клубы">
+
+        </div>
+
   <nav class="bottom-nav" aria-label="Главное меню">
     <a class="nav-item" href="../index.html" aria-label="Главная">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
