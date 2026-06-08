@@ -555,6 +555,8 @@ function renderPCs(pcs) {
         container.appendChild(el);
     });
 
+    updateCounters(pcs);
+
     // Apply a tiny percentage-based spread only for markers with identical
     // percent coordinates so they don't perfectly overlap while the whole
     // structure still scales as one unit.
@@ -1097,6 +1099,27 @@ function getNumberField(source, keys) {
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
+}
+
+function updateCounters(pcs) {
+    const freeEl = document.getElementById('free-count');
+    const busyEl = document.getElementById('busy-count');
+    if (!freeEl || !busyEl) return;
+
+    let free = 0;
+    let busy = 0;
+
+    pcs.forEach(pc => {
+        const status = getStatus(pc);
+        if (status === 'free' || status === 'offline') {
+            free++;
+        } else if (status === 'busy' || status === 'reserved' || status === 'maintenance' || status === 'service') {
+            busy++;
+        }
+    });
+
+    freeEl.textContent = free;
+    busyEl.textContent = busy;
 }
 
 // Compress PC positions along an axis ('x' or 'y').

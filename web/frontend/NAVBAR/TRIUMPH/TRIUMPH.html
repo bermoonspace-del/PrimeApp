@@ -11,7 +11,7 @@
     .wrap { padding: 18px; }
     h1 { margin: 0 0 10px; font-size: 20px; }
     p { margin: 0; opacity: .8; line-height: 1.4; }
-    body.tg-app { padding-top: 80px; }
+    body.tg-app { padding-top: 120px; }
   </style>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
@@ -109,6 +109,10 @@
 
   <div class="map-legend" aria-label="Легенда карты">
     <div class="legend-title">Легенда</div>
+    <div class="legend-counters">
+        <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
+        <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
+    </div>
     <div class="legend-grid">
       <div class="legend-item"><span class="legend-swatch legend-login"></span><span>Занят по логину</span></div>
       <div class="legend-item"><span class="legend-swatch legend-check"></span><span>Занят по чеку</span></div>
