@@ -575,7 +575,7 @@ body.tg-app {
 .soon-card.is-empty{opacity:.4}
 @media (max-width:420px){.soon-bar{bottom:70px;width:min(96vw,360px);padding:6px 8px;gap:4px}.soon-bar-title{font-size:9px;padding-right:6px}.soon-card-num{font-size:12px}.soon-card-time{font-size:9px}}
 
-.map-legend{position:fixed;right:14px;top:115px;z-index:9998;display:grid;gap:0px;width:min(36vw,170px);padding:8px 10px;border-radius:12px;background:rgba(0, 0, 0, 0.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.map-legend{position:fixed;right:14px;top:155px;z-index:9998;display:grid;gap:0px;width:min(36vw,170px);padding:8px 10px;border-radius:12px;background:rgba(0, 0, 0, 0.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.35)}
 .legend-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c8d2ec;margin-bottom:4px}
 .legend-counters{display:flex;gap:12px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.12)}
 .counter{font-size:11px;font-weight:600;color:#e8ebf2}
