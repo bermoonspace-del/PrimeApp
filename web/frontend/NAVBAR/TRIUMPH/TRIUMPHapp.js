@@ -1301,5 +1301,5 @@ window.addEventListener('resize', debounce(() => {
 (async () => {
     await loadPositions();
     loadPCs();
-    setInterval(loadPCs, 180000);
+    setInterval(loadPCs, 60000);
 })();
