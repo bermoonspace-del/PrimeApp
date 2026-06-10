@@ -26,7 +26,7 @@
 .tab-panels{padding:0}
     .panel{display:none}
     .panel.is-active{display:block}
-    iframe{display:block;width:100%;height:calc(100dvh - 60px);margin-top:60px;border:0;border-radius:0;background:rgba(0,0,0,.35)}
+    iframe{display:block;width:100%;height:calc(100dvh - 60px);margin-top:60px;border:0;border-radius:0;background:rgba(0,0,0,.35);overflow:hidden}
     .booking-contacts{display:none}
 
     .map-legend{display:none}
@@ -42,7 +42,7 @@
     @supports not (height: 100dvh) {
       iframe{height:calc(100vh - 60px);margin-top:60px}
     }
-    @media (max-width:420px){
+    @media (max-width:520px){
       .booking-contacts{bottom:84px;width:min(94vw,360px);gap:7px;padding:8px}
       .booking-contacts-title,.booking-contacts a{font-size:12px}
       .soon-bar{bottom:300px;width:min(94vw,360px);padding:6px 8px;gap:4px}
@@ -93,6 +93,12 @@
     window.addEventListener('load', fixMobileViewport);
     window.addEventListener('resize', fixMobileViewport);
     window.addEventListener('orientationchange', fixMobileViewport);
+
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'call' && e.data.number) {
+        window.location.href = 'tel:' + e.data.number;
+      }
+    });
   </script>
 </head>
 <body>
@@ -193,10 +199,10 @@
   <div class="content">
     <div class="tab-panels">
       <section class="panel is-active" id="panel-ar" role="tabpanel" aria-labelledby="tab-ar">
-        <iframe src="./ARNAU/ARNAU.html?v=20260605-1" title="ARNAU"></iframe>
+        <iframe scrolling="no" src="./ARNAU/ARNAU.html?v=20260605-1" title="ARNAU"></iframe>
       </section>
       <section class="panel" id="panel-tr" role="tabpanel" aria-labelledby="tab-tr">
-        <iframe src="./TRIUMPH/TRIUMPH.html?v=20260531-2" title="TRIUMPH"></iframe>
+        <iframe scrolling="no" src="./TRIUMPH/TRIUMPH.html?v=20260531-2" title="TRIUMPH"></iframe>
       </section>
     </div>
   </div>

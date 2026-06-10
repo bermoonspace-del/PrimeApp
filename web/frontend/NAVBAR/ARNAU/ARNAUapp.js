@@ -4,7 +4,7 @@ tg?.expand();
 
 
 // Configuration for local backend
-const BACKEND_URL = ""; // Empty for local development, set to your Render URL for production
+const BACKEND_URL = "https://primeapp-2.onrender.com"; // Empty for local development, set to your Render URL for production
 
 const API_URL =
     `/api/map?office_id=1114&limit=9999`;
@@ -217,6 +217,7 @@ async function loadPCs() {
         currentPCs = pcs;
 
         renderPCs(pcs);
+        bindZonesAndPCs();
 
         if (pcs.length === 0) {
             showMapMessage("Компьютеры не найдены. Проверьте ответ API или координаты рабочих мест.");
@@ -513,6 +514,8 @@ function renderPCs(pcs) {
 
     container.innerHTML = "";
 
+    alignPcsToSvgViewBox('.map-svg');
+
     const coordinateMode = detectCoordinateMode(pcs);
 
     pcs.forEach(pc => {
@@ -538,7 +541,7 @@ function renderPCs(pcs) {
         }
 
         const leftPercent = (point.x / VIEWBOX_WIDTH) * 100;
-        const topPercent = (point.y / VIEWBOX_HEIGHT) * 100;
+        const topPercent = ((point.y + 50) / VIEWBOX_HEIGHT) * 100;
 
         el.style.left = leftPercent + "%";
         el.style.top = topPercent + "%";
@@ -550,6 +553,8 @@ function renderPCs(pcs) {
         if (pc.num != null && pc.num !== '') {
             el.dataset.num = String(pc.num);
         }
+        const zone = getZoneForPC(pc.num);
+        if (zone) el.dataset.zone = zone;
         el.onclick = () => openPC(pc);
 
         container.appendChild(el);
@@ -557,434 +562,39 @@ function renderPCs(pcs) {
 
     updateCounters(pcs);
 
-    // Apply a tiny percentage-based spread only for markers with identical
-    // percent coordinates so they don't perfectly overlap while the whole
-    // structure still scales as one unit.
-    try {
-        const items = Array.from(container.querySelectorAll('.pc')).map(el => {
-            const left = parseFloat(String(el.style.left).replace('%', '')) || 0;
-            const top = parseFloat(String(el.style.top).replace('%', '')) || 0;
-
-            return { el, left, top };
-        });
-
-        // If the container (or device) is narrow, force a compact global grid
-        const COMPACT_BREAKPOINT_PX = 540;
-        const containerRect = container.getBoundingClientRect();
-        const isCompact = (containerRect.width && containerRect.width <= COMPACT_BREAKPOINT_PX)
-            || (window.innerWidth && window.innerWidth <= COMPACT_BREAKPOINT_PX);
-        if (isCompact) {
-            // Compact mode: position markers exactly by the percent coordinates
-            // provided by the endpoint. To avoid exact overlap for identical
-            // coordinates, apply a small deterministic jitter for groups of
-            // identical positions.
-
-            const JITTER_RADIUS_PERCENT = 0.2; // small spread in percent units (further reduced)
-
-            const bins = new Map();
-
-            // Bin by rounded coordinates to group identical/very-close points
-            items.forEach(it => {
-                const key = `${Math.round(it.left * 100)}_${Math.round(it.top * 100)}`;
-                if (!bins.has(key)) bins.set(key, []);
-                bins.get(key).push(it);
-            });
-
-            bins.forEach(group => {
-                const n = group.length;
-                if (n === 1) {
-                    const it = group[0];
-                    it.el.style.left = clamp(it.left, 0, 100) + "%";
-                    it.el.style.top = clamp(it.top, 0, 100) + "%";
-                    return;
-                }
-
-                // Sort for deterministic arrangement
-                group.sort((a, b) => (a.top - b.top) || (a.left - b.left) || (a.id || '').localeCompare(b.id || ''));
-
-                for (let i = 0; i < group.length; i++) {
-                    const it = group[i];
-                    const angle = (i / n) * Math.PI * 2;
-                    const radius = JITTER_RADIUS_PERCENT * (1 + Math.floor(i / n));
-                    const px = clamp(it.left + Math.cos(angle) * radius, 0, 100);
-                    const py = clamp(it.top + Math.sin(angle) * radius, 0, 100);
-                    it.el.style.left = px + "%";
-                    it.el.style.top = py + "%";
-                }
-            });
-
-            // Targeted nudges: increase separation for specific pairs
-            try {
-                // Generate mirrored pairs for range 1..52: (1,52),(2,51),...
-                const PAIR_MAX = 52;
-                const PAIRS = [];
-                for (let i = 1; i <= Math.floor(PAIR_MAX / 2); i++) {
-                    PAIRS.push([String(i), String(PAIR_MAX + 1 - i)]);
-                }
-
-                const SEPARATION_PERCENT = 78.0; // total extra separation in percent per pair
-                const MIN_DIST_THRESHOLD = 1.0; // only nudge pairs closer than this percent distance
-
-                PAIRS.forEach(([aNum, bNum]) => {
-                    const aEl = container.querySelector(`[data-num="${aNum}"]`);
-                    const bEl = container.querySelector(`[data-num="${bNum}"]`);
-
-                    if (!aEl || !bEl) return;
-
-                    const ax = parseFloat(String(aEl.style.left).replace('%','')) || 0;
-                    const ay = parseFloat(String(aEl.style.top).replace('%','')) || 0;
-                    const bx = parseFloat(String(bEl.style.left).replace('%','')) || 0;
-                    const by = parseFloat(String(bEl.style.top).replace('%','')) || 0;
-
-                    let dx = bx - ax;
-                    let dy = by - ay;
-                    let dist = Math.hypot(dx, dy);
-                    if (dist < 0.0001) dist = 0.0001;
-
-                    // Only apply separation if they are too close
-                    if (dist >= MIN_DIST_THRESHOLD) return;
-
-                    const ux = dx / dist;
-                    const uy = dy / dist;
-
-                    const shift = SEPARATION_PERCENT / 2; // each moves half
-
-                    const aNewX = clamp(ax - ux * shift, 0, 100);
-                    const aNewY = clamp(ay - uy * shift, 0, 100);
-                    const bNewX = clamp(bx + ux * shift, 0, 100);
-                    const bNewY = clamp(by + uy * shift, 0, 100);
-
-                    aEl.style.left = aNewX + "%";
-                    aEl.style.top = aNewY + "%";
-                    bEl.style.left = bNewX + "%";
-                    bEl.style.top = bNewY + "%";
-                });
-            } catch (e) {
-                console.warn('Pair nudges failed', e);
-            }
-        } else {
-            // cluster nearby percent coordinates (within CLUSTER_RADIUS_PERCENT)
-            const CLUSTER_RADIUS_PERCENT = 1.2; // percent distance to consider "nearby"
-            const SPREAD_PERCENT = 1.5; // base spacing in percent for grid cells
-
-            const clusters = [];
-
-            items.forEach(it => {
-                // try to find a cluster within threshold
-                let found = null;
-                for (const c of clusters) {
-                    const dx = c.cx - it.left;
-                    const dy = c.cy - it.top;
-                    const dist = Math.hypot(dx, dy);
-
-                    if (dist <= CLUSTER_RADIUS_PERCENT) {
-                        found = c;
-                        break;
-                    }
-                }
-
-                if (found) {
-                    found.items.push(it);
-                    // update cluster center
-                    const sumX = found.items.reduce((s, x) => s + x.left, 0);
-                    const sumY = found.items.reduce((s, x) => s + x.top, 0);
-                    found.cx = sumX / found.items.length;
-                    found.cy = sumY / found.items.length;
-                } else {
-                    clusters.push({ cx: it.left, cy: it.top, items: [it] });
-                }
-            });
-
-            // layout each cluster: single items keep percent position, multi-items get a tight grid
-            clusters.forEach(cluster => {
-                const n = cluster.items.length;
-
-                if (n === 1) {
-                    const it = cluster.items[0];
-                    it.el.style.left = clamp(it.left, 0, 100) + "%";
-                    it.el.style.top = clamp(it.top, 0, 100) + "%";
-                    return;
-                }
-
-                // grid sizing
-                const cols = Math.ceil(Math.sqrt(n));
-                const rows = Math.ceil(n / cols);
-                const spacing = SPREAD_PERCENT; // percent
-
-                const gridW = (cols - 1) * spacing;
-                const gridH = (rows - 1) * spacing;
-
-                const startX = cluster.cx - gridW / 2;
-                const startY = cluster.cy - gridH / 2;
-
-                // sort items consistently
-                cluster.items.sort((a, b) => (a.top - b.top) || (a.left - b.left));
-
-                cluster.items.forEach((it, idx) => {
-                    const col = idx % cols;
-                    const row = Math.floor(idx / cols);
-
-                    const px = clamp(startX + col * spacing, 0, 100);
-                    const py = clamp(startY + row * spacing, 0, 100);
-
-                    it.el.style.left = px + "%";
-                    it.el.style.top = py + "%";
-                });
-            });
-        }
-
-        // User requested tighter vertical packing — apply a stronger compression.
-        // Disabled to keep origin at top-left
-        // try {
-        //     if (typeof window.compressPCsAxis === 'function') {
-        //         window.compressPCsAxis('y', 0.8);
-        //     }
-        // } catch (e) {
-        //     console.warn('compressPCsAxis failed', e);
-        // }
-        // Compress the PC distribution along the X axis so markers occupy less horizontal space.
-        // Disabled to keep origin at top-left
-        // try {
-        //     if (typeof window.compressPCsAxis === 'function') {
-        //         window.compressPCsAxis('x', 0.72);
-        //     }
-        // } catch (e) {
-        //     console.warn('horizontal compressPCsAxis failed', e);
-        // }
-
-        // Targeted separation: increase X-distance between groups 45..52 and 85..91
-        try {
-            const containerEl = document.getElementById('pcs');
-            if (containerEl) {
-                const getGroupEls = (start, end) => {
-                    const out = [];
-                    for (let n = start; n <= end; n++) {
-                        const el = containerEl.querySelector(`[data-num="${n}"]`);
-                        if (el) out.push(el);
-                    }
-                    return out;
-                };
-
-                const groupA = getGroupEls(45, 52);
-                const groupB = getGroupEls(85, 91);
-
-                if (groupA.length > 0 && groupB.length > 0) {
-                    const avg = els => els.reduce((s, el) => s + (parseFloat(String(el.style.left).replace('%','')) || 0), 0) / els.length;
-
-                    const aAvg = avg(groupA);
-                    const bAvg = avg(groupB);
-                    const currentSep = Math.abs(bAvg - aAvg);
-                    const DESIRED_SEP = 1; // percent total desired separation between group centers
-
-                    if (currentSep < DESIRED_SEP) {
-                        const diff = DESIRED_SEP - currentSep;
-                        const shift = diff / 2;
-
-                        groupA.forEach(el => {
-                            const x = parseFloat(String(el.style.left).replace('%','')) || 0;
-                            el.style.left = clamp(x - shift, 0, 100) + "%";
-                        });
-
-                        groupB.forEach(el => {
-                            const x = parseFloat(String(el.style.left).replace('%','')) || 0;
-                            el.style.left = clamp(x + shift, 0, 100) + "%";
-                        });
-                    }
-                }
-
-                const positionGroupAsBlock = (start, end, leftBound, rightBound, topBound, bottomBound) => {
-                    const group = getGroupEls(start, end);
-                    if (group.length === 0) return;
-
-                    const xs = group.map(el => parseFloat(String(el.style.left).replace('%','')) || 0);
-                    const ys = group.map(el => parseFloat(String(el.style.top).replace('%','')) || 0);
-                    const minX = Math.min(...xs);
-                    const maxX = Math.max(...xs);
-                    const minY = Math.min(...ys);
-                    const maxY = Math.max(...ys);
-                    const rangeX = maxX - minX || 1;
-                    const rangeY = maxY - minY || 1;
-
-                    group.forEach(el => {
-                        const x = parseFloat(String(el.style.left).replace('%','')) || 0;
-                        const top = parseFloat(String(el.style.top).replace('%','')) || 0;
-                        const normX = (x - minX) / rangeX;
-                        const normY = (top - minY) / rangeY;
-                        const newX = leftBound + normX * (rightBound - leftBound);
-                        const newTop = topBound + normY * (bottomBound - topBound);
-                        el.style.left = clamp(newX, 0, 100) + "%";
-                        el.style.top = clamp(newTop, 0, 100) + "%";
-                    });
-                };
-
-                if (LAYOUT_AUTORUN) {
-                    positionGroupAsBlock(1, 52, 2, 40, 4, 46);
-                    positionGroupAsBlock(53, 107, 60, 98, 44, 86);
-                }
-
-                const stretchGroupYAxis = (start, end, factor, topBound, bottomBound) => {
-                    const group = getGroupEls(start, end);
-                    if (group.length === 0) return;
-
-                    const items = group.map(el => ({
-                        el,
-                        top: parseFloat(String(el.style.top).replace('%','')) || 0
-                    })).sort((a, b) => a.top - b.top);
-
-                    const currentCenter = items.reduce((sum, item) => sum + item.top, 0) / items.length;
-                    const groupTop = Math.min(...items.map(item => item.top));
-                    const groupBottom = Math.max(...items.map(item => item.top));
-                    const range = groupBottom - groupTop || 1;
-
-                    items.forEach(item => {
-                        const offset = item.top - currentCenter;
-                        const stretchedTop = currentCenter + offset * factor;
-                        item.el.style.top = clamp(stretchedTop, topBound, bottomBound) + "%";
-                    });
-                };
-
-                const distributeGroupYAxis = (start, end, topBound, bottomBound) => {
-                    const group = getGroupEls(start, end);
-                    if (group.length === 0) return;
-
-                    const rowsMap = new Map();
-                    group.forEach(el => {
-                        const rowKey = el.dataset.y || "0";
-                        if (!rowsMap.has(rowKey)) rowsMap.set(rowKey, []);
-                        rowsMap.get(rowKey).push(el);
-                    });
-
-                    const rows = Array.from(rowsMap.entries())
-                        .sort((a, b) => Number(a[0]) - Number(b[0]));
-
-                    const step = rows.length > 1
-                        ? (bottomBound - topBound) / (rows.length - 1)
-                        : 0;
-
-                    rows.forEach(([rowKey, els], idx) => {
-                        const rowTop = clamp(topBound + step * idx, topBound, bottomBound);
-                        els.forEach(el => {
-                            el.style.top = rowTop + "%";
-                        });
-                    });
-                };
-
-                const separateRangesYAxis = (startA, endA, startB, endB, minGap) => {
-                    const groupA = getGroupEls(startA, endA);
-                    const groupB = getGroupEls(startB, endB);
-                    if (groupA.length === 0 || groupB.length === 0) return;
-
-                    const readTop = el => parseFloat(String(el.style.top).replace('%','')) || 0;
-                    const avgTop = els => els.reduce((sum, el) => sum + readTop(el), 0) / els.length;
-
-                    const aTop = avgTop(groupA);
-                    const bTop = avgTop(groupB);
-                    const currentGap = Math.abs(bTop - aTop);
-
-                    if (currentGap >= minGap) return;
-
-                    const shift = (minGap - currentGap) / 2;
-                    const aUp = aTop < bTop;
-
-                    groupA.forEach(el => {
-                        el.style.top = clamp(readTop(el) + (aUp ? -shift : shift), 0, 100) + "%";
-                    });
-                    groupB.forEach(el => {
-                        el.style.top = clamp(readTop(el) + (aUp ? shift : -shift), 0, 100) + "%";
-                    });
-                };
-
-                const separateAdjacentRowsYAxis = (start, end, minGap) => {
-                    const group = getGroupEls(start, end);
-                    if (group.length === 0) return;
-
-                    const rowsMap = new Map();
-                    group.forEach(el => {
-                        const rowKey = el.dataset.y || "0";
-                        if (!rowsMap.has(rowKey)) rowsMap.set(rowKey, []);
-                        rowsMap.get(rowKey).push(el);
-                    });
-
-                    const rows = Array.from(rowsMap.entries())
-                        .sort((a, b) => Number(a[0]) - Number(b[0]))
-                        .map(([_, els]) => {
-                            const nums = els
-                                .map(el => Number(el.dataset.num) || 0)
-                                .filter(n => n);
-                            return {
-                                els,
-                                numMin: nums.length ? Math.min(...nums) : 0,
-                                numMax: nums.length ? Math.max(...nums) : 0
-                            };
-                        });
-
-                    for (let i = 0; i < rows.length - 1; i++) {
-                        const a = rows[i];
-                        const b = rows[i + 1];
-                        separateRangesYAxis(a.numMin, a.numMax, b.numMin, b.numMax, minGap);
-                    }
-                };
-
-                const pinRowAndStackYAxis = (anchorStart, anchorEnd, start, end, pxGap) => {
-                    const containerEl = document.getElementById('pcs');
-                    if (!containerEl) return;
-
-                    const containerHeight = containerEl.getBoundingClientRect().height;
-                    if (!containerHeight) return;
-
-                    const group = getGroupEls(start, end);
-                    if (group.length === 0) return;
-
-                    const rowsMap = new Map();
-                    group.forEach(el => {
-                        const rowKey = el.dataset.y || "0";
-                        if (!rowsMap.has(rowKey)) rowsMap.set(rowKey, []);
-                        rowsMap.get(rowKey).push(el);
-                    });
-
-                    const rows = Array.from(rowsMap.values())
-                        .map(els => ({
-                            els,
-                            topPercent: parseFloat(String(els[0].style.top).replace('%','')) || 0
-                        }))
-                        .sort((a, b) => a.topPercent - b.topPercent);
-
-                    const anchorIdx = rows.findIndex(row => {
-                        const nums = row.els.map(el => Number(el.dataset.num) || 0);
-                        return nums.includes(anchorStart) || nums.includes(anchorEnd);
-                    });
-
-                    if (anchorIdx === -1) return;
-
-                    const anchorTopPercent = rows[anchorIdx].topPercent;
-                    const anchorTopPx = (anchorTopPercent / 100) * containerHeight;
-
-                    rows[anchorIdx].els.forEach(el => {
-                        el.style.top = anchorTopPercent + "%";
-                    });
-
-                    for (let i = anchorIdx + 1; i < rows.length; i++) {
-                        const offsetPx = pxGap * (i - anchorIdx);
-                        const newTopPercent = clamp(((anchorTopPx + offsetPx) / containerHeight) * 100, 0, 100);
-                        rows[i].els.forEach(el => {
-                            el.style.top = newTopPercent + "%";
-                        });
-                    }
-                };
-
-                if (LAYOUT_AUTORUN) {
-                    distributeGroupYAxis(53, 107, 44, 86);
-                    pinRowAndStackYAxis(53, 61, 53, 107, 10);
-                    pinRowAndStackYAxis(62, 66, 67, 107, 10);
-                }
-            }
-        } catch (e) {
-            console.warn('Range separation failed', e);
-        }
-
-    } catch (err) {
-        console.warn('Percent spread failed', err);
+    // Fixed positions — no post-processing to prevent shifting on resize
+}
+
+function alignPcsToSvgViewBox(svgSelector) {
+    const svg = document.querySelector(svgSelector);
+    const pcs = document.getElementById('pcs');
+    const parent = pcs?.parentElement;
+    if (!svg || !pcs || !parent) return;
+
+    const svgRect = svg.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+    const svgAspect = VIEWBOX_WIDTH / VIEWBOX_HEIGHT;
+    const elAspect = svgRect.width / svgRect.height;
+
+    let contentW, contentH, offsetX, offsetY;
+    if (elAspect > svgAspect) {
+        contentH = svgRect.height;
+        contentW = contentH * svgAspect;
+        offsetX = (svgRect.width - contentW) / 2;
+        offsetY = 0;
+    } else {
+        contentW = svgRect.width;
+        contentH = contentW / svgAspect;
+        offsetX = 0;
+        offsetY = (svgRect.height - contentH) / 2;
     }
+
+    const pct = (v, total) => total > 0 ? (v / total) * 100 : 0;
+
+    pcs.style.left = pct(svgRect.left + offsetX - parentRect.left, parentRect.width) + '%';
+    pcs.style.top = pct(svgRect.top + offsetY - parentRect.top, parentRect.height) + '%';
+    pcs.style.width = pct(contentW, parentRect.width) + '%';
+    pcs.style.height = pct(contentH, parentRect.height) + '%';
 }
 
 function getReadableTextColor(hexColor) {
@@ -1120,6 +730,44 @@ function updateCounters(pcs) {
 
     freeEl.textContent = free;
     busyEl.textContent = busy;
+}
+
+function getZoneForPC(num) {
+    if (num == null) return null;
+    const n = Number(num);
+    if (!Number.isFinite(n)) return null;
+    if (n >= 1 && n <= 52) return '1-52';
+    if (n >= 53 && n <= 61) return '53-61';
+    if (n >= 62 && n <= 66) return 'vip-1';
+    if (n >= 67 && n <= 84) return 'vip-2';
+    if (n >= 85 && n <= 91) return 'vip-3';
+    if (n >= 92 && n <= 98) return 'vip-2';
+    if (n >= 99 && n <= 106) return 'vip-3';
+    if (n === 107) return 'stream';
+    return null;
+}
+
+function bindZonesAndPCs() {
+    const zones = document.querySelectorAll('.map-svg .zone[data-zone]');
+    const pcs = document.querySelectorAll('#pcs .pc[data-zone]');
+
+    zones.forEach(zoneEl => {
+        zoneEl.addEventListener('mouseenter', () => {
+            const zone = zoneEl.dataset.zone;
+            pcs.forEach(pc => {
+                if (pc.dataset.zone === zone) {
+                    pc.classList.add('highlighted');
+                } else {
+                    pc.classList.add('dimmed');
+                }
+            });
+        });
+        zoneEl.addEventListener('mouseleave', () => {
+            pcs.forEach(pc => {
+                pc.classList.remove('highlighted', 'dimmed');
+            });
+        });
+    });
 }
 
 // Compress PC positions along an axis ('x' or 'y').

@@ -23,6 +23,12 @@
             window.Telegram.WebApp.disableVerticalSwipes();
             document.body.classList.add('tg-app');
         }
+        document.addEventListener('touchmove', function(e) {
+            var scrollable = e.target.closest('.zone-dropdown-menu, .zone-popup-list');
+            if (!scrollable) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </head>
 
@@ -39,34 +45,30 @@
     <svg class="map-svg" viewBox="0 0 2000 1230" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;">
       <defs>
         <style>
-          .zone { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 3; stroke-dasharray: 8,4; }
-          .zone-label { font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; font-size: 30px; font-weight: 700; fill: rgba(255,255,255,0.4); pointer-events: none; }
+          .zone { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 8; stroke-dasharray: 8,4; cursor: pointer; transition: stroke 0.2s, fill 0.2s; }
+          .zone:hover { stroke: #fff; stroke-width: 10; fill: rgba(255,255,255,0.05); }
+          .zone-label { font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; font-size: 50px; font-weight: 700; fill: rgba(255,255,255,0.4); pointer-events: none; }
+          .pc.highlighted { transform: scale(1.3); z-index: 100; box-shadow: 0 0 20px #fff; transition: transform 0.2s, box-shadow 0.2s; }
+          .pc.dimmed { opacity: 0.2; transition: opacity 0.2s; }
         </style>
-      </defs>
+      </defs>co
       <!-- Zone 1-52: Top row blocks A+B+C+D -->
-      <rect class="zone" x="1" y="-540" width="948" height="750" rx="15"/>
-      <text class="zone-label" x="475" y="240" text-anchor="middle">Standart 1</text>
+      <rect class="zone" data-zone="1-52" x="1" y="-660" width="970" height="950" rx="15"/>
+      <text class="zone-label" x="475" y="365" text-anchor="middle">Standart 1</text>
       <!-- Zone 53-61: Block F -->
-      <rect class="zone" x="1200" y="220" width="900" height="100" rx="12"/>
-      <text class="zone-label" x="1650" y="210" text-anchor="middle">Standart 2</text>
-      <!-- Zone 62-66: Block G -->
-      <rect class="zone" x="1400" y="550" width="500" height="100" rx="12"/>
-      <text class="zone-label" x="1650" y="540" text-anchor="middle">Зона 62–66</text>
-      <!-- Zone 67-84: Blocks H (two rows) -->
-      <rect class="zone" x="1200" y="600" width="900" height="125" rx="12"/>
-      <text class="zone-label" x="1650" y="590" text-anchor="middle">Зона 67–84</text>
-      <!-- Zone 85-91: Block E -->
-      <rect class="zone" x="1040" y="350" width="100" height="240" rx="12"/>
-      <text class="zone-label" x="1090" y="340" text-anchor="middle">Зона 85–91</text>
+      <rect class="zone" data-zone="53-61" x="1100" y="315" width="900" height="610" rx="12"/>
+      <text class="zone-label" x="1550" y="285" text-anchor="middle">Standart 2</text>
+      <rect class="zone" data-zone="vip-1" x="1208" y="-615" width="100" height="745" rx="12"/>
+      <text class="zone-label" x="1260" y="204" text-anchor="middle">VIP 1</text>
       <!-- Zone 92-98: Block I -->
-      <rect class="zone" x="1400" y="685" width="700" height="100" rx="12"/>
-      <text class="zone-label" x="1750" y="675" text-anchor="middle">Зона 92–98</text>
+      <rect class="zone" data-zone="vip-2" x="1250" y="1040" width="715" height="100" rx="12"/>
+      <text class="zone-label" x="1150" y="1040" text-anchor="middle">VIP 2</text>
       <!-- Zone 99-106: Block J -->
-      <rect class="zone" x="1300" y="715" width="800" height="100" rx="12"/>
-      <text class="zone-label" x="1700" y="705" text-anchor="middle">Зона 99–106</text>
+      <rect class="zone" data-zone="vip-3" x="1150" y="1160" width="820" height="100" rx="12"/>
+      <text class="zone-label" x="1050" y="1305" text-anchor="middle">VIP 3</text>
       <!-- Zone 107: Block K -->
-      <rect class="zone" x="1040" y="580" width="100" height="100" rx="12"/>
-      <text class="zone-label" x="1090" y="570" text-anchor="middle">Зона 107</text>
+      <rect class="zone" data-zone="stream" x="808" y="635" width="100" height="100" rx="12"/>
+      <text class="zone-label" x="860" y="605" text-anchor="middle">STREAM ROOM</text>
     </svg>
     <div id="pcs"></div>
     <div id="map-message" class="map-message" hidden></div>
@@ -83,7 +85,7 @@
 
 
 <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Легенда</div>
+    <div class="legend-title">Всего: 107</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -99,7 +101,7 @@
 
 <section class="booking-contacts" aria-label="Контакты для брони">
     <span class="booking-contacts-title">Контакты для брони</span>
-    <a href="tel:+77011000608" aria-label="Позвонить +7 701 100 06 08" onclick="window.location.href='tel:+77011000608'" rel="nofollow noopener">+7 701 100 06 08 Арнау</a>
+    <a href="tel:+77011000608" aria-label="Позвонить +7 701 100 06 08" onclick="(function(){var n='+77011000608';window.parent.postMessage({type:'call',number:n},'*');try{window.top.location.href='tel:'+n}catch(e){}document.location.href='tel:'+n;setTimeout(function(){window.open('tel:'+n,'_blank')},100);return false;})()" rel="nofollow noopener">+7 701 100 06 08 Арнау</a>
 </section>
 
 <section class="soon-bar" aria-label="Скоро освободятся">
@@ -108,8 +110,48 @@
     <div class="soon-card is-empty" data-soon="1"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
     <div class="soon-card is-empty" data-soon="2"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
     <div class="soon-card is-empty" data-soon="3"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-    <div class="soon-card is-empty" data-soon="4"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card soon-zone-dropdown" id="zone-dropdown">
+        <div class="soon-card-num">📋</div>
+        <div class="soon-card-time">По зонам</div>
+        <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden>
+            <div class="zone-section">
+                <div class="zone-section-title">Standart 1</div>
+                <div class="zone-pc-list" id="zone-1-52"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">Standart 2</div>
+                <div class="zone-pc-list" id="zone-53-84"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">VIP 1</div>
+                <div class="zone-pc-list" id="zone-85-91"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">VIP 2</div>
+                <div class="zone-pc-list" id="zone-92-98"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">VIP 3</div>
+                <div class="zone-pc-list" id="zone-99-106"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">Stream Room1</div>
+                <div class="zone-pc-list" id="zone-107"></div>
+            </div>
+        </div>
+    </div>
 </section>
+
+<!-- Popup Overlay -->
+<div class="zone-popup-overlay" id="zone-popup" hidden>
+    <div class="zone-popup-content">
+        <div class="zone-popup-header">
+            <span>Скоро освободятся по зонам</span>
+            <button class="zone-popup-close" type="button" aria-label="Закрыть">×</button>
+        </div>
+        <div class="zone-popup-list" id="zone-popup-list"></div>
+    </div>
+</div>
 
 <script>
 (function(){
@@ -123,6 +165,32 @@ const releaseDates=new Array(cards.length).fill(null);
 let cachedToken=null;
 let cachedTokenAt=0;
 let inFlight=false;
+
+const zoneElements = {
+  '1-52': document.getElementById('zone-1-52'),
+  '53-84': document.getElementById('zone-53-84'),
+  '85-91': document.getElementById('zone-85-91'),
+  '92-98': document.getElementById('zone-92-98'),
+  '99-106': document.getElementById('zone-99-106'),
+  '107': document.getElementById('zone-107')
+};
+
+const zoneDropdown = document.getElementById('zone-dropdown');
+const zoneDropdownMenu = document.getElementById('zone-dropdown-menu');
+
+function getZoneForPC(num) {
+  if (num == null) return null;
+  const n = Number(num);
+  if (!Number.isFinite(n)) return null;
+  if (n >= 1 && n <= 52) return '1-52';
+  if (n >= 53 && n <= 84) return '53-84';
+  if (n >= 85 && n <= 91) return '85-91';
+  if (n >= 92 && n <= 98) return '92-98';
+  if (n >= 99 && n <= 106) return '99-106';
+  if (n === 107) return '107';
+  return null;
+}
+
 function getNestedField(source,path){return path.split('.').reduce((v,k)=>v?.[k],source);}
 function getNumberField(source,keys){for(const key of keys){const value=getNestedField(source,key);if(value!=null&&value!==''&&!Number.isNaN(Number(value)))return Number(value);}return null;}
 function parseApiDate(value){if(value==null||value==='')return null;if(typeof value==='number'||/^\d+$/.test(String(value))){const ts=Number(value);const date=new Date(ts<10000000000?ts*1000:ts);return Number.isNaN(date.getTime())?null:date;}const normalized=String(value).includes('T')?String(value):String(value).replace(' ','T');const date=new Date(normalized);return Number.isNaN(date.getTime())?null:date;}
@@ -135,8 +203,105 @@ async function getToken(){const now=Date.now();if(cachedToken&&(now-cachedTokenA
 async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
 async function fetchUserInfo(pcId,token){if(!pcId||!token)return null;try{const res=await fetch(USER_INFO_URL_PREFIX+pcId+'/user_info/',{method:'GET',headers:{'Content-Type':'application/json','Authorization':'Token '+token}});if(!res.ok)return null;return await res.json();}catch{return null;}}
 function renderCard(index,item){const card=cards[index];if(!card)return;if(item){const num=String(item.pc.num??item.pc.device_name??'?');card.className='soon-card '+cardClass(formatTimeRemaining(item.releaseDate));card.querySelector('.soon-card-num').textContent=num;card.querySelector('.soon-card-time').textContent=formatTimeRemaining(item.releaseDate);}else{card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent='—';card.querySelector('.soon-card-time').textContent='—';}}
-async function refreshSoon(){if(inFlight)return;inFlight=true;try{let pcs=[];try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);}const busy=pcs.filter(isBusy);const token=await getToken();const withDates=(await Promise.all(busy.map(async pc=>{const ui=await fetchUserInfo(pc.id,token);const releaseDate=getReleaseDate({...pc,...ui,current_session:ui});return {pc,releaseDate};}))).filter(x=>x.releaseDate).sort((a,b)=>a.releaseDate-b.releaseDate).slice(0,5);for(let i=0;i<cards.length;i++){releaseDates[i]=withDates[i]?withDates[i].releaseDate:null;renderCard(i,withDates[i]);}}finally{inFlight=false;}}
-function tickTimers(){for(let i=0;i<cards.length;i++){if(!releaseDates[i])continue;const card=cards[i];if(card.classList.contains('is-empty'))continue;const remaining=formatTimeRemaining(releaseDates[i]);card.querySelector('.soon-card-time').textContent=remaining;card.className='soon-card '+cardClass(remaining);}}
+
+function renderZoneDropdown(withDates) {
+  Object.values(zoneElements).forEach(el => { if (el) el.innerHTML = ''; });
+  
+  const grouped = {};
+  withDates.forEach(item => {
+    const num = item.pc.num ?? item.pc.device_name;
+    const zone = getZoneForPC(num);
+    if (!zone) return;
+    if (!grouped[zone]) grouped[zone] = [];
+    grouped[zone].push(item);
+  });
+
+  Object.entries(grouped).forEach(([zone, items]) => {
+    const el = zoneElements[zone];
+    if (!el) return;
+    items.sort((a, b) => a.releaseDate - b.releaseDate);
+    items.forEach(item => {
+      const num = String(item.pc.num ?? item.pc.device_name ?? '?');
+      const time = formatTimeRemaining(item.releaseDate);
+      const div = document.createElement('div');
+      div.className = 'zone-pc-item';
+      div.innerHTML = `<span class="zone-pc-num">${num}</span><span class="zone-pc-time">${time}</span>`;
+      el.appendChild(div);
+    });
+  });
+
+  Object.entries(zoneElements).forEach(([zone, el]) => {
+    if (el && el.children.length === 0) {
+      el.innerHTML = '<div class="zone-empty-text">Нет ожидающих</div>';
+    }
+  });
+}
+
+if (zoneDropdown && zoneDropdownMenu) {
+  zoneDropdown.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = zoneDropdownMenu.hidden;
+    zoneDropdownMenu.hidden = !isHidden;
+    zoneDropdown.classList.toggle('menu-open', !isHidden);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!zoneDropdown.contains(e.target)) {
+      zoneDropdownMenu.hidden = true;
+      zoneDropdown.classList.remove('menu-open');
+    }
+  });
+}
+
+async function refreshSoon(){
+  if(inFlight) return;
+  inFlight=true;
+  try{
+    let pcs=[];
+    try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);}
+    const busy=pcs.filter(isBusy);
+    const token=await getToken();
+    const withDates=(await Promise.all(busy.map(async pc=>{
+      const ui=await fetchUserInfo(pc.id,token);
+      const releaseDate=getReleaseDate({...pc,...ui,current_session:ui});
+      return {pc,releaseDate};
+    }))).filter(x=>x.releaseDate).sort((a,b)=>a.releaseDate-b.releaseDate);
+    
+    currentWithDates = withDates;
+    
+    const top5 = withDates.slice(0,5);
+    for(let i=0;i<cards.length;i++){
+      releaseDates[i]=top5[i]?top5[i].releaseDate:null;
+      renderCard(i,top5[i]);
+    }
+    
+    renderZoneDropdown(withDates);
+  }finally{inFlight=false;}
+}
+
+let currentWithDates = [];
+
+function tickTimers(){
+  for(let i=0;i<cards.length;i++){
+    if(!releaseDates[i]) continue;
+    const card=cards[i];
+    if(card.classList.contains('is-empty')) continue;
+    const remaining=formatTimeRemaining(releaseDates[i]);
+    card.querySelector('.soon-card-time').textContent=remaining;
+    card.className='soon-card '+cardClass(remaining);
+  }
+  
+  Object.entries(zoneElements).forEach(([zone, el]) => {
+    if (!el) return;
+    el.querySelectorAll('.zone-pc-item').forEach(item => {
+      const numText = item.querySelector('.zone-pc-num').textContent;
+      const data = currentWithDates.find(d => String(d.pc.num ?? d.pc.device_name) === numText);
+      if (data) {
+        item.querySelector('.zone-pc-time').textContent = formatTimeRemaining(data.releaseDate);
+      }
+    });
+  });
+}
 refreshSoon();
 setInterval(refreshSoon,REFRESH_INTERVAL_MS);
 setInterval(tickTimers,1000);
