@@ -55,9 +55,28 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.expand();
+      window.Telegram.WebApp.ready();
       window.Telegram.WebApp.disableVerticalSwipes();
       document.body.classList.add('tg-app');
+
+      window.addEventListener('load', function() {
+        window.Telegram.WebApp.expand();
+        try {
+          window.Telegram.WebApp.requestFullscreen();
+        } catch(e) {}
+        if (!window.Telegram.WebApp.isExpanded) {
+          var timer = setInterval(function() {
+            window.Telegram.WebApp.expand();
+            try {
+              window.Telegram.WebApp.requestFullscreen();
+            } catch(e) {}
+            if (window.Telegram.WebApp.isExpanded) {
+              clearInterval(timer);
+            }
+          }, 100);
+          setTimeout(function() { clearInterval(timer); }, 3000);
+        }
+      });
     }
 
     // Force cache busting for Telegram WebApp
