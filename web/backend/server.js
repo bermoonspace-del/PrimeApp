@@ -4,7 +4,7 @@ const path = require("path");
 const express = require("express");
 
 const app = express();
-const PORT = Number(process.env.PORT || 8080);
+const PORT = Number(process.env.PORT || 6767);
 const MAP_URL = "https://strongastana.app.enes.tech/api/v2/map_v2/get_map/";
 const TOKEN_URL = "https://strongastana.app.enes.tech/api/v2/user/admin_auth/";
 
