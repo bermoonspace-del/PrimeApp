@@ -4,9 +4,9 @@ const path = require("path");
 const express = require("express");
 
 const app = express();
-const PORT = Number(process.env.PORT || 6767);
+const PORT = Number(process.env.PORT || 8080);
 const MAP_URL = "https://strongastana.app.enes.tech/api/v2/map_v2/get_map/";
-const TOKEN_URL = "https://strongastana.app.enes.tech/api/v2/user/admin_auth/";
+const TOKEN_URL = "https://strongastana.app.enes.tech/api/v2/user/idm_admin_auth/";
 
 let tokenCache = {
     token: "",
@@ -107,6 +107,21 @@ app.get("/api/token", async (req, res) => {
 app.get("/api/map", async (req, res) => {
     try {
         res.json(await fetchMap(new URLSearchParams(req.query).toString()));
+    } catch (err) {
+        res.status(502).json({ error: err.message });
+    }
+});
+
+// Proxy /api/bookings to Python backend (bot.py on port 8085)
+app.post("/api/bookings", async (req, res) => {
+    try {
+        const response = await fetch("http://127.0.0.1:8085/api/bookings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(req.body)
+        });
+        const data = await response.json();
+        res.status(response.status).json(data);
     } catch (err) {
         res.status(502).json({ error: err.message });
     }

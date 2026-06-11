@@ -10,7 +10,7 @@ const API_URL =
     `/api/map?office_id=1114&limit=9999`;
 
 const USER_INFO_URL_PREFIX =
-    "https://strongastana.app.enes.tech/api/v2/map/";
+    "https://strongastana.app.enes.tech/api/v2/map_v2/get_map";
 
 const SEED_CAP_TOKEN = "";
 
