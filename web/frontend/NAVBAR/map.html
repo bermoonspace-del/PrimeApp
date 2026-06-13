@@ -12,16 +12,20 @@
     html,body{height:100%;margin:0}
     body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
     body.tg-app{padding-top:120px}
-    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
     .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
-    .tab-btn{appearance:none;position:fixed;top: 115px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:all .35s cubic-bezier(0.22,1,0.36,1)}
-    .tab-btn1{appearance:none;position:fixed;top: 115px;left:80px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:all .35s cubic-bezier(0.22,1,0.36,1)}
-    .tab-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
-    .tab-btn1:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
-    .tab-btn:active{transform:translateY(0)}
-    .tab-btn1:active{transform:translateY(0)}
-    .tab-btn[aria-selected="true"]{background:#fff;color:#000;border-color:#fff}
-    .tab-btn1[aria-selected="true"]{background:#fff;color:#000;border-color:#fff}
+    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .club-dropdown-wrap{position:fixed;top:115px;left:14px;z-index:9999}
+    .club-dropdown-trigger{appearance:none;border:1px solid rgba(255,255,255,.18);background:#000;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:14px;transition:all .35s cubic-bezier(0.22,1,0.36,1);font-family:inherit;display:flex;align-items:center;gap:8px}
+    .club-dropdown-trigger:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+    .club-dropdown-trigger:active{transform:translateY(0) scale(.98)}
+    .club-dropdown-trigger::after{content:"▾";font-size:11px;color:rgba(255,255,255,.6);transition:transform .25s ease}
+    .club-dropdown-trigger.open::after{transform:rotate(180deg)}
+    .club-dropdown-menu{position:absolute;top:100%;left:0;margin-top:6px;background:#0d0d0d;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:6px;min-width:180px;z-index:10001;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:slideDown .2s ease;overflow:hidden}
+    .club-dropdown-menu[hidden]{display:none}
+    .club-dropdown-item{display:block;width:100%;padding:10px 14px;border:none;border-radius:8px;background:transparent;color:#fff;font-size:14px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;transition:background .2s ease}
+    .club-dropdown-item:hover{background:rgba(255,255,255,.08)}
+    .club-dropdown-item.active{background:rgba(255,255,255,.12);color:#fff}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .content{padding-bottom:0}
 .tab-panels{padding:0}
     .panel{display:none}
@@ -203,25 +207,52 @@
     <rect width="450" height="800" fill="#1a1a1a" opacity="0.04" filter="url(#noise)"/>
   </svg>
 
-  <div class="tabs" role="tablist" aria-label="Клубы">
+  <div class="club-dropdown-wrap">
+    <button class="club-dropdown-trigger" id="club-trigger" type="button">ТРИУМФ</button>
+    <div class="club-dropdown-menu" id="club-menu" hidden role="menu">
+      <button class="club-dropdown-item active" type="button" role="menuitem" data-value="tr">ТРИУМФ</button> 
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ar">АРНАУ</button>
+     <button class="club-dropdown-item" type="button" role="menuitem" data-value="sp">САТПАЕВА</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ko">КОШКАРБАЕВА</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="kn">БАЙТУРСЫНОВА</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ke">КЕНЕСАРЫ</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="km">КУМЫСБЕКОВА</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="as">SAT CITY</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="mh">МУХАМЕДХАНОВА</button>
 
+    </div>
   </div>
+<div class="tabs" role="tablist" aria-label="Клубы"></div>
 
-  <div>
-    <button class="tab-btn" type="button" role="tab" aria-selected="true" aria-controls="panel-ar" id="tab-ar">АРНАY</button>
-  </div>  
-  <div>  
-    <button class="tab-btn1" type="button" role="tab" aria-selected="false" aria-controls="panel-tr" id="tab-tr">ТРИYМФ</button>
-  </div>  
   
-
   <div class="content">
     <div class="tab-panels">
-      <section class="panel is-active" id="panel-ar" role="tabpanel" aria-labelledby="tab-ar">
+        <section class="panel is-active" id="panel-tr">
+        <iframe scrolling="no" src="./TRIUMPH/TRIUMPH.html?v=20260531-2" title="TRIUMPH"></iframe>
+      </section>
+      <section class="panel" id="panel-ar">
         <iframe scrolling="no" src="./ARNAU/ARNAU.html?v=20260605-1" title="ARNAU"></iframe>
       </section>
-      <section class="panel" id="panel-tr" role="tabpanel" aria-labelledby="tab-tr">
-        <iframe scrolling="no" src="./TRIUMPH/TRIUMPH.html?v=20260531-2" title="TRIUMPH"></iframe>
+     <section class="panel" id="panel-sp">
+        <iframe scrolling="no" src="./SATPAEVA/SATPAVEA.html" title="SATPAEVA"></iframe>
+      </section>
+        <section class="panel" id="panel-ko">
+        <iframe scrolling="no" src="./koshk/koshk.html" title="KOSHKARBAYEVA"></iframe>
+      </section>
+      <section class="panel" id="panel-kn">
+        <iframe scrolling="no" src="./bait/bait.html" title="BAITURSYNOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-ke">
+        <iframe scrolling="no" src="./KENESARY/kenesary.html" title="KENESARY"></iframe>
+      </section>
+      <section class="panel" id="panel-km">
+        <iframe scrolling="no" src="./kumis/kumys.html" title="KUMYSBEKOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-as">
+        <iframe scrolling="no" src="./asfen/asfen.html" title="SAT CITY"></iframe>
+      </section>
+      <section class="panel" id="panel-mh">
+        <iframe scrolling="no" src="./muhamedh/muh.html" title="MUKHAMEDKHANOVA"></iframe>
       </section>
     </div>
   </div>
@@ -276,24 +307,67 @@
       <span>Senet ID</span>
     </a>
   </nav>
+        <div class="tabs" role="tablist" aria-label="Клубы">
+
+  </div>
 
   <script>
     (function() {
-      const tabAr = document.getElementById('tab-ar');
-      const tabTr = document.getElementById('tab-tr');
-      const panelAr = document.getElementById('panel-ar');
-      const panelTr = document.getElementById('panel-tr');
+      const trigger = document.getElementById('club-trigger');
+      const menu = document.getElementById('club-menu');
+      const items = menu.querySelectorAll('.club-dropdown-item');
+      const panels = {
+        tr: document.getElementById('panel-tr'),
+        ar: document.getElementById('panel-ar'),
+        sp: document.getElementById('panel-sp'),
+        ko: document.getElementById('panel-ko'),
+        kn: document.getElementById('panel-kn'),
+        ke: document.getElementById('panel-ke'),
+        km: document.getElementById('panel-km'),
+        as: document.getElementById('panel-as'),
+        mh: document.getElementById('panel-mh')
+      };
+      const names = {
+        tr: 'ТРИУМФ',
+        ar: 'АРНАУ',
+        sp: 'САТПАЕВА',
+        ko: 'КОШКАРБАЕВА',
+        kn: 'БАЙТУРСЫНОВА',
+        ke: 'КЕНЕСАРЫ',
+        km: 'КУМЫСБЕКОВА',
+        as: 'SAT CITY',
+        mh: 'МУХАМЕДХАНОВА'
+      };
 
-      function setActive(which) {
-        const isAr = which === 'ar';
-        tabAr.setAttribute('aria-selected', String(isAr));
-        tabTr.setAttribute('aria-selected', String(!isAr));
-        panelAr.classList.toggle('is-active', isAr);
-        panelTr.classList.toggle('is-active', !isAr);
+      function setActive(value) {
+        items.forEach(item => {
+          item.classList.toggle('active', item.dataset.value === value);
+        });
+        Object.entries(panels).forEach(([key, panel]) => {
+          panel.classList.toggle('is-active', key === value);
+        });
+        trigger.textContent = names[value] || value;
+        menu.hidden = true;
+        trigger.classList.remove('open');
       }
 
-      tabAr.addEventListener('click', () => setActive('ar'));
-      tabTr.addEventListener('click', () => setActive('tr'));
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isHidden = menu.hidden;
+        menu.hidden = !isHidden;
+        trigger.classList.toggle('open', isHidden);
+      });
+
+      items.forEach(item => {
+        item.addEventListener('click', function() {
+          setActive(this.dataset.value);
+        });
+      });
+
+      document.addEventListener('click', function() {
+        menu.hidden = true;
+        trigger.classList.remove('open');
+      });
     })();
   </script>
 </body>

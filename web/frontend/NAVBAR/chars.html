@@ -30,14 +30,15 @@
       visibility:hidden;
       max-height:0;
       overflow:hidden;
-      transform:translateY(12px);
-      transition:opacity .35s ease,transform .35s ease,max-height .35s ease;
+      transform:translateY(3px);
+      transition:opacity .35s ease,transform .35s ease,visibility .35s ease;
     }
     .club-panel.active{
       opacity:1;
       visibility:visible;
       max-height:2500px;
       transform:translateY(0);
+      transition:opacity .35s ease,transform .35s ease,visibility .35s ease,max-height 0s;
     }
     .spec-card{
       max-width:520px;
@@ -48,14 +49,15 @@
       overflow:hidden;
       opacity:0;
       max-height:0;
-      transform:translateY(10px);
-      transition:opacity .3s ease,transform .3s ease,max-height .35s ease;
+      transform:translateY(4px);
+      transition:opacity .3s ease,transform .3s ease;
       pointer-events:none;
     }
     .spec-card.active{
       opacity:1;
       max-height:2000px;
       transform:translateY(0);
+      transition:opacity .3s ease,transform .3s ease,max-height 0s;
       pointer-events:auto;
     }
     .spec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -77,6 +79,19 @@
     .nav-item.active{color:var(--accent)}
     .nav-item svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     .nav-item span{display:block;width:100%;line-height:14px;text-align:center;white-space:nowrap;overflow:hidden}
+    .custom-select{position:relative;max-width:520px;margin:0 auto 16px;z-index:100}
+    .select-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 18px;border:2px solid rgba(255,255,255,.15);border-radius:14px;background:rgba(0,0,0,.7);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:border-color .3s ease,background .3s ease;box-sizing:border-box;user-select:none}
+    .select-trigger:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.06)}
+    .select-trigger.open{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.08)}
+    .select-trigger .arrow{transition:transform .35s cubic-bezier(0.22,1,0.36,1);font-size:11px;color:rgba(255,255,255,.4);line-height:1}
+    .select-trigger.open .arrow{transform:rotate(180deg)}
+    .select-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(10,10,10,.97);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:6px;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transition:opacity .3s ease,transform .3s ease,visibility .3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
+    .select-menu.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+    .select-option{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;color:rgba(255,255,255,.7);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s ease,color .2s ease}
+    .select-option:hover{background:rgba(255,255,255,.08);color:#fff}
+    .select-option.selected{color:#fff;background:rgba(255,255,255,.1)}
+    .select-option .check{opacity:0;transition:opacity .2s ease;color:#fff;font-size:14px}
+    .select-option.selected .check{opacity:1}
   </style>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
@@ -91,8 +106,7 @@
 
   </div>
 
-  <div class="page-shell page-enter">
-    <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#0a0a0a"/>
@@ -173,14 +187,28 @@
     </g>
     <rect width="450" height="800" fill="#1a1a1a" opacity="0.04" filter="url(#noise)"/>
   </svg>
+  <div class="page-shell page-enter">
   <main class="content">
     <h1>Характеристики</h1>
-    <div class="club-switcher" role="tablist" aria-label="Выбор клуба">
-      <button class="club-button active" data-club="arnau" type="button">ARNAU</button>
-      <button class="club-button" data-club="triumph" type="button">TRIUMPH</button>
+    <div class="custom-select" id="club-select">
+      <div class="select-trigger" role="combobox" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+        <span class="select-label">Триумф</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="select-menu" role="listbox">
+        <div class="select-option selected" data-value="triumph" role="option" aria-selected="true"><span>Триумф</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="arnau" role="option"><span>Арнау</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="satpaeva" role="option"><span>Сатпаева</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="koshk" role="option"><span>Кошкарбаева</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="bait" role="option"><span>Байтурсынова</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="kenesary" role="option"><span>Кенесары</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="kumis" role="option"><span>Кумисбекова</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="asfen" role="option"><span>Sat City</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="muhamedh" role="option"><span>Мухамедханова</span><span class="check">✓</span></div>
+      </div>
     </div>
 
-    <div class="club-panel active" id="club-arnau">
+    <div class="club-panel" id="club-arnau">
       <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба ARNAU">
         <button class="zone-button active" data-zone="standard1" type="button">Standart 1</button>
         <button class="zone-button" data-zone="standard2" type="button">Standart 2</button>
@@ -613,6 +641,288 @@
     </section>
   </div>
 
+  <div class="club-panel" id="club-satpaeva">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Сатпаева">
+      <button class="zone-button active" data-zone="standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="bootcamp1" type="button">Bootcamp 1</button>
+      <button class="zone-button" data-zone="bootcamp2" type="button">Bootcamp 2</button>
+      <button class="zone-button" data-zone="vip1" type="button">VIP 1</button>
+      <button class="zone-button" data-zone="vip2" type="button">VIP 2</button>
+      <button class="zone-button" data-zone="vip3" type="button">VIP 3</button>
+    </div>
+    <section class="spec-card active" id="standard">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">280Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 12400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 4060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 16GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 280Hz 27"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Клавиатура - Origins Core, Мышка - G Pro Wireless, Наушники - Cloud II</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="bootcamp1">
+      <div class="spec-head"><h2 class="spec-title">Bootcamp 1</h2><span class="spec-badge">280Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 13400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 4060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 280 24.5"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Клавиатура - Origins Core, Мышка - Superlight, Наушники - Cloud II</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="bootcamp2">
+      <div class="spec-head"><h2 class="spec-title">Bootcamp 2</h2><span class="spec-badge">280Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 13400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 4060Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 280 27"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Клавиатура - Varmillo Summit R1, Мышка - Superlight IIc, Наушники - Cloud II</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip1">
+      <div class="spec-head"><h2 class="spec-title">VIP 1</h2><span class="spec-badge">280Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i7 12700F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 4060Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 280 27"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Клавиатура - Varmillo Summit R1, Мышка - Superlight II, Наушники - Cloud III Wireless</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip2">
+      <div class="spec-head"><h2 class="spec-title">VIP 2</h2><span class="spec-badge">360Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i7 12700f</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 4060Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ZOWIE 360Hz</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Клавиатура - Varmillo Summit R1, Мышка - Superlight IIc, Наушники - Cloud III Wireless</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip3">
+      <div class="spec-head"><h2 class="spec-title">VIP 3</h2><span class="spec-badge">500Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i7 13700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 4070 16GB</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Клавиатура - Varmillo Summit R1, Мышка - Superlight IIc, Наушники - Cloud III Wireless</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="club-panel" id="club-koshk">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Кошка">
+      <button class="zone-button active" data-zone="standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="vip" type="button">VIP</button>
+    </div>
+    <section class="spec-card active" id="standard">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip">
+      <div class="spec-head"><h2 class="spec-title">VIP</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="club-panel" id="club-bait">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Байтурсынова">
+      <button class="zone-button active" data-zone="standard1" type="button">Standart 1</button>
+      <button class="zone-button" data-zone="standard2" type="button">Standart 2</button>
+      <button class="zone-button" data-zone="vip1" type="button">VIP 1</button>
+      <button class="zone-button" data-zone="trio" type="button">Trio</button>
+      <button class="zone-button" data-zone="solo" type="button">Solo room</button>
+    </div>
+    <section class="spec-card active" id="standard1">
+      <div class="spec-head"><h2 class="spec-title">Standart 1</h2><span class="spec-badge">380Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 14400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 380 27"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight, Наушники - Cloud II, Клава - Origins Core</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="standard2">
+      <div class="spec-head"><h2 class="spec-title">Standart 2</h2><span class="spec-badge">400Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">r7 7800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ZOWIE 400Hz 24.1"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight, Наушники - Cloud III Wireless, Клава - Origins Core</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip1">
+      <div class="spec-head"><h2 class="spec-title">VIP 1</h2><span class="spec-badge">400Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">r7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ZOWIE 400Hz 24.5"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight, Наушники - Cloud III S Wireless, Клава - Varmilo Panda</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="trio">
+      <div class="spec-head"><h2 class="spec-title">Trio</h2><span class="spec-badge">540</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">r7 78003D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 540Hz 24.5"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight II, Наушники - Cloud III Wireless, Клава - Darkproject midnight</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="solo">
+      <div class="spec-head"><h2 class="spec-title">Solo room</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">r9 9900X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5090 24GB</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR5 64GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ZOWIE 600Hz 24.1"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight IIc, Наушники - Cloud III Wireless, Клава - ATK RS7 PRO RGB</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="club-panel" id="club-kenesary">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Кенесары">
+      <button class="zone-button active" data-zone="standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="vip" type="button">VIP</button>
+    </div>
+    <section class="spec-card active" id="standard">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip">
+      <div class="spec-head"><h2 class="spec-title">VIP</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="club-panel" id="club-kumis">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Кумисбекова">
+      <button class="zone-button active" data-zone="standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="vip" type="button">VIP</button>
+    </div>
+    <section class="spec-card active" id="standard">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip">
+      <div class="spec-head"><h2 class="spec-title">VIP</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="club-panel" id="club-asfen">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Sat City">
+      <button class="zone-button active" data-zone="standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="vip" type="button">VIP</button>
+      <button class="zone-button" data-zone="vip2" type="button">VIP 2</button>
+      <button class="zone-button" data-zone="vip3" type="button">VIP 3</button>
+    </div>
+    <section class="spec-card active" id="standard">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">165Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 12400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 2060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 165Hz</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - G102, Наушники - Cloud II, Клава - Origins Core</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip">
+      <div class="spec-head"><h2 class="spec-title">VIP</h2><span class="spec-badge">280Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i7 12700F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 3060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 280Hz 27"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight, Наушники - Cloud III, Клава - Origins Core</span></div>
+      </div>
+    </section>
+      <section class="spec-card" id="vip2">
+      <div class="spec-head"><h2 class="spec-title">VIP 2</h2><span class="spec-badge">280Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 14600KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 3070 | 5060Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 280Hz 27"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight, Наушники - Cloud III, Клава - Origins Core</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip3">
+      <div class="spec-head"><h2 class="spec-title">VIP 3</h2><span class="spec-badge">360Hz</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">i5 14600KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5060Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">DDR4 32GB</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Asus 360Hz 24.5"</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">Мышь - Superlight II DEX, Наушники - Cloud III, Клава - Origins Core</span></div>
+      </div>
+    </section>
+  </div>
+  <div class="club-panel" id="club-muhamedh">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Мухамедханова">
+      <button class="zone-button active" data-zone="standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="vip" type="button">VIP</button>
+    </div>
+    <section class="spec-card active" id="standard">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+    <section class="spec-card" id="vip">
+      <div class="spec-head"><h2 class="spec-title">VIP</h2><span class="spec-badge">—</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">—</span></div>
+        <div class="spec-item"><span class="spec-label">Периферия</span><span class="spec-value">—</span></div>
+      </div>
+    </section>
+  </div>
+
     <section class="spec-card" id="trio" aria-label="Trio — режим на троих">
       <div class="spec-head">
         <h2 class="spec-title">VIP 1</h2>
@@ -704,34 +1014,61 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const clubButtons = document.querySelectorAll('.club-button');
+      const customSelect = document.getElementById('club-select');
+      const trigger = customSelect.querySelector('.select-trigger');
+      const menu = customSelect.querySelector('.select-menu');
+      const label = customSelect.querySelector('.select-label');
+      const clubOptions = customSelect.querySelectorAll('.select-option');
       const clubPanels = document.querySelectorAll('.club-panel');
       const zoneButtons = document.querySelectorAll('.zone-button');
 
       function activateZone(panel, zoneId) {
         const buttons = panel.querySelectorAll('.zone-button');
         const cards = panel.querySelectorAll('.spec-card');
-
         buttons.forEach((btn) => btn.classList.toggle('active', btn.dataset.zone === zoneId));
         cards.forEach((card) => card.classList.toggle('active', card.id === zoneId));
       }
 
-      clubButtons.forEach((button) => {
-        button.addEventListener('click', function () {
-          const selectedClub = this.dataset.club;
-          const targetPanel = document.getElementById(`club-${selectedClub}`);
+      function switchClub(clubId) {
+        const targetPanel = document.getElementById(`club-${clubId}`);
+        clubPanels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
+        if (targetPanel) {
+          const firstZone = targetPanel.querySelector('.zone-button');
+          if (firstZone) activateZone(targetPanel, firstZone.dataset.zone);
+        }
+      }
 
-          clubButtons.forEach((btn) => btn.classList.toggle('active', btn === this));
-          clubPanels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('open');
+        menu.classList.toggle('open', !isOpen);
+        trigger.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen);
+      });
 
-          if (targetPanel) {
-            const firstZone = targetPanel.querySelector('.zone-button');
-            if (firstZone) {
-              activateZone(targetPanel, firstZone.dataset.zone);
-            }
-          }
+      clubOptions.forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          const value = this.dataset.value;
+          label.textContent = this.querySelector('span:first-child').textContent;
+          clubOptions.forEach(function (o) { o.classList.remove('selected'); o.setAttribute('aria-selected', 'false'); });
+          this.classList.add('selected');
+          this.setAttribute('aria-selected', 'true');
+          menu.classList.remove('open');
+          trigger.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+          switchClub(value);
         });
       });
+
+      document.addEventListener('click', function () {
+        if (menu.classList.contains('open')) {
+          menu.classList.remove('open');
+          trigger.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      switchClub('triumph');
 
       zoneButtons.forEach((button) => {
         button.addEventListener('click', function () {

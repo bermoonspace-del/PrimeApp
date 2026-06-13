@@ -362,6 +362,16 @@ body {
 .pc.vip {
     box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
 }
+.pc.is-skeleton {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.05);
+    animation: pcPulse 1.2s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes pcPulse {
+    0%, 100% { opacity: .25; transform: translate(-50%, -50%) scale(.85); }
+    50% { opacity: .55; transform: translate(-50%, -50%) scale(1); }
+}
 
 @media (max-width: 700px) {
     .map-wrapper {
@@ -581,6 +591,9 @@ body {
 .soon-card.is-now{border-color:rgba(76,175,80,.5);background:rgba(76,175,80,.12)}
 .soon-card.is-now .soon-card-time{color:#4CAF50;font-weight:700}
 .soon-card.is-empty{opacity:.4}
+.soon-card.is-loading .soon-card-num,.soon-card.is-loading .soon-card-time{background:rgba(255,255,255,.1);border-radius:4px;color:transparent;animation:pulse 1.2s ease-in-out infinite;min-width:20px;min-height:12px}
+.soon-card.is-loading .soon-card-num{min-width:24px;min-height:14px}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.7}}
 @media (max-width:520px){.soon-bar{bottom:70px;width:min(96vw,360px);padding:6px 8px;gap:4px}.soon-bar-title{font-size:9px;padding-right:6px}.soon-card-num{font-size:12px}.soon-card-time{font-size:9px}}
 
 /* Zone dropdown trigger button */

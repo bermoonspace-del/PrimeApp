@@ -166,7 +166,7 @@
 
   <section class="booking-contacts" aria-label="Контакты для брони">
     <span class="booking-contacts-title">Контакты для брони</span>
-    <a href="tel:+77028880066" aria-label="Позвонить +7 702 888 00 66" onclick="(function(){var n='+77028880066';window.parent.postMessage({type:'call',number:n},'*');try{window.top.location.href='tel:'+n}catch(e){}document.location.href='tel:'+n;setTimeout(function(){window.open('tel:'+n,'_blank')},100);return false;})()" rel="nofollow noopener">+7 702 888 00 66 Триумф</a>
+    <a href="tel:+77028880066" aria-label="Позвонить +7 702 888 00 66" onclick="(function(){var n='+77028880066';window.parent.postMessage({type:'call',number:n},'*');try{window.top.location.href='tel:'+n}catch(e){}document.location.href='tel:'+n;setTimeout(function(){window.open('tel:'+n,'_blank')},100);return false;})()" rel="nofollow noopener">+7 702 888 00 66</a>
   </section>
 
   <section class="soon-bar" aria-label="Скоро освободятся">
@@ -322,6 +322,7 @@ if (zoneDropdown && zoneDropdownMenu) {
 async function refreshSoon(){
   if(inFlight) return;
   inFlight=true;
+  cards.forEach(c=>c.classList.add('is-loading'));
   try{
     let pcs=[];
     try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);}
@@ -342,7 +343,7 @@ async function refreshSoon(){
     }
     
     renderZoneDropdown(withDates);
-  }finally{inFlight=false;}
+  }finally{inFlight=false;cards.forEach(c=>c.classList.remove('is-loading'));}
 }
 
 let currentWithDates = [];

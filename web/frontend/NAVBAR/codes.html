@@ -11,17 +11,30 @@
     body.tg-app{padding-top:120px}
     .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
     .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
-    .content{min-height:100%;box-sizing:border-box;padding:110px 16px 160px}
-    h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
-    .codes-list{display:grid;gap:10px;max-width:420px;margin:0 auto;padding-top:16px}
-    .club-button{appearance:none;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;width:100%;min-height:58px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;padding:12px 14px;font:inherit;cursor:pointer;text-align:left;transition:background .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
-    .club-button:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
-    .club-button:active{transform:translateY(0) scale(.98)}
-    .club-button.is-open{background:#fff;color:#000;border-color:#fff}
-    .club-button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .club-name{font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .club-code{display:none;font-size:15px;font-weight:700;line-height:1;letter-spacing:1.5px}
-    .club-button.is-open .club-code{display:block}
+    .content{min-height:100%;box-sizing:border-box;padding:110px 16px 160px;display:flex;flex-direction:column;align-items:center}
+    .club-dropdown-wrap{position:relative;width:100%;max-width:420px;z-index:100;margin-top:24px}
+    .club-dropdown-trigger{appearance:none;width:100%;border:1px solid rgba(255,255,255,.18);background:#000;color:#fff;padding:12px 40px 12px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:16px;transition:all .35s cubic-bezier(0.22,1,0.36,1);font-family:inherit;display:flex;align-items:center;gap:10px;text-align:left}
+    .club-dropdown-trigger:hover{border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+    .club-dropdown-trigger:active{transform:translateY(0) scale(.98)}
+    .club-dropdown-trigger::after{content:"▾";position:absolute;right:14px;font-size:12px;color:rgba(255,255,255,.6);transition:transform .25s ease}
+    .club-dropdown-trigger.open::after{transform:rotate(180deg)}
+    .club-dropdown-menu{position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#0d0d0d;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:6px;z-index:101;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:slideDown .2s ease;max-height:60vh;overflow-y:auto}
+    .club-dropdown-menu[hidden]{display:none}
+    .club-dropdown-item{display:block;width:100%;padding:12px 14px;border:none;border-radius:8px;background:transparent;color:#fff;font-size:15px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;transition:background .2s ease}
+    .club-dropdown-item:hover{background:rgba(255,255,255,.08)}
+    .club-dropdown-item.active{background:rgba(255,255,255,.12)}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    .code-display{width:100%;max-width:420px;margin-top:24px;padding:20px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.04);text-align:center;box-sizing:border-box}
+    .code-display.hidden{display:none}
+    .code-label{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:8px}
+    .code-value{font-size:32px;font-weight:800;letter-spacing:4px;color:#fff}
+    .code-hint{width:100%;max-width:420px;margin-top:16px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));box-sizing:border-box}
+    .code-hint.hidden{display:none}
+    .code-hint-title{font-size:14px;font-weight:700;color:#fff;text-align:center;margin-bottom:12px}
+    .code-hint table{width:100%;border-collapse:collapse;font-size:13px}
+    .code-hint td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;color:rgba(255,255,255,.85)}
+    .code-hint td:first-child{width:32px;color:rgba(255,255,255,.35);font-weight:700;text-align:center;font-size:15px}
+    .code-hint tr:last-child td{border-bottom:none}
     .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
     .bottom-nav *{pointer-events:auto}
     .nav-item{display:grid;grid-template-rows:28px 14px;gap:5px;justify-items:center;align-content:center;width:100%;height:54px;min-width:0;padding:0 2px;box-sizing:border-box;color:var(--muted);text-decoration:none;font-size:10px;line-height:1;transition:color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
@@ -127,64 +140,36 @@
     <rect width="450" height="800" fill="#1a1a1a" opacity="0.04" filter="url(#noise)"/>
   </svg>
   <main class="content">
-    <h1>Коды клубов</h1>
-    <section class="codes-list" aria-label="Коды клубов">
-      <button class="club-button" type="button" id="baitursynovaBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Байтурсынова</span>
-        <span class="club-code" id="baitursynovaCode" aria-live="polite">W51TC</span>
-      </button>
-      <button class="club-button" type="button" id="moldagaliyevaBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Кумысбекова</span>
-        <span class="club-code" id="moldagaliyevaCode" aria-live="polite">ZITKD</span>
-      </button>      
-      <button class="club-button" type="button" id="koshkarbayevaBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Кошкарбаева</span>
-        <span class="club-code" id="koshkarbayevaCode" aria-live="polite">J9J4Q</span>
-      </button>
-      <button class="club-button" type="button" id="kereyZhanibekBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Керей Жанибек</span>
-        <span class="club-code" id="kereyZhanibekCode" aria-live="polite">D6H8L</span>
-      </button>
-      <button class="club-button" type="button" id="kabanbayBatyrBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Кабанбай Батыра</span>
-        <span class="club-code" id="kabanbayBatyrCode" aria-live="polite">D6H8L</span>
-      </button>
-      <button class="club-button" type="button" id="saptaevaBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Саптаева</span>
-        <span class="club-code" id="saptaevaCode" aria-live="polite">CORTP</span>
-      </button>
-      <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Мухамедханова</span>
-        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
-      </button>
-      <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Сауран</span>
-        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
-      </button>
-       <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Кенесары</span>
-        <span class="club-code" id="sauranCode" ari a-live="polite">Пока что кода нет</span>
-      </button>
-        <button class="club-button" type="button" id="sauranBtn" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
-        <span class="club-name">Асфендиярова</span>
-        <span class="club-code" id="sauranCode" ari a-live="polite">I5L57</span>
-      </button>
-    </section>
+    <div class="club-dropdown-wrap">
+      <button class="club-dropdown-trigger" id="club-trigger" type="button">Выберите клуб</button>
+      <div class="club-dropdown-menu" id="club-menu" hidden role="menu">
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="triumph">Триумф</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="arnau">Арнау</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="satpaeva">Сатпаева</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="koshkarbaeva">Кошкарбаева</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="baitursynova">Байтурсынова</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="kenesary">Кенесары</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="kumisbekova">Кумисбекова</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="asfendiyarova">Асфендиярова</button>
+        <button class="club-dropdown-item" type="button" role="menuitem" data-value="mukhamedkhanova">Мухамедханова</button>
+      </div>
+    </div>
+
+    <div class="code-display hidden" id="code-display">
+      <div class="code-label">Код клуба</div>
+      <div class="code-value" id="code-value"></div>
+    </div>
+<div class="tabs" role="tablist" aria-label="Клубы"></div>
+    <div class="code-hint" id="code-hint">
+      <div class="code-hint-title">Чтобы привязать клуб к вашему Senet ID:</div>
+      <table>
+        <tr><td>1</td><td>Скачать приложение Senet ID</td></tr>
+        <tr><td>2</td><td>Создать аккаунт</td></tr>
+        <tr><td>3</td><td>Написать код клуба который вы хотите привязать</td></tr>
+        <tr><td>4</td><td>Войти / создать аккаунт клуба</td></tr>
+      </table>
+    </div>
   </main>
-
-        <div class="tabs" role="tablist" aria-label="Клубы">
-
-        </div>
 
   <nav class="bottom-nav" aria-label="Главное меню">
     <a class="nav-item" href="../index.html" aria-label="Главная">
@@ -209,19 +194,48 @@
     </a>
   </nav>
   <script>
-      const clubButtons = document.querySelectorAll('.club-button');
+    (function() {
+      const trigger = document.getElementById('club-trigger');
+      const menu = document.getElementById('club-menu');
+      const items = menu.querySelectorAll('.club-dropdown-item');
+      const codeDisplay = document.getElementById('code-display');
+      const codeValue = document.getElementById('code-value');
 
-    clubButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        clubButtons.forEach((btn) => {
-          btn.classList.remove('is-open');
-          btn.setAttribute('aria-expanded', 'false');
-        });
+      const codes = {
+        triumph: 'D6H8L',
+        arnau: 'D6H8L',
+        satpaeva: 'CORTP',
+        koshkarbaeva: 'J9J4Q',
+        baitursynova: 'W51TC',
+        kenesary: 'Пока что кода нет',
+        kumisbekova: 'ZITKD',
+        asfendiyarova: 'I5L57',
+        mukhamedkhanova: 'Пока что кода нет'
+      };
 
-        button.classList.add('is-open');
-        button.setAttribute('aria-expanded', 'true');
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isHidden = menu.hidden;
+        menu.hidden = !isHidden;
+        trigger.classList.toggle('open', isHidden);
       });
-    });
+
+      items.forEach(item => {
+        item.addEventListener('click', function() {
+          const val = this.dataset.value;
+          trigger.textContent = this.textContent;
+          menu.hidden = true;
+          trigger.classList.remove('open');
+          codeDisplay.classList.remove('hidden');
+          codeValue.textContent = codes[val] || '—';
+        });
+      });
+
+      document.addEventListener('click', function() {
+        menu.hidden = true;
+        trigger.classList.remove('open');
+      });
+    })();
   </script>
 </body>
 </html>

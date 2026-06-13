@@ -4,7 +4,7 @@ tg?.expand();
 
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com"; // Empty for local development, set to your Render URL for production
+const BACKEND_URL = "https://primeapp-2.onrender.com";
 
 const API_URL =
     `/api/map?office_id=1114&limit=9999`;
@@ -1051,6 +1051,23 @@ function getNestedField(source, path) {
         .split(".")
         .reduce((value, key) => value?.[key], source);
 }
+function renderSkeletons() {
+    if (!PC_POSITIONS_LOADED || PC_POSITIONS.size === 0) return;
+    const container = document.getElementById("pcs");
+    if (!container) return;
+    container.innerHTML = "";
+    alignPcsToSvgViewBox('.map-svg');
+    for (const [num, pos] of PC_POSITIONS) {
+        const el = document.createElement("div");
+        el.className = "pc is-skeleton";
+        const leftPercent = (pos[0] / VIEWBOX_WIDTH) * 100;
+        const topPercent = ((pos[1] + 50) / VIEWBOX_HEIGHT) * 100;
+        el.style.left = leftPercent + "%";
+        el.style.top = topPercent + "%";
+        container.appendChild(el);
+    }
+}
+
 clearLegacyTokenCaches();
 
 window.addEventListener('resize', debounce(() => {
@@ -1059,6 +1076,7 @@ window.addEventListener('resize', debounce(() => {
 
 (async () => {
     await loadPositions();
+    renderSkeletons();
     loadPCs();
     setInterval(loadPCs, 60000);
 })();

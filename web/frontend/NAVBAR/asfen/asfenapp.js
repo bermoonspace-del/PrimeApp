@@ -6,17 +6,17 @@ tg?.expand();
 const BACKEND_URL = "https://primeapp-2.onrender.com";
 
 const API_URL =
-    `/api/map?office_id=1&limit=9999&_satpayeva=1`;
+    `/api/map?office_id=1&limit=9999&_primegamehub=1`;
 
 const USER_INFO_URL_PREFIX =
-    "https://satpayeva.app.enes.tech/api/v2/map/";
+    "https://primegamehub.app.enes.tech/api/v2/map/";
 
 const SEED_CAP_TOKEN =
     "";
 
-const TOKEN_STORAGE_KEY = "satpayeva.map.capToken.v2";
+const TOKEN_STORAGE_KEY = "primegamehub.map.capToken.v2";
 const LEGACY_TOKEN_STORAGE_KEYS = [
-    "satpayeva.map.token"
+    "primegamehub.map.token"
 ];
 const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -303,7 +303,7 @@ async function getAuthToken({ forceRefresh = false } = {}) {
     showMapMessage("Обновление токена...");
 
     try {
-        const json = await fetchJson("/api/token?_satpayeva=1");
+        const json = await fetchJson("/api/token?_primegamehub=1");
 
         const token = json?.token;
 
@@ -516,6 +516,18 @@ function renderPCs(pcs) {
 
     alignPcsToSvgViewBox('.zone-overlay');
 
+    // Re-align PCs when the iframe gets layout dimensions (e.g. hidden panel becomes visible)
+    if (!container._alignObs) {
+        container._alignObs = true;
+        const ro = new ResizeObserver(() => {
+            const svg = document.querySelector('.zone-overlay');
+            if (svg && svg.getBoundingClientRect().width > 0) {
+                alignPcsToSvgViewBox('.zone-overlay');
+            }
+        });
+        ro.observe(document.body);
+    }
+
     const coordinateMode = detectCoordinateMode(pcs);
 
     pcs.forEach(pc => {
@@ -540,8 +552,8 @@ function renderPCs(pcs) {
             el.classList.add("vip");
         }
 
-        const leftPercent = ((point.x + 100) / VIEWBOX_WIDTH) * 100;
-        const topPercent = ((point.y - 350) / VIEWBOX_HEIGHT) * 100;
+        const leftPercent = ((point.x - 30) / VIEWBOX_WIDTH) * 100;
+        const topPercent = ((point.y - 108) / VIEWBOX_HEIGHT) * 100;
 
         el.style.left = leftPercent + "%";
         el.style.top = topPercent + "%";
@@ -1174,7 +1186,7 @@ async function fetchPCUserInfo(pc, _token) {
     }
 
     try {
-        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_satpayeva=1`);
+        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_primegamehub=1`);
     } catch (err) {
         console.warn(`Не удалось получить user_info для ПК ${getPcLabel(pc)}`, err);
         return null;

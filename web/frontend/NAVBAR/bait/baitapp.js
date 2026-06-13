@@ -6,17 +6,17 @@ tg?.expand();
 const BACKEND_URL = "https://primeapp-2.onrender.com";
 
 const API_URL =
-    `/api/map?office_id=1&limit=9999&_satpayeva=1`;
+    `/api/map?office_id=1&limit=9999&_baitursynova=1`;
 
 const USER_INFO_URL_PREFIX =
-    "https://satpayeva.app.enes.tech/api/v2/map/";
+    "https://baitursynova.app.enes.tech/api/v2/map/";
 
 const SEED_CAP_TOKEN =
     "";
 
-const TOKEN_STORAGE_KEY = "satpayeva.map.capToken.v2";
+const TOKEN_STORAGE_KEY = "baitursynova.map.capToken.v2";
 const LEGACY_TOKEN_STORAGE_KEYS = [
-    "satpayeva.map.token"
+    "baitursynova.map.token"
 ];
 const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -303,7 +303,7 @@ async function getAuthToken({ forceRefresh = false } = {}) {
     showMapMessage("Обновление токена...");
 
     try {
-        const json = await fetchJson("/api/token?_satpayeva=1");
+        const json = await fetchJson("/api/token?_baitursynova=1");
 
         const token = json?.token;
 
@@ -516,6 +516,18 @@ function renderPCs(pcs) {
 
     alignPcsToSvgViewBox('.zone-overlay');
 
+    // Re-align PCs when the iframe gets layout dimensions (e.g. hidden panel becomes visible)
+    if (!container._alignObs) {
+        container._alignObs = true;
+        const ro = new ResizeObserver(() => {
+            const svg = document.querySelector('.zone-overlay');
+            if (svg && svg.getBoundingClientRect().width > 0) {
+                alignPcsToSvgViewBox('.zone-overlay');
+            }
+        });
+        ro.observe(document.body);
+    }
+
     const coordinateMode = detectCoordinateMode(pcs);
 
     pcs.forEach(pc => {
@@ -540,8 +552,8 @@ function renderPCs(pcs) {
             el.classList.add("vip");
         }
 
-        const leftPercent = ((point.x + 100) / VIEWBOX_WIDTH) * 100;
-        const topPercent = ((point.y - 350) / VIEWBOX_HEIGHT) * 100;
+        const leftPercent = ((point.x - 380) / VIEWBOX_WIDTH) * 100;
+        const topPercent = ((point.y - 142) / VIEWBOX_HEIGHT) * 100;
 
         el.style.left = leftPercent + "%";
         el.style.top = topPercent + "%";
@@ -746,14 +758,11 @@ function getZoneForPC(num) {
     if (num == null) return null;
     const n = Number(num);
     if (!Number.isFinite(n)) return null;
-    if (n >= 1 && n <= 52) return '1-52';
-    if (n >= 53 && n <= 84) return '53-84';
-    if (n >= 85 && n <= 91) return 'vip-3';
-    if (n >= 92 && n <= 98) return 'vip-1';
-    if (n >= 99 && n <= 106) return 'vip-2';
-    if (n >= 107 && n <= 116) return 'private';
-    if (n >= 117 && n <= 136) return 'vip-3';
-    if (n === 157) return 'solo';
+    if (n >= 1 && n <= 48) return '1-48';
+    if (n >= 49 && n <= 73) return '49-73';
+    if (n >= 74 && n <= 79) return '74-79';
+    if (n >= 80 && n <= 82) return '80-82';
+    if (n === 107) return '107';
     return null;
 }
 
@@ -1174,7 +1183,7 @@ async function fetchPCUserInfo(pc, _token) {
     }
 
     try {
-        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_satpayeva=1`);
+        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_baitursynova=1`);
     } catch (err) {
         console.warn(`Не удалось получить user_info для ПК ${getPcLabel(pc)}`, err);
         return null;

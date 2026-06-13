@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SATPAEVA</title>
+  <title>KOSHARBAYEVA</title>
   <link rel="stylesheet" href="style.css">
   <style>
     html, body { height: 100%; margin: 0; color:#fff; font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; position: relative; }
@@ -129,32 +129,26 @@
         .pc.highlighted { transform: scale(1.3); z-index: 100; box-shadow: 0 0 20px #fff; transition: transform 0.2s, box-shadow 0.2s; }
         .pc.dimmed { opacity: 0.2; transition: opacity 0.2s; }
       </style>
-      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255,255,255,0.35)"/>
-      </marker>
     </defs>
-    <rect class="zone" data-zone="1-52" x="80" y="-430" width="455" height="1290" rx="12"/>
-    <text class="zone-label" x="300" y="-450" text-anchor="middle">Standart 1</text>
-    <rect class="zone" data-zone="vip-3" x="575" y="-335" width="135" height="670" rx="12"/>
-    <text class="zone-label" x="640" y="-480" text-anchor="middle">BOOTCAMP 01</text>
-    <rect class="zone" data-zone="vip-1" x="710" y="-410" width="135" height="820" rx="12"/>
-    <text class="zone-label" x="800" y="-430" text-anchor="middle">BOOTCAMP 02</text>
-    <rect class="zone" data-zone="vip-2" x="570" y="420" width="420" height="420" rx="12"/>
-    <text class="zone-label" x="790" y="900" text-anchor="middle">VIP 1</text>
-    <rect class="zone" data-zone="private" x="1020" y="420" width="420" height="420" rx="12"/>
-    <text class="zone-label" x="1230" y="900" text-anchor="middle">VIP 2</text>
-    <rect class="zone" data-zone="53-84" x="940" y="-130" width="90" height="400" rx="12"/>
-    <text class="zone-label" x="990" y="-150" text-anchor="middle">VIP 3</text>
-    <rect class="zone" data-zone="solo" x="900" y="-300" width="270" height="90" rx="12"/>
-    <text class="zone-label" x="1040" y="-330" text-anchor="middle">TRIO</text>
-    <line x1="640" y1="-480" x2="640" y2="-345" stroke="rgba(255,255,255,0.35)" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect class="zone" data-zone="1-48" x="60" y="160" width="1080" height="800" rx="12"/>
+    <text class="zone-label" x="600" y="130" text-anchor="middle">Standart</text>
+    <rect class="zone" data-zone="49-73" x="130" y="-50" width="170" height="170" rx="12"/>
+    <text class="zone-label" x="220" y="-80" text-anchor="middle">Squad</text>
+    <rect class="zone" data-zone="74-79" x="410" y="-190" width="170" height="240" rx="12"/>
+    <text class="zone-label" x="1125" y="-220" text-anchor="middle">VIP 1</text>
+    <rect class="zone" data-zone="80-82" x="620" y="-190" width="170" height="240" rx="12"/>
+    <text class="zone-label" x="915" y="-220" text-anchor="middle">VIP 2</text>
+    <rect class="zone" data-zone="80-82" x="830" y="-190" width="170" height="240" rx="12"/>
+    <text class="zone-label" x="715" y="-220" text-anchor="middle">BTCMP 1</text>
+    <rect class="zone" data-zone="80-82" x="1040" y="-190" width="170" height="240" rx="12"/>
+    <text class="zone-label" x="505" y="-220" text-anchor="middle">BTCMP 2</text>
   </svg>
 
   <div id="pcs"></div>
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:102</div>
+    <div class="legend-title">Всего:98</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -170,7 +164,7 @@
 
   <section class="booking-contacts" aria-label="Контакты для брони">
     <span class="booking-contacts-title">Контакты для брони</span>
-    <a href="tel:+77770104080" aria-label="Позвонить +7 777 010 40 80" onclick="(function(){var n='+77770104080';window.parent.postMessage({type:'call',number:n},'*');try{window.top.location.href='tel:'+n}catch(e){}document.location.href='tel:'+n;setTimeout(function(){window.open('tel:'+n,'_blank')},100);return false;})()" rel="nofollow noopener">+7 777 010 40 80</a>
+    <a href="tel:+77770103080" aria-label="Позвонить +7 777 010 30 80" onclick="(function(){var n='+77770103080';window.parent.postMessage({type:'call',number:n},'*');try{window.top.location.href='tel:'+n}catch(e){}document.location.href='tel:'+n;setTimeout(function(){window.open('tel:'+n,'_blank')},100);return false;})()" rel="nofollow noopener">+7 777 010 30 80</a>
   </section>
 
   <section class="soon-bar" aria-label="Скоро освободятся">
@@ -184,32 +178,24 @@
         <div class="soon-card-time">По зонам</div>
         <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden>
             <div class="zone-section">
-                <div class="zone-section-title">Standart 1 (1–60)</div>
-                <div class="zone-pc-list" id="zone-1-60"></div>
+                <div class="zone-section-title">Standart 1 (1-48)</div>
+                <div class="zone-pc-list" id="zone-1-48"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Bootcamp 1 (61-68)</div>
-                <div class="zone-pc-list" id="zone-61-68"></div>
+                <div class="zone-section-title">VIP (49-73)</div>
+                <div class="zone-pc-list" id="zone-49-73"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Bootcamp 2 (69-78)</div>
-                <div class="zone-pc-list" id="zone-69-78"></div>
+                <div class="zone-section-title">Ряд 1 (74-79)</div>
+                <div class="zone-pc-list" id="zone-74-79"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 1 (79-86)</div>
-                <div class="zone-pc-list" id="zone-vip-1"></div>
+                <div class="zone-section-title">Ряд 2 (80-82)</div>
+                <div class="zone-pc-list" id="zone-80-82"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 2 (87-94)</div>
-                <div class="zone-pc-list" id="zone-vip-2"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">VIP 3 (95-99)</div>
-                <div class="zone-pc-list" id="zone-vip-3"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">TRIO (100-102)</div>
-                <div class="zone-pc-list" id="zone-trio"></div>
+                <div class="zone-section-title">107</div>
+                <div class="zone-pc-list" id="zone-107"></div>
             </div>
         </div>
     </div>
@@ -218,8 +204,8 @@
 <script>
 (function(){
 const OFFICE_ID=1;
-const USER_INFO_URL_PREFIX="https://satpayeva.app.enes.tech/api/v2/map/";
-const TOKEN_STORAGE_KEY="satpayeva.map.capToken.v2";
+const USER_INFO_URL_PREFIX="https://koshkarbayeva.app.enes.tech/api/v2/map/";
+const TOKEN_STORAGE_KEY="koshkarbayeva.map.capToken.v2";
 const TOKEN_REFRESH_MS=10*24*60*60*1000;
 const REFRESH_INTERVAL_MS=30000;
 const cards=Array.from(document.querySelectorAll('.soon-card[data-soon]'));
@@ -229,13 +215,11 @@ let cachedTokenAt=0;
 let inFlight=false;
 
 const zoneElements = {
-  '1-60': document.getElementById('zone-1-60'),
-  '61-68': document.getElementById('zone-61-68'),
-  '69-78': document.getElementById('zone-69-78'),
-  'vip-1': document.getElementById('zone-vip-1'),
-  'vip-2': document.getElementById('zone-vip-2'),
-  'vip-3': document.getElementById('zone-vip-3'),
-  'trio': document.getElementById('zone-trio')
+  '1-48': document.getElementById('zone-1-48'),
+  '49-73': document.getElementById('zone-49-73'),
+  '74-79': document.getElementById('zone-74-79'),
+  '80-82': document.getElementById('zone-80-82'),
+  '107': document.getElementById('zone-107')
 };
 
 const zoneDropdown = document.getElementById('zone-dropdown');
@@ -245,13 +229,11 @@ function getZoneForPC(num) {
   if (num == null) return null;
   const n = Number(num);
   if (!Number.isFinite(n)) return null;
-  if (n >= 1 && n <= 60) return '1-60';
-  if (n >= 61 && n <= 68) return '61-68';
-  if (n >= 69 && n <= 78) return '69-78';
-  if (n >= 79 && n <= 86) return 'vip-1';
-  if (n >= 87 && n <= 94) return 'vip-2';
-  if (n >= 95 && n <= 99) return 'vip-3';
-  if (n >= 100 && n <= 102) return 'trio';
+  if (n >= 1 && n <= 48) return '1-48';
+  if (n >= 49 && n <= 73) return '49-73';
+  if (n >= 74 && n <= 79) return '74-79';
+  if (n >= 80 && n <= 82) return '80-82';
+  if (n === 107) return '107';
   return null;
 }
 
@@ -263,10 +245,10 @@ function formatTimeRemaining(releaseDate){if(!releaseDate)return "—";const dif
 function cardClass(remaining){if(!remaining||remaining==="—")return "is-empty";if(remaining==="Сейчас")return "is-now";const m=remaining.match(/^(\d+)\s*мин/);if(m&&Number(m[1])<=5)return "is-urgent";return "";}
 function isBusy(pc){const statusId=Number(pc.dic_workstation_status_id);return [1,2,3,4].includes(statusId);}
 const BACKEND_URL="";
-async function getToken(){const now=Date.now();if(cachedToken&&(now-cachedTokenAt)<TOKEN_REFRESH_MS)return cachedToken;try{const stored=localStorage.getItem(TOKEN_STORAGE_KEY);if(stored){const parsed=JSON.parse(stored);if(parsed?.token&&parsed?.createdAt&&(now-parsed.createdAt)<TOKEN_REFRESH_MS){cachedToken=parsed.token;cachedTokenAt=parsed.createdAt;return cachedToken;}}}catch{}    try{const res=await fetch(BACKEND_URL+'/api/token?_satpayeva=1',{method:'GET'});if(!res.ok)throw new Error('token HTTP '+res.status);const json=await res.json();const token=json?.token;if(!token)throw new Error('no token in response');cachedToken=token;cachedTokenAt=now;try{localStorage.setItem(TOKEN_STORAGE_KEY,JSON.stringify({token,createdAt:now}));}catch{}return token;}catch(err){console.warn('getToken failed:',err);return null;}}
-const MAP_API_URL="https://satpayeva.app.enes.tech";
-async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999&_satpayeva=1');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
-async function fetchUserInfo(pcId,_token){if(!pcId)return null;try{const res=await fetch(BACKEND_URL+'/api/user-info?pc_id='+pcId+'&_satpayeva=1');if(!res.ok)return null;return await res.json();}catch{return null;}}
+async function getToken(){const now=Date.now();if(cachedToken&&(now-cachedTokenAt)<TOKEN_REFRESH_MS)return cachedToken;try{const stored=localStorage.getItem(TOKEN_STORAGE_KEY);if(stored){const parsed=JSON.parse(stored);if(parsed?.token&&parsed?.createdAt&&(now-parsed.createdAt)<TOKEN_REFRESH_MS){cachedToken=parsed.token;cachedTokenAt=parsed.createdAt;return cachedToken;}}}catch{}    try{const res=await fetch(BACKEND_URL+'/api/token?_koshkarbayeva=1',{method:'GET'});if(!res.ok)throw new Error('token HTTP '+res.status);const json=await res.json();const token=json?.token;if(!token)throw new Error('no token in response');cachedToken=token;cachedTokenAt=now;try{localStorage.setItem(TOKEN_STORAGE_KEY,JSON.stringify({token,createdAt:now}));}catch{}return token;}catch(err){console.warn('getToken failed:',err);return null;}}
+const MAP_API_URL="https://koshkarbayeva.app.enes.tech";
+async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999&_koshkarbayeva=1');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
+async function fetchUserInfo(pcId,_token){if(!pcId)return null;try{const res=await fetch(BACKEND_URL+'/api/user-info?pc_id='+pcId+'&_koshkarbayeva=1');if(!res.ok)return null;return await res.json();}catch{return null;}}
 function renderCard(index,item){const card=cards[index];if(!card)return;if(item){const num=String(item.pc.num??item.pc.device_name??'?');card.className='soon-card '+cardClass(formatTimeRemaining(item.releaseDate));card.querySelector('.soon-card-num').textContent=num;card.querySelector('.soon-card-time').textContent=formatTimeRemaining(item.releaseDate);}else{card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent='—';card.querySelector('.soon-card-time').textContent='—';}}
 
 function renderZoneDropdown(withDates) {
@@ -375,7 +357,7 @@ setInterval(tickTimers,1000);
 
 
 
-<script src="SATPAEVAapp.js"></script>
+<script src="koshkapp.js"></script>
 </body>
 </html>
 
