@@ -568,7 +568,7 @@ body {
 .legend-maintenance{background:#2196F3}
 .legend-free{background:#4CAF50}
 .legend-offline{background:#A9A9AA}
-@media (max-width:520px){.map-legend{right:14px;top:115px;width:min(40vw,150px);padding:6px 8px}.legend-item{font-size:10px}.legend-title{font-size:9px}}
+@media (max-width:520px){.map-legend{right:14px;top:55px;width:min(40vw,150px);padding:6px 8px}.legend-item{font-size:10px}.legend-title{font-size:9px}}
 
 
 .soon-bar{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:9998;display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:6px;align-items:center;width:min(92vw, 540px);padding:8px 10px;border-radius:12px;background:rgb(0, 0, 0);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.35);box-sizing:border-box}
