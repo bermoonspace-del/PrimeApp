@@ -49,6 +49,20 @@ const CLUBS = {
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
+  primekenesary: {
+    mapUrl: "https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://primekenesary.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  muhamedkhanova: {
+    mapUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://muhamedkhanova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
 };
 
 const tokenCaches = {};
@@ -65,6 +79,8 @@ function resolveClub(req) {
   if (req.query._primegamehub === "1") return "primegamehub";
   if (req.query._koshkarbayeva === "1") return "koshkarbayeva";
   if (req.query._kumysbekova === "1") return "kumysbekova";
+  if (req.query._primekenesary === "1") return "primekenesary";
+  if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
   return "default";
 }
 
@@ -172,6 +188,8 @@ app.get("/api/map", async (req, res) => {
     delete cleanQuery._primegamehub;
     delete cleanQuery._koshkarbayeva;
     delete cleanQuery._kumysbekova;
+    delete cleanQuery._primekenesary;
+    delete cleanQuery._muhamedkhanova;
     res.json(await fetchMap(new URLSearchParams(cleanQuery).toString(), false, clubId));
   } catch (err) {
     res.status(502).json({ error: err.message });
