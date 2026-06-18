@@ -735,13 +735,12 @@ function getZoneForPC(num) {
     if (num == null) return null;
     const n = Number(num);
     if (!Number.isFinite(n)) return null;
-    if (n >= 1 && n <= 52) return '1-52';
-    if (n >= 53 && n <= 84) return '53-84';
-    if (n >= 85 && n <= 91) return 'vip-3';
-    if (n >= 92 && n <= 98) return 'vip-1';
-    if (n >= 99 && n <= 106) return 'vip-2';
-    if (n >= 107 && n <= 116) return 'private';
-    if (n >= 117 && n <= 136) return 'vip-3';
+    if (n >= 1 && n <= 80) return '1-52';
+    if (n >= 81 && n <= 90) return 'vip-1';
+    if (n >= 91 && n <= 100) return 'vip-2';
+    if (n >= 101 && n <= 110) return 'vip-3';
+    if (n >= 111 && n <= 116) return 'private';
+    if (n >= 117 && n <= 136) return '53-84';
     if (n === 157) return 'solo';
     return null;
 }

@@ -180,33 +180,30 @@
         <div class="soon-card-time">По зонам</div>
         <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden>
             <div class="zone-section">
-                <div class="zone-section-title">Standart 1 (1–52)</div>
+                <div class="zone-section-title">Standart 1 (1–80)</div>
                 <div class="zone-pc-list" id="zone-1-52"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Standart 2 (53–84)</div>
+                <div class="zone-section-title">Standart 2 (117-136)</div>
                 <div class="zone-pc-list" id="zone-53-84"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 3 (85–91)</div>
-                <div class="zone-pc-list" id="zone-vip-3"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">VIP 1 (92–98)</div>
+                <div class="zone-section-title">VIP 1 (81-90)</div>
                 <div class="zone-pc-list" id="zone-vip-1"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 2 (99–106)</div>
+                <div class="zone-section-title">VIP 2 (91-100)</div>
                 <div class="zone-pc-list" id="zone-vip-2"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">PRIVATE (107–116)</div>
-                <div class="zone-pc-list" id="zone-private"></div>
+                <div class="zone-section-title">VIP 3 (101-110)</div>
+                <div class="zone-pc-list" id="zone-vip-3"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 3 (117–136)</div>
-                <div class="zone-pc-list" id="zone-vip-3b"></div>
+                <div class="zone-section-title">PRIVATE (111–116)</div>
+                <div class="zone-pc-list" id="zone-private"></div>
             </div>
+
             <div class="zone-section">
                 <div class="zone-section-title">SOLO ROOM (157)</div>
                 <div class="zone-pc-list" id="zone-solo"></div>
@@ -231,11 +228,10 @@ let inFlight=false;
 const zoneElements = {
   '1-52': document.getElementById('zone-1-52'),
   '53-84': document.getElementById('zone-53-84'),
-  'vip-3': document.getElementById('zone-vip-3'),
   'vip-1': document.getElementById('zone-vip-1'),
   'vip-2': document.getElementById('zone-vip-2'),
   'private': document.getElementById('zone-private'),
-  'vip-3b': document.getElementById('zone-vip-3b'),
+  'vip-3': document.getElementById('zone-vip-3'),
   'solo': document.getElementById('zone-solo')
 };
 
@@ -246,13 +242,12 @@ function getZoneForPC(num) {
   if (num == null) return null;
   const n = Number(num);
   if (!Number.isFinite(n)) return null;
-  if (n >= 1 && n <= 52) return '1-52';
-  if (n >= 53 && n <= 84) return '53-84';
-  if (n >= 85 && n <= 91) return 'vip-3';
-  if (n >= 92 && n <= 98) return 'vip-1';
-  if (n >= 99 && n <= 106) return 'vip-2';
-  if (n >= 107 && n <= 116) return 'private';
-  if (n >= 117 && n <= 136) return 'vip-3b';
+  if (n >= 1 && n <= 80) return '1-52';
+  if (n >= 81 && n <= 90) return 'vip-1';
+  if (n >= 91 && n <= 100) return 'vip-2';
+  if (n >= 101 && n <= 110) return 'vip-3';
+  if (n >= 111 && n <= 116) return 'private';
+  if (n >= 117 && n <= 136) return '53-84';
   if (n === 157) return 'solo';
   return null;
 }
