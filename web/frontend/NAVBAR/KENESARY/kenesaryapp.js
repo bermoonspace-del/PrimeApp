@@ -3,7 +3,7 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = "";
+const BACKEND_URL = "https://primeapp-2.onrender.com";
 
 const API_URL =
     `/api/map?office_id=1&limit=9999&_primekenesary=1`;
@@ -743,9 +743,9 @@ function updateCounters(pcs) {
 
     pcs.forEach(pc => {
         const status = getStatus(pc);
-        if (status === 'free' || status === 'offline') {
+        if (status === 'free' || status === 'offline' || status === 'reserved') {
             free++;
-        } else if (status === 'busy' || status === 'reserved' || status === 'maintenance' || status === 'service') {
+        } else if (status === 'busy' || status === 'maintenance' || status === 'service') {
             busy++;
         }
     });

@@ -32,10 +32,7 @@ const WALL_Y = 50;
 const WALL_WIDTH = 1390;
 const WALL_HEIGHT = 625;
 
-// Static PC positions loaded from positions.json (viewBox 1440x725)
-// Edit positions in: /web/frontend/NAVBAR/TRIUMPH/positions.json
 const PC_POSITIONS = new Map();
-// Add version parameter to force reload and bypass any caching issues
 const POSITIONS_URL = new URL('positions.json?v=' + Date.now(), document.currentScript ? document.currentScript.src : location.href).toString();
 let PC_POSITIONS_LOADED = false;
 
@@ -474,7 +471,7 @@ function getStatusInfo(pc) {
         return {
             id: 'reserved',
             name: 'Забронирован',
-            color: '#d2c91c',
+            color: '#ffff00',
             kind: 'reserved'
         };
     }
@@ -720,9 +717,9 @@ function updateCounters(pcs) {
 
     pcs.forEach(pc => {
         const status = getStatus(pc);
-        if (status === 'free' || status === 'offline') {
+        if (status === 'free' || status === 'offline' || status === 'reserved') {
             free++;
-        } else if (status === 'busy' || status === 'reserved' || status === 'maintenance' || status === 'service') {
+        } else if (status === 'busy' || status === 'maintenance' || status === 'service') {
             busy++;
         }
     });
