@@ -138,7 +138,7 @@ const STATUS_BY_ID = {
     },
     "0": {
         name: "Check",
-        color: "#F20D0D",
+        color: "#64B5FF",
         kind: "service"
     },
     "1": {
@@ -163,7 +163,7 @@ const STATUS_BY_ID = {
     },
     "5": {
         name: "Забронирован",
-        color: "#9C27B0",
+        color: "#F20D0D",
         kind: "reserved"
     },
     "6": {
@@ -189,7 +189,7 @@ function getStatusInfo(pc) {
         return {
             id: 'reserved',
             name: 'Забронирован',
-            color: '#d2c91c',
+            color: '#F20D0D',
             kind: 'reserved'
         };
     }

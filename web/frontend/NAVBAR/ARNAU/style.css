@@ -307,10 +307,10 @@ body.tg-app {
 }
 
 .legend-login { background: #FF9800; }
-.legend-check { background: #F20D0D; }
+.legend-check { background: #64B5FF; }
 .legend-free { background: #4CAF50; }
 .legend-offline { background: #A9A9AA; }
-.legend-booked { background: #9C27B0; }
+.legend-booked { background: #F20D0D; }
 .legend-maintenance { background: #2196F3; }
 
 .map-message[hidden] {
@@ -448,7 +448,7 @@ body.tg-app {
 }
 
 .reserved {
-    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.18);
+    box-shadow: 0 0 0 2px rgba(242, 13, 13, 0.18);
 }
 
 .maintenance {
@@ -604,8 +604,8 @@ body.tg-app {
 .legend-item{display:flex;align-items:center;gap:6px;color:#e8ebf2;font-size:11px;line-height:1.2}
 .legend-swatch{width:10px;height:10px;border-radius:999px;display:inline-block;flex-shrink:0;border:1px solid rgba(255,255,255,.16)}
 .legend-login{background:#FF9800}
-.legend-check{background:#F20D0D}
-.legend-booked{background:#d2c91c}
+.legend-check{background:#64B5FF}
+.legend-booked{background:#F20D0D}
 .legend-maintenance{background:#585859}
 .legend-free{background:#4CAF50}
 .legend-offline{background:#A9A9AA}
