@@ -178,24 +178,28 @@
         <div class="soon-card-time">По зонам</div>
         <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden>
             <div class="zone-section">
-                <div class="zone-section-title">Standart 1 (1-48)</div>
-                <div class="zone-pc-list" id="zone-1-48"></div>
+                <div class="zone-section-title">Standart 1</div>
+                <div class="zone-pc-list" id="zone-1-74"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP (49-73)</div>
-                <div class="zone-pc-list" id="zone-49-73"></div>
+                <div class="zone-section-title">SQUAD</div>
+                <div class="zone-pc-list" id="zone-44-46"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Ряд 1 (74-79)</div>
-                <div class="zone-pc-list" id="zone-74-79"></div>
+                <div class="zone-section-title">VIP 1</div>
+                <div class="zone-pc-list" id="zone-75-80"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Ряд 2 (80-82)</div>
-                <div class="zone-pc-list" id="zone-80-82"></div>
+                <div class="zone-section-title">VIP 2</div>
+                <div class="zone-pc-list" id="zone-81-86"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">107</div>
-                <div class="zone-pc-list" id="zone-107"></div>
+                <div class="zone-section-title">BOTCAMP 1</div>
+                <div class="zone-pc-list" id="zone-87-92"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">BOOTCAMP 2</div>
+                <div class="zone-pc-list" id="zone-93-98"></div>
             </div>
         </div>
     </div>
@@ -215,11 +219,12 @@ let cachedTokenAt=0;
 let inFlight=false;
 
 const zoneElements = {
-  '1-48': document.getElementById('zone-1-48'),
-  '49-73': document.getElementById('zone-49-73'),
-  '74-79': document.getElementById('zone-74-79'),
-  '80-82': document.getElementById('zone-80-82'),
-  '107': document.getElementById('zone-107')
+  '1-74': document.getElementById('zone-1-74'),
+  '43-46': document.getElementById('zone-43-46'),
+  '75-80': document.getElementById('zone-75-80'),
+  '81-86': document.getElementById('zone-81-86'),
+  '87-92': document.getElementById('zone-87-92'),
+  '93-98': document.getElementById('zone-93-98'),
 };
 
 const zoneDropdown = document.getElementById('zone-dropdown');
@@ -229,11 +234,12 @@ function getZoneForPC(num) {
   if (num == null) return null;
   const n = Number(num);
   if (!Number.isFinite(n)) return null;
-  if (n >= 1 && n <= 48) return '1-48';
-  if (n >= 49 && n <= 73) return '49-73';
-  if (n >= 74 && n <= 79) return '74-79';
-  if (n >= 80 && n <= 82) return '80-82';
-  if (n === 107) return '107';
+  if (n >= 1 && n <= 74) return '1-74';
+  if (n >= 43 && n <= 46) return '43-46';
+  if (n >= 75 && n <= 80) return '75-80';
+  if (n >= 81 && n <= 86) return '81-86';
+  if (n >= 87 && n <= 92) return '87-92';
+  if (n >= 93 && n <=98) return '93-98';
   return null;
 }
 

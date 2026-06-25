@@ -128,8 +128,8 @@
     ></iframe>
     <div class="sen-fallback" id="senet-fallback" aria-live="polite">
       <div class="sen-fallback-inner">
-        <p>Если Senet не отображается в рамке, нажмите кнопку, чтобы открыть страницу напрямую.</p>
-        <a class="sen-open-link" href="https://senet.id/sign-in" target="_blank" rel="noopener noreferrer">Открыть Senet ID</a>
+        <p>Если прайс не отображается в рамке, нажмите кнопку, чтобы открыть страницу напрямую.</p>
+        <a class="sen-open-link" href="https://primekz.taplink.ws/" target="_blank" rel="noopener noreferrer">Открыть прайс</a>
       </div>
     </div>
   </main>
@@ -137,17 +137,13 @@
   <script>
     const iframe = document.getElementById('senet-frame');
     const fallback = document.getElementById('senet-fallback');
-    const timer = setTimeout(() => fallback.classList.add('visible'), 2500);
+    const timer = setTimeout(() => fallback.classList.add('visible'), 8000);
     iframe.addEventListener('load', () => {
       clearTimeout(timer);
       fallback.classList.remove('visible');
     });
   </script>
   
-        <div class="tabs" role="tablist" aria-label="Клубы">
-
-  </div>
-
   <nav class="bottom-nav" aria-label="Главное меню">
     <a class="nav-item" href="../index.html" aria-label="Главная">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
