@@ -758,10 +758,12 @@ function getZoneForPC(num) {
     if (num == null) return null;
     const n = Number(num);
     if (!Number.isFinite(n)) return null;
-    if (n >= 1 && n <= 48) return '1-48';
-    if (n >= 49 && n <= 73) return '49-73';
-    if (n >= 74 && n <= 79) return '74-79';
-    if (n >= 80 && n <= 82) return '80-82';
+    if (n >= 43 && n <= 46) return '43-46';
+    if (n >= 1 && n <= 74) return '1-74';
+    if (n >= 75 && n <= 80) return '75-80';
+    if (n >= 81 && n <= 86) return '81-86';
+    if (n >= 87 && n <= 92) return '87-92';
+    if (n >= 93 && n <= 98) return '93-98';
     if (n === 107) return '107';
     return null;
 }
