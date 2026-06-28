@@ -85,7 +85,7 @@
 
     // Force cache busting for Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
-      const currentVersion = '20260605-4';
+      const currentVersion = '20260628-1';
       const storedVersion = localStorage.getItem('mapAppVersion');
 
       if (storedVersion !== currentVersion) {
@@ -217,6 +217,7 @@
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="kn">Байтурсынова 30</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="ke">Кенесары 42</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="km">Кумисбекова 9а</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ml">Молдагалиева 7</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="as">Асфендиярова 1</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="mh">Мухамедханова 25</button>
 
@@ -247,6 +248,9 @@
       </section>
       <section class="panel" id="panel-km">
         <iframe scrolling="no" src="./kumis/kumys.html" title="KUMYSBEKOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-ml">
+        <iframe scrolling="no" src="./molda/molda.html?v=20260628-10" title="MOLDAGALIYEVA"></iframe>
       </section>
       <section class="panel" id="panel-as">
         <iframe scrolling="no" src="./asfen/asfen.html" title="SAT CITY"></iframe>
@@ -324,6 +328,7 @@
         kn: document.getElementById('panel-kn'),
         ke: document.getElementById('panel-ke'),
         km: document.getElementById('panel-km'),
+        ml: document.getElementById('panel-ml'),
         as: document.getElementById('panel-as'),
         mh: document.getElementById('panel-mh')
       };
@@ -335,6 +340,7 @@
         kn: 'Байтурсынова 30',
         ke: 'Кенесары 42',
         km: 'Кумисбекова 9а',
+        ml: 'Молдагалиева 7',
         as: 'Асфендиярова 1',
         mh: 'Мухамедханова 25'
       };

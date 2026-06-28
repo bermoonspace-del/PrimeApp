@@ -1,6 +1,6 @@
-require("dotenv").config();
-
 const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
 const express = require("express");
 
 const app = express();
@@ -49,6 +49,13 @@ const CLUBS = {
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
+  moldagalieva: {
+    mapUrl: "https://moldagalieva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://moldagalieva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://moldagalieva.app.enes.tech/api/v2/map/",
+    username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.LOG || "",
+    password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.PAS || "",
+  },
   primekenesary: {
     mapUrl: "https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
@@ -79,6 +86,7 @@ function resolveClub(req) {
   if (req.query._primegamehub === "1") return "primegamehub";
   if (req.query._koshkarbayeva === "1") return "koshkarbayeva";
   if (req.query._kumysbekova === "1") return "kumysbekova";
+  if (req.query._moldagalieva === "1") return "moldagalieva";
   if (req.query._primekenesary === "1") return "primekenesary";
   if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
   return "default";
@@ -188,6 +196,7 @@ app.get("/api/map", async (req, res) => {
     delete cleanQuery._primegamehub;
     delete cleanQuery._koshkarbayeva;
     delete cleanQuery._kumysbekova;
+    delete cleanQuery._moldagalieva;
     delete cleanQuery._primekenesary;
     delete cleanQuery._muhamedkhanova;
     res.json(await fetchMap(new URLSearchParams(cleanQuery).toString(), false, clubId));
