@@ -3,7 +3,7 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = "";
+const BACKEND_URL = "https://primeapp-2.onrender.com";
 
 const API_URL =
     `/api/map?office_id=1&limit=9999&_kumysbekova=1`;
