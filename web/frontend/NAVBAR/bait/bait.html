@@ -131,22 +131,33 @@
       </style>
     </defs>
     <rect class="zone" data-zone="1-48" x="50" y="-420" width="870" height="610" rx="12"/>
-    <text class="zone-label" x="480" y="-470" text-anchor="middle">Standart 1 (1 Этаж)</text>
-    <rect class="zone" data-zone="49-73" x="150" y="540" width="670" height="375" rx="12"/>
-    <text class="zone-label" x="470" y="500" text-anchor="middle">Standart 2 (2 Этаж)</text>
-    <rect class="zone" data-zone="74-79" x="270" y="350" width="430" height="80" rx="12"/>
-    <text class="zone-label" x="500" y="320" text-anchor="middle">VIP 1 (2 Этаж)</text>
-    <rect class="zone" data-zone="80-82" x="950" y="350" width="240" height="80" rx="12"/>
-    <text class="zone-label" x="1070" y="320" text-anchor="middle">TRIO (2 Этаж)</text>
-        <rect class="zone" data-zone="80-82" x="1095" y="65" width="90" height="90" rx="12"/>
-    <text class="zone-label" x="1150" y="40" text-anchor="middle">Solo Room (3 Этаж)</text>
+    <text class="zone-label" x="480" y="-470" text-anchor="middle">Standart (1 Этаж)</text>
+    <rect class="zone" data-zone="49-73" x="50" y="540" width="510" height="375" rx="12"/>
+    <text class="zone-label" x="300" y="500" text-anchor="middle">Comfort (2 Этаж)</text>
+    <rect class="zone" data-zone="74-79" x="60" y="350" width="430" height="80" rx="12"/>
+    <text class="zone-label" x="300" y="320" text-anchor="middle">VIP 1 (2 Этаж)</text>
+    <rect class="zone" data-zone="80-82" x="1025" y="-100" width="240" height="80" rx="12"/>
+    <text class="zone-label" x="1150" y="-120" text-anchor="middle">TRIO (2 Этаж)</text>
+    <rect class="zone" data-zone="80-82" x="1095" y="-305" width="90" height="90" rx="12"/>
+    <text class="zone-label" x="1150" y="-325" text-anchor="middle">Solo Room (3 Этаж)</text>
+    <rect class="zone" data-zone="83-88" x="1025" y="640" width="230" height="250" rx="12"/>
+    <text class="zone-label" x="1150" y="620" text-anchor="middle">VIP 2 (3 Этаж)</text>
+    <rect class="zone" data-zone="89-93" x="945" y="260" width="230" height="170" rx="12"/>
+    <text class="zone-label" x="1060" y="230" text-anchor="middle">SQUAD (3 Этаж)</text>
+    <rect class="zone" data-zone="94-98" x="768" y="265" width="80" height="160" rx="12"/>
+    <text class="zone-label" x="830" y="240" text-anchor="middle">DUO (3 Этаж)</text>
+    <rect class="zone" data-zone="99-100" x="850" y="500" width="80" height="400" rx="12"/>
+    <text class="zone-label" x="900" y="490" text-anchor="middle">VIP 3 (3 Этаж)</text>
+    <rect class="zone" data-zone="99-100" x="670" y="500" width="80" height="400" rx="12"/>
+    <text class="zone-label" x="760" y="490" text-anchor="middle">Private (3 Этаж)</text>
+
   </svg>
 
   <div id="pcs"></div>
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:83</div>
+    <div class="legend-title">Всего:105</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -192,6 +203,26 @@
                 <div class="zone-pc-list" id="zone-80-82"></div>
             </div>
             <div class="zone-section">
+                <div class="zone-section-title">83-88</div>
+                <div class="zone-pc-list" id="zone-83-88"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">89-93</div>
+                <div class="zone-pc-list" id="zone-89-93"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">94-98</div>
+                <div class="zone-pc-list" id="zone-94-98"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">99-100</div>
+                <div class="zone-pc-list" id="zone-99-100"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">101-104</div>
+                <div class="zone-pc-list" id="zone-101-104"></div>
+            </div>
+            <div class="zone-section">
                 <div class="zone-section-title">SOLO</div>
                 <div class="zone-pc-list" id="zone-107"></div>
             </div>
@@ -217,6 +248,11 @@ const zoneElements = {
   '49-73': document.getElementById('zone-49-73'),
   '74-79': document.getElementById('zone-74-79'),
   '80-82': document.getElementById('zone-80-82'),
+  '83-88': document.getElementById('zone-83-88'),
+  '89-93': document.getElementById('zone-89-93'),
+  '94-98': document.getElementById('zone-94-98'),
+  '99-100': document.getElementById('zone-99-100'),
+  '101-104': document.getElementById('zone-101-104'),
   '107': document.getElementById('zone-107')
 };
 
@@ -231,6 +267,11 @@ function getZoneForPC(num) {
   if (n >= 49 && n <= 73) return '49-73';
   if (n >= 74 && n <= 79) return '74-79';
   if (n >= 80 && n <= 82) return '80-82';
+  if (n >= 83 && n <= 88) return '83-88';
+  if (n >= 89 && n <= 93) return '89-93';
+  if (n >= 94 && n <= 98) return '94-98';
+  if (n >= 99 && n <= 100) return '99-100';
+  if (n >= 101 && n <= 104) return '101-104';
   if (n === 107) return '107';
   return null;
 }
@@ -358,4 +399,3 @@ setInterval(tickTimers,1000);
 <script src="baitapp.js"></script>
 </body>
 </html>
-

@@ -3,7 +3,7 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com";
+const BACKEND_URL = "";
 
 const API_URL =
     `/api/map?office_id=1&limit=9999&_baitursynova=1`;
@@ -762,6 +762,11 @@ function getZoneForPC(num) {
     if (n >= 49 && n <= 73) return '49-73';
     if (n >= 74 && n <= 79) return '74-79';
     if (n >= 80 && n <= 82) return '80-82';
+    if (n >= 83 && n <= 88) return '83-88';
+    if (n >= 89 && n <= 93) return '89-93';
+    if (n >= 94 && n <= 98) return '94-98';
+    if (n >= 99 && n <= 100) return '99-100';
+    if (n >= 101 && n <= 104) return '101-104';
     if (n === 107) return '107';
     return null;
 }
