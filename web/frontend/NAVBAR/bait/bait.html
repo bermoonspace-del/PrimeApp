@@ -141,15 +141,19 @@
     <rect class="zone" data-zone="80-82" x="1095" y="-305" width="90" height="90" rx="12"/>
     <text class="zone-label" x="1150" y="-325" text-anchor="middle">Solo Room (3 Этаж)</text>
     <rect class="zone" data-zone="83-88" x="1025" y="640" width="230" height="250" rx="12"/>
-    <text class="zone-label" x="1150" y="620" text-anchor="middle">VIP 2 (3 Этаж)</text>
+    <text class="zone-label" x="1150" y="620" text-anchor="middle">VIP 2</text>
     <rect class="zone" data-zone="89-93" x="945" y="260" width="230" height="170" rx="12"/>
-    <text class="zone-label" x="1060" y="230" text-anchor="middle">SQUAD (3 Этаж)</text>
+    <text class="zone-label" x="1060" y="230" text-anchor="middle">SQUAD</text>
     <rect class="zone" data-zone="94-98" x="768" y="265" width="80" height="160" rx="12"/>
-    <text class="zone-label" x="830" y="240" text-anchor="middle">DUO (3 Этаж)</text>
+    <text class="zone-label" x="810" y="240" text-anchor="middle">DUO 1</text>
     <rect class="zone" data-zone="99-100" x="850" y="500" width="80" height="400" rx="12"/>
-    <text class="zone-label" x="900" y="490" text-anchor="middle">VIP 3 (3 Этаж)</text>
+    <text class="zone-label" x="900" y="490" text-anchor="middle">VIP 3</text>
     <rect class="zone" data-zone="99-100" x="670" y="500" width="80" height="400" rx="12"/>
-    <text class="zone-label" x="760" y="490" text-anchor="middle">Private (3 Этаж)</text>
+    <text class="zone-label" x="720" y="490" text-anchor="middle">Private</text>
+    <rect class="zone" data-zone="94-98" x="1228" y="265" width="80" height="160" rx="12"/>
+    <text class="zone-label" x="1268" y="240" text-anchor="middle">DUO 2</text>
+    <rect class="zone" data-zone="101-104" x="600" y="200" width="790" height="750" rx="12"/>
+    <text class="zone-label" x="1100" y="180" text-anchor="middle">3 Этаж</text>
 
   </svg>
 
@@ -157,7 +161,7 @@
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:105</div>
+    <div class="legend-title">Всего:107</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -203,24 +207,28 @@
                 <div class="zone-pc-list" id="zone-80-82"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">83-88</div>
+                <div class="zone-section-title">VIP 2</div>
                 <div class="zone-pc-list" id="zone-83-88"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">89-93</div>
+                <div class="zone-section-title">VIP 3</div>
                 <div class="zone-pc-list" id="zone-89-93"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">94-98</div>
+                <div class="zone-section-title">Private</div>
                 <div class="zone-pc-list" id="zone-94-98"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">99-100</div>
+                <div class="zone-section-title">DUO 1</div>
                 <div class="zone-pc-list" id="zone-99-100"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">101-104</div>
+                <div class="zone-section-title">SQUAD</div>
                 <div class="zone-pc-list" id="zone-101-104"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">DUO 2</div>
+                <div class="zone-pc-list" id="zone-105-106"></div>
             </div>
             <div class="zone-section">
                 <div class="zone-section-title">SOLO</div>
@@ -253,6 +261,7 @@ const zoneElements = {
   '94-98': document.getElementById('zone-94-98'),
   '99-100': document.getElementById('zone-99-100'),
   '101-104': document.getElementById('zone-101-104'),
+  '105-106': document.getElementById('zone-105-106'),
   '107': document.getElementById('zone-107')
 };
 
@@ -272,6 +281,7 @@ function getZoneForPC(num) {
   if (n >= 94 && n <= 98) return '94-98';
   if (n >= 99 && n <= 100) return '99-100';
   if (n >= 101 && n <= 104) return '101-104';
+  if (n >= 105 && n <= 106) return '105-106';
   if (n === 107) return '107';
   return null;
 }

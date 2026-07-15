@@ -3,7 +3,9 @@ const tg = window.Telegram?.WebApp;
 tg?.expand();
 
 // Configuration for local backend
-const BACKEND_URL = "https://primeapp-2.onrender.com";
+const BACKEND_URL = ["127.0.0.1", "localhost"].includes(window.location.hostname)
+    ? "http://127.0.0.1:8080"
+    : "https://primeapp-2.onrender.com";
 
 const API_URL =
     `/api/map?office_id=1&limit=9999&_kumysbekova=1`;
@@ -19,13 +21,60 @@ const LEGACY_TOKEN_STORAGE_KEYS = [
     "kumysbekova.map.token"
 ];
 const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
+const KUMIS_ZONE_LABELS = window.KUMIS_ZONE_LABELS || {
+    "1111": "Стандарт",
+    "1113": "Комфорт",
+    "1114": "Буткемп 1",
+    "1115": "Буткемп 2",
+    "1117": "Private",
+    "-6": "VIP 2",
+    "1116": "VIP 1"
+};
+const KUMIS_ZONE_ORDER = window.KUMIS_ZONE_ORDER || [
+    "1111",
+    "1113",
+    "1114",
+    "1115",
+    "1117",
+    "-6",
+    "1116"
+];
+const KUMIS_ZONE_FALLBACK_RANGES = [
+    { id: "1111", min: 1, max: 50 },
+    { id: "1113", min: 61, max: 70 },
+    { id: "1114", min: 71, max: 75 },
+    { id: "1115", min: 76, max: 80 },
+    { id: "1117", min: 56, max: 60 },
+    { id: "-6", min: 81, max: 87 },
+    { id: "1116", min: 51, max: 55 }
+];
 
 let currentPCs = [];
 let memoryTokenCache = null;
 
-const VIEWBOX_WIDTH = 1440;
-const VIEWBOX_HEIGHT = 725;
+const VIEWBOX_WIDTH = 900;
+const VIEWBOX_HEIGHT = 1400;
 const GRID_UNIT = 70;
+const KUMIS_ZONE_LAYOUTS = {
+    "1111": {
+        x: 52,
+        y: 272,
+        width: 796,
+        height: 430,
+        groups: [
+            { min: 1, max: 24, x: 78, y: 322, width: 744, height: 118 },
+            { min: 25, max: 36, x: 92, y: 466, width: 292, height: 190 },
+            { min: 37, max: 50, x: 474, y: 466, width: 310, height: 220 }
+        ]
+    },
+    "1113": { x: 56, y: 722, width: 306, height: 154 },
+    "1116": { x: 400, y: 722, width: 200, height: 154 },
+    "1117": { x: 636, y: 722, width: 208, height: 154 },
+    "1114": { x: 56, y: 926, width: 360, height: 120 },
+    "1115": { x: 484, y: 926, width: 360, height: 120 },
+    "-6": { x: 238, y: 1108, width: 424, height: 214 }
+};
+const ZONE_INNER_PADDING = 34;
 
 const WALL_X = 50;
 const WALL_Y = 50;
@@ -33,7 +82,7 @@ const WALL_WIDTH = 1390;
 const WALL_HEIGHT = 625;
 
 // Static PC positions loaded from positions.json (viewBox 1440x725)
-// Edit positions in: /web/frontend/NAVBAR/TRIUMPH/positions.json
+// Edit positions in: /web/frontend/NAVBAR/kumis/positions.json
 const PC_POSITIONS = new Map();
 // Add version parameter to force reload and bypass any caching issues
 const POSITIONS_URL = new URL('positions.json?v=' + Date.now(), document.currentScript ? document.currentScript.src : location.href).toString();
@@ -219,7 +268,6 @@ async function loadPCs() {
         currentPCs = pcs;
 
         renderPCs(pcs);
-        bindZonesAndPCs();
 
         await renderSoonList(pcs);
 
@@ -502,9 +550,9 @@ function getStatus(pc) {
 }
 
 function isVipComputer(pc) {
-    const number = Number(pc.num);
+    const zone = getZoneConfigForPC(pc);
 
-    return Number.isFinite(number) && number >= 8 && number <= 107;
+    return zone ? zone.title.toLowerCase().includes("vip") : false;
 }
 
 function renderPCs(pcs) {
@@ -529,6 +577,7 @@ function renderPCs(pcs) {
     }
 
     const coordinateMode = detectCoordinateMode(pcs);
+    const layoutContext = getZoneLayoutContext(pcs, coordinateMode);
 
     pcs.forEach(pc => {
         const point = getMapPoint(pc, coordinateMode);
@@ -552,8 +601,9 @@ function renderPCs(pcs) {
             el.classList.add("vip");
         }
 
-        const leftPercent = ((point.x - 380) / VIEWBOX_WIDTH) * 100;
-        const topPercent = ((point.y - 142) / VIEWBOX_HEIGHT) * 100;
+        const projectedPoint = projectPCToViewBox(pc, point, layoutContext);
+        const leftPercent = (projectedPoint.x / VIEWBOX_WIDTH) * 100;
+        const topPercent = (projectedPoint.y / VIEWBOX_HEIGHT) * 100;
 
         el.style.left = leftPercent + "%";
         el.style.top = topPercent + "%";
@@ -564,7 +614,7 @@ function renderPCs(pcs) {
         if (pc.num != null && pc.num !== '') {
             el.dataset.num = String(pc.num);
         }
-        const zone = getZoneForPC(pc.num);
+        const zone = getZoneForPC(pc);
         if (zone) el.dataset.zone = zone;
         el.onclick = () => openPC(pc);
 
@@ -572,6 +622,8 @@ function renderPCs(pcs) {
     });
 
     updateCounters(pcs);
+    renderZoneOverlay(pcs, coordinateMode, layoutContext);
+    bindZonesAndPCs();
 
     // Fixed positions — no post-processing to prevent shifting on resize
 }
@@ -681,13 +733,125 @@ function getMapPoint(pc, coordinateMode) {
     return coords;
 }
 
+function getZoneLayoutContext(pcs, coordinateMode) {
+    const context = {};
+
+    getEndpointZones(pcs).forEach(zone => {
+        const layout = KUMIS_ZONE_LAYOUTS[zone.id] || getFallbackZoneLayout(Object.keys(context).length);
+        const points = zone.pcs
+            .map(pc => getMapPoint(pc, coordinateMode))
+            .filter(Boolean);
+
+        if (!points.length) {
+            return;
+        }
+
+        context[zone.id] = {
+            zone,
+            layout,
+            groups: getZoneGroupContexts(zone, layout, coordinateMode),
+            source: {
+                minX: Math.min(...points.map(point => point.x)),
+                maxX: Math.max(...points.map(point => point.x)),
+                minY: Math.min(...points.map(point => point.y)),
+                maxY: Math.max(...points.map(point => point.y))
+            }
+        };
+    });
+
+    return context;
+}
+
+function getZoneGroupContexts(zone, layout, coordinateMode) {
+    if (!Array.isArray(layout.groups)) {
+        return [];
+    }
+
+    return layout.groups
+        .map(group => {
+            const points = zone.pcs
+                .filter(pc => {
+                    const num = Number(pc.num);
+                    return Number.isFinite(num) && num >= group.min && num <= group.max;
+                })
+                .map(pc => getMapPoint(pc, coordinateMode))
+                .filter(Boolean);
+
+            if (!points.length) {
+                return null;
+            }
+
+            return {
+                layout: group,
+                min: group.min,
+                max: group.max,
+                source: {
+                    minX: Math.min(...points.map(point => point.x)),
+                    maxX: Math.max(...points.map(point => point.x)),
+                    minY: Math.min(...points.map(point => point.y)),
+                    maxY: Math.max(...points.map(point => point.y))
+                }
+            };
+        })
+        .filter(Boolean);
+}
+
+function getFallbackZoneLayout(index) {
+    const columns = 2;
+    const gap = 52;
+    const width = 360;
+    const height = 180;
+    const x = 64 + (index % columns) * (width + gap);
+    const y = 108 + Math.floor(index / columns) * (height + gap);
+
+    return { x, y, width, height };
+}
+
+function projectPCToViewBox(pc, point, layoutContext) {
+    const zoneId = getZoneForPC(pc);
+    const context = zoneId ? layoutContext[zoneId] : null;
+
+    if (!context) {
+        return point;
+    }
+
+    const num = Number(pc.num);
+    const group = Number.isFinite(num)
+        ? context.groups.find(item => num >= item.min && num <= item.max)
+        : null;
+    const { layout, source } = group || context;
+    const innerX = layout.x + ZONE_INNER_PADDING;
+    const innerY = layout.y + ZONE_INNER_PADDING;
+    const innerWidth = Math.max(1, layout.width - ZONE_INNER_PADDING * 2);
+    const innerHeight = Math.max(1, layout.height - ZONE_INNER_PADDING * 2);
+    const sourceWidth = source.maxX - source.minX;
+    const sourceHeight = source.maxY - source.minY;
+    const xRatio = sourceWidth === 0 ? 0.5 : (point.x - source.minX) / sourceWidth;
+    const yRatio = sourceHeight === 0 ? 0.5 : (point.y - source.minY) / sourceHeight;
+
+    return {
+        x: innerX + clamp(xRatio, 0, 1) * innerWidth,
+        y: innerY + clamp(yRatio, 0, 1) * innerHeight
+    };
+}
+
 function getRawCoordinates(pc) {
+    const apiCoords = getApiCoordinates(pc);
+
+    if (apiCoords) {
+        return apiCoords;
+    }
+
     const num = Number(pc.num);
     if (Number.isFinite(num) && PC_POSITIONS.has(num)) {
         const pair = PC_POSITIONS.get(num);
         return { x: pair[0], y: pair[1] };
     }
 
+    return null;
+}
+
+function getApiCoordinates(pc) {
     const x = getNumberField(pc, [
         "map_x",
         "x",
@@ -736,6 +900,7 @@ function clamp(value, min, max) {
 function updateCounters(pcs) {
     const freeEl = document.getElementById('free-count');
     const busyEl = document.getElementById('busy-count');
+    const totalEl = document.querySelector('.legend-title');
     if (!freeEl || !busyEl) return;
 
     let free = 0;
@@ -752,18 +917,201 @@ function updateCounters(pcs) {
 
     freeEl.textContent = free;
     busyEl.textContent = busy;
+    if (totalEl) totalEl.textContent = `Всего:${pcs.length}`;
 }
 
 function getZoneForPC(num) {
-    if (num == null) return null;
-    const n = Number(num);
+    const zone = getZoneConfigForPC(num);
+    return zone ? zone.id : null;
+}
+
+function getZoneConfigForPC(source) {
+    const endpointZone = getEndpointZoneId(source);
+
+    if (endpointZone) {
+        return {
+            id: endpointZone,
+            title: KUMIS_ZONE_LABELS[endpointZone] || `Зона ${endpointZone}`
+        };
+    }
+
+    const n = Number(source);
     if (!Number.isFinite(n)) return null;
-    if (n >= 1 && n <= 24) return '1-24';
-    if (n >= 25 && n <= 36) return '25-36';
-    if (n >= 37 && n <= 57) return '37-57';
-    if (n >= 58 && n <= 77) return '58-77';
-    if (n >= 78 && n <= 96) return '78-96';
-    return null;
+    const fallback = KUMIS_ZONE_FALLBACK_RANGES.find(item => n >= item.min && n <= item.max);
+
+    if (!fallback) {
+        return null;
+    }
+
+    return {
+        id: fallback.id,
+        title: KUMIS_ZONE_LABELS[fallback.id] || `Зона ${fallback.id}`
+    };
+}
+
+function getEndpointZoneId(source) {
+    if (!source || typeof source !== 'object') {
+        return null;
+    }
+
+    const zoneId = source.dic_office_zone_id ?? source.office_zone_id ?? source.zone_id ?? source.zone?.id;
+
+    if (zoneId == null || zoneId === '') {
+        return null;
+    }
+
+    return String(zoneId);
+}
+
+function getEndpointZones(pcs) {
+    const groups = new Map();
+
+    pcs.forEach(pc => {
+        const zone = getZoneConfigForPC(pc);
+
+        if (!zone) {
+            return;
+        }
+
+        if (!groups.has(zone.id)) {
+            groups.set(zone.id, {
+                ...zone,
+                pcs: [],
+                minNum: Infinity
+            });
+        }
+
+        const group = groups.get(zone.id);
+        const num = Number(pc.num);
+        group.pcs.push(pc);
+
+        if (Number.isFinite(num)) {
+            group.minNum = Math.min(group.minNum, num);
+        }
+    });
+
+    return [...groups.values()].sort((a, b) => {
+        const orderA = KUMIS_ZONE_ORDER.indexOf(a.id);
+        const orderB = KUMIS_ZONE_ORDER.indexOf(b.id);
+
+        if (orderA !== -1 || orderB !== -1) {
+            return (orderA === -1 ? 999 : orderA) - (orderB === -1 ? 999 : orderB);
+        }
+
+        return a.minNum - b.minNum;
+    });
+}
+
+function renderZoneOverlay(pcs, coordinateMode, layoutContext = getZoneLayoutContext(pcs, coordinateMode)) {
+    const svg = document.querySelector('.zone-overlay');
+
+    if (!svg) {
+        return;
+    }
+
+    let layer = svg.querySelector('#zone-layer');
+
+    if (!layer) {
+        layer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        layer.id = 'zone-layer';
+        svg.appendChild(layer);
+    }
+
+    layer.replaceChildren();
+
+    getEndpointZones(pcs).forEach(zone => {
+        const context = layoutContext[zone.id];
+
+        if (!context) {
+            return;
+        }
+
+        const { layout } = context;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.classList.add('zone');
+        rect.dataset.zone = zone.id;
+        rect.setAttribute('x', String(layout.x));
+        rect.setAttribute('y', String(layout.y));
+        rect.setAttribute('width', String(layout.width));
+        rect.setAttribute('height', String(layout.height));
+        rect.setAttribute('rx', '18');
+        layer.appendChild(rect);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.classList.add('zone-label');
+        const labelAbove = zone.id === "1111" || zone.id === "-6";
+        const labelY = labelAbove
+            ? layout.y - 18
+            : layout.y + layout.height + 30;
+        label.setAttribute('x', String(layout.x + layout.width / 2));
+        label.setAttribute('y', String(labelY));
+        label.setAttribute('text-anchor', 'middle');
+        label.textContent = zone.title;
+        layer.appendChild(label);
+    });
+}
+
+function clusterZonePoints(points) {
+    const threshold = 250;
+    const clusters = [];
+
+    points.forEach(point => {
+        const matches = clusters.filter(cluster =>
+            cluster.some(existing => {
+                const dx = existing.x - point.x;
+                const dy = existing.y - point.y;
+                return dx * dx + dy * dy <= threshold * threshold;
+            })
+        );
+
+        if (matches.length === 0) {
+            clusters.push([point]);
+            return;
+        }
+
+        matches[0].push(point);
+
+        for (let i = 1; i < matches.length; i++) {
+            matches[0].push(...matches[i]);
+            clusters.splice(clusters.indexOf(matches[i]), 1);
+        }
+    });
+
+    return clusters;
+}
+
+function getZoneBounds(points) {
+    if (!points.length) {
+        return null;
+    }
+
+    const padding = 48;
+    const minSize = 96;
+    const minX = Math.min(...points.map(point => point.x));
+    const maxX = Math.max(...points.map(point => point.x));
+    const minY = Math.min(...points.map(point => point.y));
+    const maxY = Math.max(...points.map(point => point.y));
+    let x = minX - padding;
+    let y = minY - padding;
+    let width = maxX - minX + padding * 2;
+    let height = maxY - minY + padding * 2;
+
+    if (width < minSize) {
+        x -= (minSize - width) / 2;
+        width = minSize;
+    }
+
+    if (height < minSize) {
+        y -= (minSize - height) / 2;
+        height = minSize;
+    }
+
+    return {
+        x: Math.round(x),
+        y: Math.round(y),
+        width: Math.round(width),
+        height: Math.round(height)
+    };
 }
 
 function bindZonesAndPCs() {

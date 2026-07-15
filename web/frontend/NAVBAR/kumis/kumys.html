@@ -18,7 +18,9 @@
   <script>
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.disableVerticalSwipes();
-      document.body.classList.add('tg-app');
+      document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('tg-app');
+      });
     }
     document.addEventListener('touchmove', function(e) {
       var scrollable = e.target.closest('.zone-dropdown-menu');
@@ -119,34 +121,25 @@
 
   <div class="bg-dim"></div>
 
-  <!-- Zone overlay matching map coordinate system (1440x725) -->
-  <svg class="zone-overlay" viewBox="0 0 1440 725" preserveAspectRatio="xMidYMid meet" style="position:absolute;top:120px;left:0;width:100%;height:calc(100% - 120px);pointer-events:none;z-index:1;">
+  <!-- Zone overlay matching portrait map coordinate system (900x1400) -->
+  <svg class="zone-overlay" viewBox="0 0 900 1400" preserveAspectRatio="xMidYMin meet" style="position:absolute;top:88px;left:0;width:100%;height:calc(100% - 176px);pointer-events:none;z-index:1;">
     <defs>
       <style>
-        .zone { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 8; stroke-dasharray: 8,4; cursor: pointer; transition: stroke 0.2s, fill 0.2s; }
+        .zone { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 8; stroke-dasharray: 8,4; cursor: pointer; pointer-events: auto; transition: stroke 0.2s, fill 0.2s; }
         .zone:hover { stroke: #fff; stroke-width: 10; fill: rgba(255,255,255,0.05); }
-        .zone-label { font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; font-size: 40px; font-weight: 700; fill: rgba(255,255,255,0.4); pointer-events: none; }
+        .zone-label { font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; font-size: 22px; font-weight: 800; fill: rgba(255,255,255,0.56); pointer-events: none; paint-order: stroke; stroke: rgba(0,0,0,0.7); stroke-width: 5px; stroke-linejoin: round; }
         .pc.highlighted { transform: scale(1.3); z-index: 100; box-shadow: 0 0 20px #fff; transition: transform 0.2s, box-shadow 0.2s; }
         .pc.dimmed { opacity: 0.2; transition: opacity 0.2s; }
       </style>
     </defs>
-    <rect class="zone" data-zone="1-24" x="65" y="-400" width="930" height="580" rx="12"/>
-    <text class="zone-label" x="500" y="-430" text-anchor="middle">Standart</text>
-    <rect class="zone" data-zone="25-36" x="60" y="580" width="450" height="170" rx="12"/>
-    <text class="zone-label" x="290" y="550" text-anchor="middle">Comfort</text>
-    <rect class="zone" data-zone="37-57" x="1050" y="164" width="370" height="90" rx="12"/>
-    <text class="zone-label" x="1245" y="134" text-anchor="middle">Bootcamp 1</text>
-    <rect class="zone" data-zone="58-77" x="1050" y="305" width="370" height="90" rx="12"/>
-    <text class="zone-label" x="1245" y="450" text-anchor="middle">Bootcamp2</text>
-    <rect class="zone" data-zone="78-96" x="1180" y="500" width="238" height="440" rx="12"/>
-    <text class="zone-label" x="1100" y="650" text-anchor="middle">VIP</text>
+    <g id="zone-layer"></g>
   </svg>
 
   <div id="pcs"></div>
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:96</div>
+    <div class="legend-title">Всего:0</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -174,32 +167,21 @@
     <div class="soon-card soon-zone-dropdown" id="zone-dropdown">
         <div class="soon-card-num">📋</div>
         <div class="soon-card-time">По зонам</div>
-        <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden>
-            <div class="zone-section">
-                <div class="zone-section-title">Standart 1 (1-65)</div>
-                <div class="zone-pc-list" id="zone-1-65"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">Standart 2 (66-77)</div>
-                <div class="zone-pc-list" id="zone-66-77"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">Bootcamp 1 (78-82)</div>
-                <div class="zone-pc-list" id="zone-78-82"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">Bootcamp 2 (83-87)</div>
-                <div class="zone-pc-list" id="zone-83-87"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">VIP (88-96)</div>
-                <div class="zone-pc-list" id="zone-88-96"></div>
-            </div>
-        </div>
+        <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden></div>
     </div>
 </section>
 
 <script>
+window.KUMIS_ZONE_LABELS = {
+  '1111': 'Standart',
+  '1113': 'Comfort',
+  '1114': 'Bootcamp 1',
+  '1115': 'Bootcamp 2',
+  '1117': 'Private',
+  '-6': 'VIP 2',
+  '1116': 'VIP 1'
+};
+window.KUMIS_ZONE_ORDER = ['1111', '1113', '1114', '1115', '1117', '-6', '1116'];
 (function(){
 const OFFICE_ID=1;
 const USER_INFO_URL_PREFIX="https://kumysbekova.app.enes.tech/api/v2/map_v2/";
@@ -212,27 +194,56 @@ let cachedToken=null;
 let cachedTokenAt=0;
 let inFlight=false;
 
-const zoneElements = {
-  '1-65': document.getElementById('zone-1-65'),
-  '66-77': document.getElementById('zone-66-77'),
-  '78-82': document.getElementById('zone-78-82'),
-  '83-87': document.getElementById('zone-83-87'),
-  '88-96': document.getElementById('zone-88-96')
-};
-
 const zoneDropdown = document.getElementById('zone-dropdown');
 const zoneDropdownMenu = document.getElementById('zone-dropdown-menu');
+const zoneLabels = window.KUMIS_ZONE_LABELS || {};
+const zoneOrder = window.KUMIS_ZONE_ORDER || [];
+const zoneElements = {};
 
-function getZoneForPC(num) {
-  if (num == null) return null;
-  const n = Number(num);
-  if (!Number.isFinite(n)) return null;
-  if (n >= 1 && n <= 65) return '1-65';
-  if (n >= 66 && n <= 77) return '66-77';
-  if (n >= 78 && n <= 82) return '78-82';
-  if (n >= 83 && n <= 87) return '83-87';
-  if (n >= 88 && n <= 96) return '88-96';
-  return null;
+function syncZoneDropdownSections(pcs) {
+  if (!zoneDropdownMenu) return;
+  Object.keys(zoneElements).forEach(key => delete zoneElements[key]);
+  zoneDropdownMenu.innerHTML = '';
+  getEndpointZones(pcs).forEach(zone => {
+    const section = document.createElement('div');
+    section.className = 'zone-section';
+    section.innerHTML = `<div class="zone-section-title">${zone.title} (${zone.range})</div><div class="zone-pc-list" id="zone-${zone.id}"></div>`;
+    zoneDropdownMenu.appendChild(section);
+    zoneElements[zone.id] = section.querySelector('.zone-pc-list');
+  });
+}
+
+function getZoneIdForPC(pc) {
+  if (!pc || typeof pc !== 'object') return null;
+  const zoneId = pc.dic_office_zone_id ?? pc.office_zone_id ?? pc.zone_id ?? pc.zone?.id;
+  return zoneId == null || zoneId === '' ? null : String(zoneId);
+}
+
+function getEndpointZones(pcs) {
+  const groups = new Map();
+  pcs.forEach(pc => {
+    const zoneId = getZoneIdForPC(pc);
+    if (!zoneId) return;
+    if (!groups.has(zoneId)) {
+      groups.set(zoneId, { id: zoneId, title: zoneLabels[zoneId] || `Зона ${zoneId}`, nums: [] });
+    }
+    const num = Number(pc.num ?? pc.device_name);
+    if (Number.isFinite(num)) groups.get(zoneId).nums.push(num);
+  });
+
+  return [...groups.values()].map(zone => {
+    zone.nums.sort((a, b) => a - b);
+    const first = zone.nums[0];
+    const last = zone.nums[zone.nums.length - 1];
+    zone.range = Number.isFinite(first) && Number.isFinite(last) ? (first === last ? String(first) : `${first}-${last}`) : zone.id;
+    zone.minNum = Number.isFinite(first) ? first : Infinity;
+    return zone;
+  }).sort((a, b) => {
+    const orderA = zoneOrder.indexOf(a.id);
+    const orderB = zoneOrder.indexOf(b.id);
+    if (orderA !== -1 || orderB !== -1) return (orderA === -1 ? 999 : orderA) - (orderB === -1 ? 999 : orderB);
+    return a.minNum - b.minNum;
+  });
 }
 
 function getNestedField(source,path){return path.split('.').reduce((v,k)=>v?.[k],source);}
@@ -241,21 +252,22 @@ function parseApiDate(value){if(value==null||value==='')return null;if(typeof va
 function getReleaseDate(pc){const dateKeys=["end_time","ends_at","finish_time","finished_at","expires_at","expired_at","paid_to","time_end","session_end_time","session_ends_at","session_finish_time","current_session.end_time","current_session.ends_at","current_session.expires_at"];for(const key of dateKeys){const d=parseApiDate(getNestedField(pc,key));if(d)return d;}const secondsLeft=getNumberField(pc,["seconds_left","remaining_seconds","session_seconds_left","current_session.seconds_left","current_session.remaining_seconds"]);if(secondsLeft!=null&&secondsLeft>0)return new Date(Date.now()+secondsLeft*1000);const minutesLeft=getNumberField(pc,["minutes_left","remaining_minutes","time_left","session_minutes_left","current_session.minutes_left","current_session.remaining_minutes"]);if(minutesLeft!=null&&minutesLeft>0)return new Date(Date.now()+minutesLeft*60*1000);const spent=getNumberField(pc,["spent_minutes"]);const total=getNumberField(pc,["total_minutes"]);if(spent!=null&&total!=null&&total>spent)return new Date(Date.now()+(total-spent)*60*1000);return null;}
 function formatTimeRemaining(releaseDate){if(!releaseDate)return "—";const diffMs=releaseDate.getTime()-Date.now();if(diffMs<=0)return "Сейчас";const totalSec=Math.floor(diffMs/1000);if(totalSec<60)return totalSec+" сек";const totalMin=Math.floor(totalSec/60);if(totalMin<60)return totalMin+" мин";const h=Math.floor(totalMin/60);const m=totalMin%60;return m===0?(h+" ч"):(h+" ч "+m+" мин");}
 function cardClass(remaining){if(!remaining||remaining==="—")return "is-empty";if(remaining==="Сейчас")return "is-now";const m=remaining.match(/^(\d+)\s*мин/);if(m&&Number(m[1])<=5)return "is-urgent";return "";}
-function isBusy(pc){const statusId=Number(pc.dic_workstation_status_id);return [1,2,3,4].includes(statusId);}
-const BACKEND_URL="";
+function isBusy(pc){const statusId=Number(pc.map_status);return [1,2,3,4].includes(statusId);}
+const BACKEND_URL=["127.0.0.1","localhost"].includes(window.location.hostname)?"http://127.0.0.1:8080":"";
 async function getToken(){const now=Date.now();if(cachedToken&&(now-cachedTokenAt)<TOKEN_REFRESH_MS)return cachedToken;try{const stored=localStorage.getItem(TOKEN_STORAGE_KEY);if(stored){const parsed=JSON.parse(stored);if(parsed?.token&&parsed?.createdAt&&(now-parsed.createdAt)<TOKEN_REFRESH_MS){cachedToken=parsed.token;cachedTokenAt=parsed.createdAt;return cachedToken;}}}catch{}    try{const res=await fetch(BACKEND_URL+'/api/token?_kumysbekova=1',{method:'GET'});if(!res.ok)throw new Error('token HTTP '+res.status);const json=await res.json();const token=json?.token;if(!token)throw new Error('no token in response');cachedToken=token;cachedTokenAt=now;try{localStorage.setItem(TOKEN_STORAGE_KEY,JSON.stringify({token,createdAt:now}));}catch{}return token;}catch(err){console.warn('getToken failed:',err);return null;}}
 const MAP_API_URL="https://kumysbekova.app.enes.tech";
 async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999&_kumysbekova=1');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
 async function fetchUserInfo(pcId,_token){if(!pcId)return null;try{const res=await fetch(BACKEND_URL+'/api/user-info?pc_id='+pcId+'&_kumysbekova=1');if(!res.ok)return null;return await res.json();}catch{return null;}}
 function renderCard(index,item){const card=cards[index];if(!card)return;if(item){const num=String(item.pc.num??item.pc.device_name??'?');card.className='soon-card '+cardClass(formatTimeRemaining(item.releaseDate));card.querySelector('.soon-card-num').textContent=num;card.querySelector('.soon-card-time').textContent=formatTimeRemaining(item.releaseDate);}else{card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent='—';card.querySelector('.soon-card-time').textContent='—';}}
+function renderSoonStatus(label,time,pcs=[]){currentWithDates=[];for(let i=0;i<cards.length;i++){releaseDates[i]=null;renderCard(i,null);}const card=cards[0];if(card){card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent=label;card.querySelector('.soon-card-time').textContent=time;}renderZoneDropdown([],pcs);}
 
-function renderZoneDropdown(withDates) {
+function renderZoneDropdown(withDates, pcs = []) {
+  syncZoneDropdownSections(pcs);
   Object.values(zoneElements).forEach(el => { if (el) el.innerHTML = ''; });
   
   const grouped = {};
   withDates.forEach(item => {
-    const num = item.pc.num ?? item.pc.device_name;
-    const zone = getZoneForPC(num);
+    const zone = getZoneIdForPC(item.pc);
     if (!zone) return;
     if (!grouped[zone]) grouped[zone] = [];
     grouped[zone].push(item);
@@ -303,8 +315,9 @@ async function refreshSoon(){
   inFlight=true;
   try{
     let pcs=[];
-    try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);}
+    try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);renderSoonStatus('API','нет связи');return;}
     const busy=pcs.filter(isBusy);
+    if(!busy.length){renderSoonStatus('—','нет занятых',pcs);return;}
     const token=await getToken();
     const withDates=(await Promise.all(busy.map(async pc=>{
       const ui=await fetchUserInfo(pc.id,token);
@@ -320,7 +333,7 @@ async function refreshSoon(){
       renderCard(i,top5[i]);
     }
     
-    renderZoneDropdown(withDates);
+    renderZoneDropdown(withDates, pcs);
   }finally{inFlight=false;}
 }
 
@@ -358,4 +371,3 @@ setInterval(tickTimers,1000);
 <script src="kumysapp.js"></script>
 </body>
 </html>
-
