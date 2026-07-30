@@ -60,15 +60,33 @@
       transition:opacity .3s ease,transform .3s ease,max-height 0s;
       pointer-events:auto;
     }
-    .spec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
-    .spec-title{margin:0;font-size:16px;font-weight:700;line-height:1.2}
+    .spec-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .spec-title{margin:0;font-size:16px;font-weight:700;line-height:1.2;min-width:0}
+    .spec-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;justify-self:end;min-width:0;max-width:min(58vw,250px)}
     .spec-badge{flex:0 0 auto;border-radius:999px;background:#fff;color:#000;padding:4px 8px;font-size:11px;font-weight:700;line-height:1}
+    .monitor-chip{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;justify-content:flex-end;gap:8px;box-sizing:border-box;max-width:100%;padding:6px 9px 6px 6px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.035));box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 8px 20px rgba(0,0,0,.22)}
+    .monitor-logo{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:84px;height:34px;padding:5px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.24);background:#fff;color:#050505;box-sizing:border-box;font-size:10px;font-weight:900;line-height:1;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 6px 14px rgba(0,0,0,.25);overflow:hidden}
+    .monitor-logo.logo-zowie{background:#050505;padding:3px 6px;border-color:rgba(255,255,255,.16)}
+    .monitor-logo.logo-alienware{background:linear-gradient(135deg,#f4fcff,#bdf2ff);border-color:rgba(145,225,255,.65)}
+    .monitor-logo.logo-aoc,.monitor-logo.logo-asus,.monitor-logo.logo-benq,.monitor-logo.logo-hyperx{background:#fff}
+    .monitor-logo.logo-generic{background:rgba(255,255,255,.08);color:#fff}
+    .monitor-logo-img{display:block;width:100%;height:100%;max-width:76px;max-height:22px;object-fit:contain}
+    .monitor-logo.logo-zowie .monitor-logo-img{max-width:78px;max-height:28px}
+    .monitor-logo.logo-alienware .monitor-logo-img{max-width:34px;max-height:24px}
+    .monitor-logo.logo-benq .monitor-logo-img{max-width:74px;max-height:20px}
+    .monitor-logo.logo-aoc .monitor-logo-img{max-width:70px;max-height:18px}
+    .monitor-logo-fallback{display:block;white-space:nowrap}
+    .monitor-logo-img[hidden],.monitor-logo-fallback[hidden]{display:none}
+    .monitor-model{min-width:0;max-width:158px;color:rgba(255,255,255,.82);font-size:10.5px;font-weight:700;line-height:1.12;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .spec-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.1)}
     .spec-item{display:grid;gap:4px;min-height:52px;padding:10px 14px;background:#050505}
     .spec-label{color:var(--muted);font-size:12px;line-height:1}
     .spec-value{font-size:14px;font-weight:600;line-height:1.2}
     @media (max-width:460px){
-      .spec-head{align-items:flex-start;flex-direction:column}
+      .spec-head{grid-template-columns:1fr;align-items:stretch}
+      .spec-meta{justify-self:stretch;align-items:flex-start;flex-direction:row;flex-wrap:wrap;max-width:100%}
+      .monitor-chip{flex:1 1 178px;justify-content:flex-start}
+      .monitor-model{text-align:left;max-width:100%}
       .spec-list{grid-template-columns:1fr}
     }
     .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
@@ -1531,6 +1549,102 @@
       const clubPanels = document.querySelectorAll('.club-panel');
       const zoneButtons = document.querySelectorAll('.zone-button');
 
+      function getMonitorText(card) {
+        const monitorItem = Array.from(card.querySelectorAll('.spec-item')).find((item) => {
+          const labelText = item.querySelector('.spec-label')?.textContent.trim().toLowerCase();
+          return labelText === 'монитор' || labelText === 'второй монитор';
+        });
+        return monitorItem?.querySelector('.spec-value')?.textContent.trim() || '';
+      }
+
+      const monitorLogoSources = {
+        asus: 'assets/monitor-logos/asus.svg',
+        alienware: 'assets/monitor-logos/alienware.svg',
+        hyperx: 'assets/monitor-logos/hyperx.svg',
+        zowie: 'assets/monitor-logos/zowie.png',
+        benq: 'assets/monitor-logos/benq.png',
+        aoc: 'assets/monitor-logos/aoc.svg'
+      };
+
+      function getMonitorBrand(value) {
+        const normalized = value.toUpperCase();
+
+        if (normalized.includes('ALIENWARE')) {
+          return { key: 'alienware', logo: 'Alienware', src: monitorLogoSources.alienware };
+        }
+
+        if (normalized.includes('ZOWIE')) {
+          return { key: 'zowie', logo: 'ZOWIE', src: monitorLogoSources.zowie };
+        }
+
+        if (normalized.includes('BENQ')) {
+          return { key: 'benq', logo: 'BenQ', src: monitorLogoSources.benq };
+        }
+
+        if (normalized.includes('AOC') || normalized.includes('AGON')) {
+          return { key: 'aoc', logo: 'AOC', src: monitorLogoSources.aoc };
+        }
+
+        if (normalized.includes('HYPERX')) {
+          return { key: 'hyperx', logo: 'HyperX', src: monitorLogoSources.hyperx };
+        }
+
+        if (normalized.includes('ASUS') || normalized.includes('ROG') || normalized.includes('TUF')) {
+          return { key: 'asus', logo: 'ASUS', src: monitorLogoSources.asus };
+        }
+
+        return { key: 'generic', logo: 'Hz' };
+      }
+
+      function cleanMonitorName(value) {
+        return value
+          .replace(/\s*\+\s*кронштейн/gi, '')
+          .replace(/\s*\+\s*Кронштейн/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function getMonitorLogoMarkup(brand) {
+        if (brand.src) {
+          return `
+            <img class="monitor-logo-img" src="${brand.src}" alt="${brand.logo} logo" loading="lazy" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+            <span class="monitor-logo-fallback" hidden>${brand.logo}</span>
+          `;
+        }
+
+        return `<span class="monitor-logo-fallback">${brand.logo}</span>`;
+      }
+
+      function addMonitorChips() {
+        document.querySelectorAll('.spec-card').forEach((card) => {
+          const head = card.querySelector('.spec-head');
+          const badge = head?.querySelector('.spec-badge');
+          const monitorText = getMonitorText(card);
+
+          if (!head || !badge || !monitorText || head.querySelector('.monitor-chip')) {
+            return;
+          }
+
+          let meta = head.querySelector('.spec-meta');
+          if (!meta) {
+            meta = document.createElement('div');
+            meta.className = 'spec-meta';
+            head.insertBefore(meta, badge);
+            meta.appendChild(badge);
+          }
+
+          const brand = getMonitorBrand(monitorText);
+          const chip = document.createElement('div');
+          chip.className = 'monitor-chip';
+          chip.title = monitorText;
+          chip.innerHTML = `
+            <span class="monitor-logo logo-${brand.key}">${getMonitorLogoMarkup(brand)}</span>
+            <span class="monitor-model">${cleanMonitorName(monitorText)}</span>
+          `;
+          meta.appendChild(chip);
+        });
+      }
+
       function activateZone(panel, zoneId) {
         const buttons = panel.querySelectorAll('.zone-button');
         const cards = panel.querySelectorAll('.spec-card');
@@ -1577,6 +1691,7 @@
         }
       });
 
+      addMonitorChips();
       switchClub('triumph');
 
       zoneButtons.forEach((button) => {
