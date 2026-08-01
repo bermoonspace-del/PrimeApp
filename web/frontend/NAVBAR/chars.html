@@ -66,10 +66,11 @@
     .monitor-logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;padding:6px;border-radius:13px;border:1px solid rgba(255,255,255,.18);background:#fff;color:#050505;box-sizing:border-box;font-size:10px;font-weight:900;line-height:1;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 8px 18px rgba(0,0,0,.3);overflow:hidden}
     .monitor-logo.logo-zowie{padding:3px;background:#050505;border-color:rgba(255,255,255,.14)}
     .monitor-logo.logo-alienware{padding:12px;background:linear-gradient(135deg,#f4fcff,#bdf2ff);border-color:rgba(145,225,255,.65)}
+    .monitor-logo.logo-rog{padding:9px}
     .monitor-logo.logo-asus{padding:3px}
     .monitor-logo.logo-aoc{padding:8px}
     .monitor-logo.logo-benq,.monitor-logo.logo-hyperx{padding:6px}
-    .monitor-logo.logo-aoc,.monitor-logo.logo-asus,.monitor-logo.logo-benq,.monitor-logo.logo-hyperx{background:#fff}
+    .monitor-logo.logo-aoc,.monitor-logo.logo-asus,.monitor-logo.logo-benq,.monitor-logo.logo-hyperx,.monitor-logo.logo-rog{background:#fff}
     .monitor-logo.logo-generic{background:rgba(255,255,255,.08);color:#fff}
     .monitor-logo-img{display:block;width:100%;height:100%;object-fit:contain}
     .monitor-logo-fallback{display:block;white-space:nowrap}
@@ -1554,6 +1555,7 @@
 
       const monitorLogoSources = {
         asus: 'assets/monitor-logos/asus-tight.svg',
+        rog: 'assets/monitor-logos/rog.svg',
         alienware: 'assets/monitor-logos/alienware.svg',
         hyperx: 'assets/monitor-logos/hyperx.svg',
         zowie: 'assets/monitor-logos/zowie-symbol.png',
@@ -1582,6 +1584,10 @@
 
         if (normalized.includes('HYPERX')) {
           return { key: 'hyperx', logo: 'HyperX', src: monitorLogoSources.hyperx };
+        }
+
+        if (normalized.includes('ROG STRIX')) {
+          return { key: 'rog', logo: 'ROG', src: monitorLogoSources.rog };
         }
 
         if (normalized.includes('ASUS') || normalized.includes('ROG') || normalized.includes('TUF')) {
