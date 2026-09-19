@@ -814,14 +814,14 @@ function getZoneForPC(num) {
     if (n >= 53 && n <= 57) return 'btc-2';
     if (n >= 58 && n <= 61) return 'sqd-1';
     if (n >= 62 && n <= 65) return 'sqd-2';
-    if (n >= 66 && n <= 69) return 'sqd-5';
-    if (n >= 70 && n <= 72) return 'trio';
-    if (n >= 73 && n <= 74) return 'duo-1';
-    if (n >= 75 && n <= 76) return 'duo-2';
-    if (n === 77) return 'solo-2';
-    if (n === 78) return 'solo-1';
-    if (n === 79) return 'solo-3';
-    if (n === 80) return 'stream'
+    if (n >= 74 && n <= 77) return 'sqd-5';
+    if (n >= 78 && n <= 80) return 'trio';
+    if (n >= 81 && n <= 82) return 'duo-1';
+    if (n >= 85 && n <= 86) return 'duo-2';
+    if (n === 87) return 'solo-1';
+    if (n === 88) return 'solo-2';
+    if (n === 89) return 'solo-3';
+    if (n === 90) return 'stream'
     return null;
 }
 
