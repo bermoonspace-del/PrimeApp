@@ -212,7 +212,7 @@
     <div class="club-dropdown-menu" id="club-menu" hidden role="menu">
       <button class="club-dropdown-item active" type="button" role="menuitem" data-value="tr">Кабанбай Батыра 11</button> 
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="ar">Керей Жанибек 14/2</button>
-     <button class="club-dropdown-item" type="button" role="menuitem" data-value="sp">Сатпаева 15</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="sp">Сатпаева 15</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="ko">Кошкарбаева 36</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="kn">Байтурсынова 30</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="ke">Кенесары 42</button>
@@ -220,6 +220,7 @@
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="ml">Молдагалиева 7</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="as">Асфендиярова 1</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="mh">Мухамедханова 25</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="bt">Бектурова 11Б</button>
 
     </div>
   </div>
@@ -257,6 +258,9 @@
       </section>
       <section class="panel" id="panel-mh">
         <iframe scrolling="no" src="./muhamedh/muh.html" title="MUKHAMEDKHANOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-bt">
+        <iframe scrolling="no" src="./bekt/bekt.html" title="BEKTUROVA"></iframe>
       </section>
     </div>
   </div>
@@ -330,7 +334,8 @@
         km: document.getElementById('panel-km'),
         ml: document.getElementById('panel-ml'),
         as: document.getElementById('panel-as'),
-        mh: document.getElementById('panel-mh')
+        mh: document.getElementById('panel-mh'),
+        mh: document.getElementById('panel-bt')
       };
       const names = {
         tr: 'Кабанбай Батыра 11',
@@ -342,7 +347,8 @@
         km: 'Кумисбекова 9а',
         ml: 'Молдагалиева 7',
         as: 'Асфендиярова 1',
-        mh: 'Мухамедханова 25'
+        mh: 'Мухамедханова 25',
+        bt: 'Бектурова 11Б'
       };
 
       function setActive(value) {
