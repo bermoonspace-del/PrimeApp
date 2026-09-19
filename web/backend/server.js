@@ -69,7 +69,7 @@ const CLUBS = {
     userInfoUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
-  },  
+  },
   bekturova: {
     mapUrl: "https://bekturova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://bekturova.app.enes.tech/api/v2/user/idm_admin_auth/",
@@ -77,8 +77,6 @@ const CLUBS = {
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
-
-
 };
 
 const tokenCaches = {};
@@ -98,7 +96,7 @@ function resolveClub(req) {
   if (req.query._moldagalieva === "1") return "moldagalieva";
   if (req.query._primekenesary === "1") return "primekenesary";
   if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
-  if (req.query._bekturova === "1") return "bekturova";
+  if (req.query._bekturova === "1") return "bektrova";
   return "default";
 }
 
