@@ -96,7 +96,7 @@ function resolveClub(req) {
   if (req.query._moldagalieva === "1") return "moldagalieva";
   if (req.query._primekenesary === "1") return "primekenesary";
   if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
-  if (req.query._bekturova === "1") return "bektrova";
+  if (req.query._bekturova === "1") return "bekturova";
   return "default";
 }
 
