@@ -23,14 +23,14 @@ const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
 let currentPCs = [];
 let memoryTokenCache = null;
 
-const VIEWBOX_WIDTH = 1440;
-const VIEWBOX_HEIGHT = 725;
+const VIEWBOX_WIDTH = 2556;
+const VIEWBOX_HEIGHT = 1179;
 const GRID_UNIT = 70;
 
 const WALL_X = 50;
 const WALL_Y = 50;
-const WALL_WIDTH = 1390;
-const WALL_HEIGHT = 625;
+const WALL_WIDTH = 2456;
+const WALL_HEIGHT = 1079;
 
 // Static PC positions loaded from positions.json (viewBox 1440x725)
 // Edit positions in: /web/frontend/NAVBAR/TRIUMPH/positions.json
@@ -238,10 +238,25 @@ async function loadPCs() {
             err
         );
 
-        currentPCs = [];
-        renderPCs([]);
-        renderSoonList([]);
-        showMapMessage(getLoadErrorMessage(err));
+        // Fallback: show positions from positions.json even if API fails (offline)
+        try{
+            const fallbackPCs = addMissingPositionPCs([]);
+            currentPCs = fallbackPCs;
+            renderPCs(fallbackPCs);
+            bindZonesAndPCs();
+            renderSoonList(fallbackPCs);
+            if (fallbackPCs.length === 0) {
+                showMapMessage(getLoadErrorMessage(err));
+            } else {
+                showMapMessage("API недоступен — показаны позиции из positions.json (offline)");
+                setTimeout(hideMapMessage, 3500);
+            }
+        }catch(e){
+            currentPCs = [];
+            renderPCs([]);
+            renderSoonList([]);
+            showMapMessage(getLoadErrorMessage(err));
+        }
     }
 }
 
