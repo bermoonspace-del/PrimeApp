@@ -6,17 +6,17 @@ tg?.expand();
 const BACKEND_URL = "https://primeapp-2.onrender.com";
 
 const API_URL =
-    `/api/map?office_id=1&limit=9999&_moldagalieva=1`;
+    `/api/map?office_id=1&limit=9999&_bekturova=1`;
 
 const USER_INFO_URL_PREFIX =
-    "https://moldagalieva.app.enes.tech/api/v2/map/";
+    "https://bekturova.app.enes.tech/api/v2/map/";
 
 const SEED_CAP_TOKEN =
     "";
 
-const TOKEN_STORAGE_KEY = "moldagalieva.map.capToken.v2";
+const TOKEN_STORAGE_KEY = "bekturova.map.capToken.v2";
 const LEGACY_TOKEN_STORAGE_KEYS = [
-    "moldagalieva.map.token"
+    "bekturova.map.token"
 ];
 const TOKEN_REFRESH_INTERVAL_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -41,7 +41,7 @@ let PC_POSITIONS_LOADED = false;
 
 async function loadPositions() {
     try {
-        const res = await fetch(POSITIONS_URL, { cache: 'no-store' });
+        const res = await fetch('positions.json?v=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) {
             throw new Error('positions.json HTTP ' + res.status);
         }
@@ -305,7 +305,7 @@ async function getAuthToken({ forceRefresh = false } = {}) {
     showMapMessage("Обновление токена...");
 
     try {
-        const json = await fetchJson("/api/token?_moldagalieva=1");
+        const json = await fetchJson("/api/token?_bekturova=1");
 
         const token = json?.token;
 
@@ -792,19 +792,21 @@ function getZoneForPC(num) {
     if (num == null) return null;
     const n = Number(num);
     if (!Number.isFinite(n)) return null;
-    if (n >= 1 && n <= 40) return 'standard-1';
-    if (n >= 41 && n <= 65) return 'standard-2';
-    if (n >= 66 && n <= 67) return 'duo-2';
-    if (n >= 68 && n <= 70) return 'trio-3';
-    if (n >= 71 && n <= 73) return 'trio-2';
-    if (n >= 74 && n <= 76) return 'trio-1';
-    if (n >= 77 && n <= 78) return 'duo-1';
-    if (n >= 79 && n <= 88) return 'vip';
-    if (n >= 89 && n <= 93) return 'bootcamp-2';
-    if (n >= 94 && n <= 98) return 'bootcamp-1';
-    if (n >= 99 && n <= 102) return 'squad';
-    if (n === 103) return 'solo-2';
-    if (n === 104) return 'solo-1';
+    if (n >= 1 && n <= 24) return 'standard';
+    if (n >= 25 && n <= 42) return 'comfort';
+    if (n >= 43 && n <= 47) return 'vip';
+    if (n >= 48 && n <= 52) return 'btc-1';
+    if (n >= 53 && n <= 57) return 'btc-2';
+    if (n >= 58 && n <= 61) return 'sqd-1';
+    if (n >= 62 && n <= 65) return 'sqd-2';
+    if (n >= 66 && n <= 69) return 'sqd-5';
+    if (n >= 70 && n <= 72) return 'trio';
+    if (n >= 73 && n <= 74) return 'duo-1';
+    if (n >= 75 && n <= 76) return 'duo-2';
+    if (n === 77) return 'solo-2';
+    if (n === 78) return 'solo-1';
+    if (n === 79) return 'solo-3';
+    if (n === 80) return 'stream'
     return null;
 }
 
@@ -1225,7 +1227,7 @@ async function fetchPCUserInfo(pc, _token) {
     }
 
     try {
-        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_moldagalieva=1`);
+        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_bekturova=1`);
     } catch (err) {
         console.warn(`Не удалось получить user_info для ПК ${getPcLabel(pc)}`, err);
         return null;
@@ -1358,4 +1360,155 @@ window.addEventListener('resize', debounce(() => {
     await loadPositions();
     loadPCs();
     setInterval(loadPCs, 60000);
+    // --- realtime positions polling (fix: changes from constructor show instantly) ---
+    let lastPositionsText = "";
+    setInterval(async () => {
+        try {
+            const res = await fetch('positions.json?v=' + Date.now(), { cache: 'no-store' });
+            if(!res.ok) return;
+            const txt = await res.text();
+            if(txt === lastPositionsText) return;
+            lastPositionsText = txt;
+            // use existing loadPositions but we already fetched txt, so parse manually to avoid double fetch
+            try {
+                const data = JSON.parse(txt);
+                PC_POSITIONS.clear();
+                let outerOrigin = [0, 0];
+                let blocksData = data;
+                const topKeys = Object.keys(data);
+                if (topKeys.length === 1) {
+                    const top = data[topKeys[0]];
+                    if (top && typeof top === 'object' && !Array.isArray(top) && top.blocks && typeof top.blocks === 'object' && Array.isArray(top.origin)) {
+                        outerOrigin = [Number(top.origin[0]) || 0, Number(top.origin[1]) || 0];
+                        blocksData = top.blocks;
+                    }
+                }
+                for (const blockName of Object.keys(blocksData)) {
+                    const block = blocksData[blockName] || {};
+                    if (Array.isArray(block.origin) && block.pcs && typeof block.pcs === 'object') {
+                        const ox = Number(block.origin[0]) + outerOrigin[0];
+                        const oy = Number(block.origin[1]) + outerOrigin[1];
+                        const step = Number(block.step);
+                        const stepYRaw = block.stepY;
+                        const stepY = (stepYRaw != null && Number.isFinite(Number(stepYRaw)) && Number(stepYRaw) > 0) ? Number(stepYRaw) : step;
+                        if (!Number.isFinite(ox) || !Number.isFinite(oy) || !Number.isFinite(step) || step <= 0) continue;
+                        for (const key of Object.keys(block.pcs)) {
+                            const num = Number(key);
+                            if (!Number.isFinite(num)) continue;
+                            const cell = block.pcs[key];
+                            if (cell && typeof cell === 'object' && !Array.isArray(cell) && Array.isArray(cell.override) && cell.override.length >= 2) {
+                                const ox2 = Number(cell.override[0]) + outerOrigin[0];
+                                const oy2 = Number(cell.override[1]) + outerOrigin[1];
+                                if (Number.isFinite(ox2) && Number.isFinite(oy2)) PC_POSITIONS.set(num, [ox2, oy2]);
+                                continue;
+                            }
+                            if (!Array.isArray(cell) || cell.length < 2) continue;
+                            const col = Number(cell[0]); const row = Number(cell[1]);
+                            if (!Number.isFinite(col) || !Number.isFinite(row)) continue;
+                            PC_POSITIONS.set(num, [ox + col * step, oy + row * stepY]);
+                        }
+                        continue;
+                    }
+                }
+                PC_POSITIONS_LOADED = true;
+                if (Array.isArray(currentPCs) && currentPCs.length) renderPCs(currentPCs);
+            } catch(e){ console.warn('poll parse failed', e); }
+        } catch(e){}
+    }, 2000);
+    // listen for constructor save broadcasts
+    window.addEventListener('storage', (e)=>{
+        if(e.key && e.key.startsWith('positions_updated')){
+            loadPositions();
+        }
+    });
+    try{
+        const bc = new BroadcastChannel('positions-update');
+        bc.onmessage = (ev)=>{
+            // reload if message for any club or for this club
+            loadPositions();
+        };
+    }catch(e){}
+    // also use local file watch via fetch etag? already polling
+
+
+    // --- realtime zones polling (SVG overlay) ---
+    let lastZonesText = "";
+    async function refreshZones(){
+        try{
+            const club = location.pathname.split('/').filter(Boolean).slice(-2)[0] || 'bekt';
+            const res = await fetch('/api/constructor/zones?club=' + encodeURIComponent(club) + '&v=' + Date.now(), {cache:'no-store'});
+            if(!res.ok) return;
+            const data = await res.json();
+            const zones = data.zones || [];
+            const labels = data.labels || [];
+            const txt = JSON.stringify({zones, labels});
+            if(txt === lastZonesText) return;
+            lastZonesText = txt;
+            const svg = document.querySelector('.zone-overlay');
+            if(!svg) return;
+            // preserve defs
+            const defs = svg.querySelector('defs');
+            const defsHTML = defs ? defs.outerHTML : '';
+            // clear svg but keep defs
+            // Remove all rect.zone and text.zone-label
+            svg.querySelectorAll('rect.zone, text.zone-label').forEach(el=>el.remove());
+            // Also need to handle that svg may have been cleared, need to ensure defs remains
+            if(defs && !svg.querySelector('defs')){
+                svg.insertAdjacentHTML('afterbegin', defsHTML);
+            }
+            // append new zones
+            zones.forEach((z,i)=>{
+                const label = labels[i] || z.zone || '';
+                const x = Math.round(Number(z.x)||0);
+                const y = Math.round(Number(z.y)||0);
+                const w = Math.round(Number(z.width)||100);
+                const h = Math.round(Number(z.height)||100);
+                const rx = Math.round(Number(z.rx)||12);
+                const lx = Math.round(x + w/2);
+                const ly = Math.round(y - 8);
+                const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+                rect.setAttribute('class','zone');
+                rect.setAttribute('data-zone', z.zone || '');
+                rect.setAttribute('x', x);
+                rect.setAttribute('y', y);
+                rect.setAttribute('width', w);
+                rect.setAttribute('height', h);
+                rect.setAttribute('rx', rx);
+                svg.appendChild(rect);
+                const textEl = document.createElementNS('http://www.w3.org/2000/svg','text');
+                textEl.setAttribute('class','zone-label');
+                textEl.setAttribute('x', lx);
+                textEl.setAttribute('y', ly);
+                textEl.setAttribute('text-anchor','middle');
+                textEl.textContent = label;
+                svg.appendChild(textEl);
+            });
+            // re-bind zone hover
+            if(typeof bindZonesAndPCs === 'function'){
+                try{ bindZonesAndPCs(); }catch(e){}
+            }
+        }catch(e){ console.warn('refreshZones failed', e); }
+    }
+    // initial load and polling
+    refreshZones();
+    setInterval(refreshZones, 2000);
+    window.addEventListener('storage', (e)=>{
+        if(e.key && e.key.startsWith('zones_updated')){
+            refreshZones();
+        }
+    });
+    try{
+        const bcz = new BroadcastChannel('zones-update');
+        bcz.onmessage = ()=> refreshZones();
+    }catch(e){}
+    // also listen for positions-update to refresh zones (in case constructor sends both)
+    try{
+        const bcp = new BroadcastChannel('positions-update');
+        const orig = bcp.onmessage;
+        bcp.onmessage = (ev)=>{
+            if(orig) try{orig(ev);}catch(e){}
+            refreshZones();
+        };
+    }catch(e){}
+
 })();
