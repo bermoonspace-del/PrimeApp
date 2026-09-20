@@ -211,7 +211,7 @@
             </div>
             <div class="zone-section">
                 <div class="zone-section-title">VIP</div>
-                <div class="zone-pc-list" id="zone-VIP"></div>
+                <div class="zone-pc-list" id="zone-vip"></div>
             </div>
             <div class="zone-section">
                 <div class="zone-section-title">BOOTCAMP 1</div>
@@ -230,14 +230,6 @@
                 <div class="zone-pc-list" id="zone-sqd-2"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">SQUAD 3</div>
-                <div class="zone-pc-list" id="zone-sqd-3"></div>
-            </div>
-            <div class="zone-section">
-                <div class="zone-section-title">SQUAD 4</div>
-                <div class="zone-pc-list" id="zone-sqd-4"></div>
-            </div>
-            <div class="zone-section">
                 <div class="zone-section-title">SQUAD 5</div>
                 <div class="zone-pc-list" id="zone-sqd-5"></div>
             </div>
@@ -254,10 +246,6 @@
                 <div class="zone-pc-list" id="zone-duo2"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">DUO 3</div>
-                <div class="zone-pc-list" id="zone-duo-3"></div>
-            </div>
-                        <div class="zone-section">
                 <div class="zone-section-title">SOLO 1</div>
                 <div class="zone-pc-list" id="zone-solo-1"></div>
             </div>
@@ -304,7 +292,7 @@ const zoneElements = {
   'duo-2': document.getElementById('zone-duo-2'),
   'solo-1': document.getElementById('zone-solo-1'),
   'solo-2': document.getElementById('zone-solo-2'),
-  'solo-5': document.getElementById('zone-solo-5'),
+  'solo-3': document.getElementById('zone-solo-3'),
   'stream':document.getElementById('zone-stream')
 };
 
@@ -315,21 +303,21 @@ function getZoneForPC(num) {
     if (num == null) return null;
     const n = Number(num);
     if (!Number.isFinite(n)) return null;
-    if (n >= 1 && n <= 24) return 'standard';
+    if (n >= 1 && n <= 24) return 'standart';
     if (n >= 25 && n <= 42) return 'comfort';
     if (n >= 43 && n <= 47) return 'vip';
     if (n >= 48 && n <= 52) return 'btc-1';
     if (n >= 53 && n <= 57) return 'btc-2';
     if (n >= 58 && n <= 61) return 'sqd-1';
     if (n >= 62 && n <= 65) return 'sqd-2';
-    if (n >= 66 && n <= 69) return 'sqd-5';
-    if (n >= 70 && n <= 72) return 'trio';
-    if (n >= 73 && n <= 74) return 'duo-1';
-    if (n >= 75 && n <= 76) return 'duo-2';
-    if (n === 77) return 'solo-1';
-    if (n === 78) return 'solo-2';
-    if (n === 79) return 'solo-3';
-    if (n === 80) return 'stream'
+    if (n >= 74 && n <= 77) return 'sqd-5';
+    if (n >= 78 && n <= 80) return 'trio';
+    if (n >= 81 && n <= 82) return 'duo-1';
+    if (n >= 85 && n <= 86) return 'duo-2';
+    if (n === 87) return 'solo-1';
+    if (n === 88) return 'solo-2';
+    if (n === 89) return 'solo-3';
+    if (n === 90) return 'stream'
     return null;
 }
 
