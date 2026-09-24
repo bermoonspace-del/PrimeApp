@@ -799,7 +799,7 @@ function updateCounters(pcs) {
         }
     });
 
-    freeEl.textContent = free;
+    freeEl.textContent = Math.max(0, free - 10);
     busyEl.textContent = busy;
 }
 
