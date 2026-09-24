@@ -85,11 +85,8 @@ for (const key of Object.keys(CLUBS)) {
 }
 
 // Bulk table cache for ALL clubs: 1 upstream request instead of N
-const TABLE_TTL_MS = 30 * 1000;
+const TABLE_TTL_MS = 3 * 1000;
 const tableCaches = {};
-for (const key of Object.keys(CLUBS)) {
-  tableCaches[key] = { data: null, createdAt: 0, promise: null };
-}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
@@ -176,15 +173,17 @@ async function fetchMap(query, forceRefresh = false, clubId = "default") {
 async function fetchTable(forceRefresh = false, clubId = "default", officeId = null) {
   const club = CLUBS[clubId];
   if (!club.tableUrl) throw new Error(`No tableUrl for ${clubId}`);
-  const oid = String(officeId || (clubId === "default" ? "1" : "1"));
-  // для ARNAU office_id=1114 приходит из query, для TRIUMPH/strongastana office_id=1
+  const oid = String(officeId || "1");
   const cacheKey = `${clubId}:${oid}`;
   if (!tableCaches[cacheKey]) tableCaches[cacheKey] = { data: null, createdAt: 0, promise: null };
   const cache = tableCaches[cacheKey];
   const now = Date.now();
-  if (!forceRefresh && cache.data && now - cache.createdAt < TABLE_TTL_MS) {
+  // TTL=0 → кэш только для дедупликации паралл. запросов, без задержки
+  const isCacheValid = TABLE_TTL_MS > 0 && cache.data && now - cache.createdAt < TABLE_TTL_MS;
+  if (!forceRefresh && isCacheValid) {
     return cache.data;
   }
+  // дедуп: если уже идет запрос — ждем его, не создаем новый (независимо от TTL)
   if (cache.promise && !forceRefresh) {
     return cache.promise;
   }
