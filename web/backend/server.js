@@ -8,72 +8,72 @@ const PORT = Number(process.env.PORT || 8080);
 
 const CLUBS = {
   default: {
-    mapUrl: "1https://strongastana.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://strongastana.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://strongastana.app.enes.tech/api/v2/map/",
+    mapUrl: "https://strongastana.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://strongastana.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://strongastana.app.enes.tech/api/v2/map/table/",
     username: () => process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
     password: () => process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   satpayeva: {
-    mapUrl: "1https://satpayeva.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://satpayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://satpayeva.app.enes.tech/api/v2/map/",
+    mapUrl: "https://satpayeva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://satpayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://satpayeva.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   baitursynova: {
-    mapUrl: "1https://baitursynova.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://baitursynova.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://baitursynova.app.enes.tech/api/v2/map/",
+    mapUrl: "https://baitursynova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://baitursynova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://baitursynova.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   primegamehub: {
-    mapUrl: "1https://primegamehub.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://primegamehub.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://primegamehub.app.enes.tech/api/v2/map/",
+    mapUrl: "https://primegamehub.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://primegamehub.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://primegamehub.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   koshkarbayeva: {
-    mapUrl: "1https://koshkarbayeva.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://koshkarbayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://koshkarbayeva.app.enes.tech/api/v2/map/",
+    mapUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://koshkarbayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   kumysbekova: {
-    mapUrl: "1https://kumysbekova.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://kumysbekova.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://kumysbekova.app.enes.tech/api/v2/map/",
+    mapUrl: "https://kumysbekova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://kumysbekova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://kumysbekova.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   moldagalieva: {
-    mapUrl: "1https://moldagalieva.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://moldagalieva.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://moldagalieva.app.enes.tech/api/v2/map/",
+    mapUrl: "https://moldagalieva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://moldagalieva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://moldagalieva.app.enes.tech/api/v2/map/table/",
     username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.LOG || "",
     password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.PAS || "",
   },
   primekenesary: {
-    mapUrl: "1https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://primekenesary.app.enes.tech/api/v2/map/",
+    mapUrl: "https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://primekenesary.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   muhamedkhanova: {
-    mapUrl: "1https://muhamedkhanova.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://muhamedkhanova.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://muhamedkhanova.app.enes.tech/api/v2/map/",
+    mapUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://muhamedkhanova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
   bekturova: {
-    mapUrl: "1https://bekturova.app.enes.tech/api/v2/map_v2/get_map/",
-    tokenUrl: "1https://bekturova.app.enes.tech/api/v2/user/idm_admin_auth/",
-    userInfoUrl: "1https://bekturova.app.enes.tech/api/v2/map/",
+    mapUrl: "https://bekturova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://bekturova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://bekturova.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
@@ -82,6 +82,13 @@ const CLUBS = {
 const tokenCaches = {};
 for (const key of Object.keys(CLUBS)) {
   tokenCaches[key] = { token: "", createdAt: 0 };
+}
+
+// Bulk table cache for ALL clubs: 1 upstream request instead of N
+const TABLE_TTL_MS = 30 * 1000;
+const tableCaches = {};
+for (const key of Object.keys(CLUBS)) {
+  tableCaches[key] = { data: null, createdAt: 0, promise: null };
 }
 
 app.use(express.json());
@@ -164,24 +171,49 @@ async function fetchMap(query, forceRefresh = false, clubId = "default") {
   return data;
 }
 
-async function fetchUserInfoById(pcId, clubId = "default") {
+// Bulk table for ALL clubs: https://<club>.app.enes.tech/api/v2/map/table/?office_id=1&limit=9999
+// office_id различается: ARNAU (default) = 1114, остальные = 1
+async function fetchTable(forceRefresh = false, clubId = "default", officeId = null) {
   const club = CLUBS[clubId];
-  const token = await requestToken(false, clubId);
-  const url = `${club.userInfoUrl}${pcId}/user_info/`;
-
-  const response = await fetch(url, {
-    headers: { "Authorization": `Token ${token}` },
-  });
-
-  if (response.status === 401) {
-    const token2 = await requestToken(true, clubId);
-    const retry = await fetch(url, { headers: { "Authorization": `Token ${token2}` } });
-    if (!retry.ok) return null;
-    return retry.json();
+  if (!club.tableUrl) throw new Error(`No tableUrl for ${clubId}`);
+  const oid = String(officeId || (clubId === "default" ? "1" : "1"));
+  // для ARNAU office_id=1114 приходит из query, для TRIUMPH/strongastana office_id=1
+  const cacheKey = `${clubId}:${oid}`;
+  if (!tableCaches[cacheKey]) tableCaches[cacheKey] = { data: null, createdAt: 0, promise: null };
+  const cache = tableCaches[cacheKey];
+  const now = Date.now();
+  if (!forceRefresh && cache.data && now - cache.createdAt < TABLE_TTL_MS) {
+    return cache.data;
+  }
+  if (cache.promise && !forceRefresh) {
+    return cache.promise;
   }
 
-  if (!response.ok) return null;
-  return response.json();
+  const task = (async () => {
+    const token = await requestToken(forceRefresh, clubId);
+    const url = `${club.tableUrl}?office_id=${encodeURIComponent(oid)}&limit=9999`;
+    let response = await fetch(url, { headers: { "Authorization": `Token ${token}` } });
+
+    if (response.status === 401 && !forceRefresh) {
+      const token2 = await requestToken(true, clubId);
+      response = await fetch(url, { headers: { "Authorization": `Token ${token2}` } });
+    }
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.detail || data?.message || `Table API error ${response.status}`);
+    }
+    cache.data = data;
+    cache.createdAt = Date.now();
+    return data;
+  })();
+
+  cache.promise = task;
+  try {
+    return await task;
+  } finally {
+    cache.promise = null;
+  }
 }
 
 // --- Endpoints ---
@@ -214,13 +246,13 @@ app.get("/api/map", async (req, res) => {
   }
 });
 
-app.get("/api/user-info", async (req, res) => {
+// Bulk table endpoint for ALL clubs: frontend делает 1 запрос вместо 100
+app.get("/api/table", async (req, res) => {
   try {
-    const pcId = req.query.pc_id;
-    if (!pcId) return res.status(400).json({ error: "pc_id required" });
     const clubId = resolveClub(req);
-    const data = await fetchUserInfoById(pcId, clubId);
-    res.json(data || {});
+    const officeId = req.query.office_id || null;
+    const data = await fetchTable(false, clubId, officeId);
+    res.json(data);
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
