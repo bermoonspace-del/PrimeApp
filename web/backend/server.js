@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const express = require("express");
@@ -18,64 +19,64 @@ const CLUBS = {
     mapUrl: "https://satpayeva.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://satpayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://satpayeva.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.SATPAYEVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.SATPAYEVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   baitursynova: {
     mapUrl: "https://baitursynova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://baitursynova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://baitursynova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.BAITURSYNOVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.BAITURSYNOVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   primegamehub: {
     mapUrl: "https://primegamehub.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://primegamehub.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://primegamehub.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.PRIMEGAMEHUB_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.PRIMEGAMEHUB_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   koshkarbayeva: {
     mapUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://koshkarbayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.KOSHKARBAYEVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.KOSHKARBAYEVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   kumysbekova: {
     mapUrl: "https://kumysbekova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://kumysbekova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://kumysbekova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.KUMYSBEKOVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.KUMYSBEKOVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   moldagalieva: {
     mapUrl: "https://moldagalieva.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://moldagalieva.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://moldagalieva.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.LOG || "",
+    password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.PAS || "",
   },
   primekenesary: {
     mapUrl: "https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://primekenesary.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.PRIMEKENESARY_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.PRIMEKENESARY_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   muhamedkhanova: {
     mapUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://muhamedkhanova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.MUHAMEDKHANOVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.MUHAMEDKHANOVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
   bekturova: {
     mapUrl: "https://bekturova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://bekturova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://bekturova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.BEKTUROVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
-    password: () => process.env.BEKTUROVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
 };
 
@@ -118,19 +119,31 @@ async function requestToken(forceRefresh = false, clubId = "default") {
   }
 
   if (!username || !password) {
-    throw new Error("Set credentials in .env");
+    const msg = `Set credentials in .env for ${clubId}: username=${username?'set':'empty'} password=${password?'set':'empty'} (LOG=${process.env.LOG?'set':'empty'} PAS=${process.env.PAS?'set':'empty'})`;
+    console.error(msg);
+    throw new Error(msg);
   }
 
-  const response = await fetch(club.tokenUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
-  const data = await response.json();
+  let response;
+  let text="";
+  try{
+    response = await fetch(club.tokenUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    text = await response.text();
+  }catch(e){
+    console.error(`Token fetch network error ${clubId} ${club.tokenUrl}:`, e.message);
+    throw new Error(`Network error ${club.tokenUrl}: ${e.message}`);
+  }
+  let data;
+  try{ data = text?JSON.parse(text):{}; }catch{ data={raw:text.slice(0,500)}; }
   const token = extractAuthToken(data);
 
   if (!response.ok || !token) {
-    throw new Error(data?.message?.[0] || data?.detail || "Auth API did not return token");
+    console.error(`Auth failed ${clubId} ${response.status} ${club.tokenUrl} user=${username} resp:`, text.slice(0,500));
+    throw new Error(data?.message?.[0] || data?.detail || data?.raw || `Auth API ${response.status} ${club.tokenUrl} did not return token`);
   }
 
   tokenCaches[clubId] = { token, createdAt: Date.now() };
@@ -152,19 +165,23 @@ function extractAuthToken(data) {
 async function fetchMap(query, forceRefresh = false, clubId = "default") {
   const club = CLUBS[clubId];
   const token = await requestToken(forceRefresh, clubId);
-  const response = await fetch(`${club.mapUrl}?${query || "office_id=1114&limit=9999"}`, {
-    headers: { "Authorization": `Token ${token}` },
-  });
-  const data = await response.json();
-
+  const url = `${club.mapUrl}?${query || "office_id=1114&limit=9999"}`;
+  let response, text;
+  try{
+    response = await fetch(url, { headers: { "Authorization": `Token ${token}` } });
+    text = await response.text();
+  }catch(e){
+    console.error(`Map fetch network error ${clubId} ${url}:`, e.message);
+    throw new Error(`Network error map ${clubId}: ${e.message}`);
+  }
+  let data; try{ data = text?JSON.parse(text):{}; }catch{ data={raw:text.slice(0,500)}; }
   if (response.status === 401 && !forceRefresh) {
     return fetchMap(query, true, clubId);
   }
-
   if (!response.ok) {
-    throw new Error(data?.detail || data?.message || `Map API error ${response.status}`);
+    console.error(`Map failed ${clubId} ${response.status} ${url} resp:`, text.slice(0,500));
+    throw new Error(data?.detail || data?.message || data?.raw || `Map API error ${response.status} ${url}`);
   }
-
   return data;
 }
 
@@ -191,16 +208,28 @@ async function fetchTable(forceRefresh = false, clubId = "default", officeId = n
   const task = (async () => {
     const token = await requestToken(forceRefresh, clubId);
     const url = `${club.tableUrl}?office_id=${encodeURIComponent(oid)}&limit=9999`;
-    let response = await fetch(url, { headers: { "Authorization": `Token ${token}` } });
-
+    let response, text;
+    try{
+      response = await fetch(url, { headers: { "Authorization": `Token ${token}` } });
+      text = await response.text();
+    }catch(e){
+      console.error(`Table fetch network error ${clubId} ${url}:`, e.message);
+      throw new Error(`Network error table ${clubId}: ${e.message}`);
+    }
+    let data; try{ data = text?JSON.parse(text):{}; }catch{ data={raw:text.slice(0,500)}; }
     if (response.status === 401 && !forceRefresh) {
       const token2 = await requestToken(true, clubId);
-      response = await fetch(url, { headers: { "Authorization": `Token ${token2}` } });
+      try{
+        response = await fetch(url, { headers: { "Authorization": `Token ${token2}` } });
+        text = await response.text();
+        try{ data = text?JSON.parse(text):{}; }catch{ data={raw:text.slice(0,500)}; }
+      }catch(e){
+        throw new Error(`Network error table retry ${clubId}: ${e.message}`);
+      }
     }
-
-    const data = await response.json();
     if (!response.ok) {
-      throw new Error(data?.detail || data?.message || `Table API error ${response.status}`);
+      console.error(`Table failed ${clubId} ${response.status} ${url} resp:`, text.slice(0,500));
+      throw new Error(data?.detail || data?.message || data?.raw || `Table API error ${response.status} ${url}`);
     }
     cache.data = data;
     cache.createdAt = Date.now();
@@ -257,6 +286,57 @@ app.get("/api/table", async (req, res) => {
   }
 });
 
+// --- Constructor API (восстановлено из bak) ---
+const FRONTEND_ROOT = path.join(__dirname, "../frontend");
+const NAVBAR_ROOT = path.join(FRONTEND_ROOT, "NAVBAR");
+function isValidClubName(name){ return /^[a-zA-Z0-9_\-]{1,64}$/.test(name); }
+app.get("/api/constructor/list", async (req,res)=>{
+  try{
+    const entries=await fs.promises.readdir(NAVBAR_ROOT,{withFileTypes:true});
+    const clubs=[]; for(const e of entries){ if(!e.isDirectory()) continue; const p=path.join(NAVBAR_ROOT,e.name,"positions.json"); try{await fs.promises.access(p); clubs.push(e.name);}catch{} }
+    res.json({clubs});
+  }catch(err){ res.status(500).json({error:err.message}); }
+});
+app.get("/api/constructor/load", async (req,res)=>{
+  try{
+    const club=String(req.query.club||"").trim(); if(!isValidClubName(club)) return res.status(400).json({error:"invalid club name"});
+    const filePath=path.join(NAVBAR_ROOT,club,"positions.json"); const data=await fs.promises.readFile(filePath,"utf8"); res.type("application/json").send(data);
+  }catch(err){ if(err.code==="ENOENT") return res.status(404).json({error:"not found"}); res.status(500).json({error:err.message}); }
+});
+app.post("/api/constructor/save", async (req,res)=>{
+  try{
+    const club=String(req.body.club||"").trim(); const data=req.body.data; if(!isValidClubName(club)) return res.status(400).json({error:"invalid club name"});
+    if(!data||typeof data!=="object") return res.status(400).json({error:"data required"});
+    const dir=path.join(NAVBAR_ROOT,club); await fs.promises.mkdir(dir,{recursive:true});
+    const filePath=path.join(dir,"positions.json"); await fs.promises.writeFile(filePath, JSON.stringify(data,null,2),"utf8");
+    res.json({ok:true, path:`NAVBAR/${club}/positions.json`});
+  }catch(err){ res.status(500).json({error:err.message}); }
+});
+app.get("/api/constructor/zones", async (req,res)=>{
+  try{
+    const club=String(req.query.club||"").trim(); if(!isValidClubName(club)) return res.status(400).json({error:"invalid club name"});
+    const dir=path.join(NAVBAR_ROOT,club); const files=await fs.promises.readdir(dir).catch(()=>[]); const htmlFile=files.find(f=>f.toLowerCase().endsWith(".html"));
+    if(!htmlFile) return res.json({zones:[], htmlFile:null});
+    const html=await fs.promises.readFile(path.join(dir,htmlFile),"utf8");
+    const zoneRegex=/<rect[^>]*class="zone"[^>]*>/gi; const zones=[]; let m;
+    while((m=zoneRegex.exec(html))!==null){ const tag=m[0]; const get=(attr)=>{ const r=new RegExp(attr+'\\s*=\\s*"([^"]+)"','i'); const mm=r.exec(tag); return mm?mm[1]:null; }; zones.push({zone:get("data-zone"), x:Number(get("x")), y:Number(get("y")), width:Number(get("width")), height:Number(get("height")), rx:Number(get("rx")||12)}); }
+    const labelRegex=/<text[^>]*class="zone-label"[^>]*>([^<]+)<\/text>/gi; const labels=[]; while((m=labelRegex.exec(html))!==null){ labels.push(m[1].trim()); }
+    res.json({zones, labels, htmlFile});
+  }catch(err){ res.status(500).json({error:err.message}); }
+});
+// Debug — проверить env и токены без раскрытия пароля
+app.get("/api/debug/env", (req,res)=>{
+  const clubId=resolveClub(req);
+  const envStatus={
+    LOG: process.env.LOG ? `set len=${process.env.LOG.length}` : "empty",
+    PAS: process.env.PAS ? `set len=${process.env.PAS.length}` : "empty",
+    STRONG_USERNAME: process.env.STRONG_USERNAME ? "set" : "empty",
+    STRONG_PASSWORD: process.env.STRONG_PASSWORD ? "set" : "empty",
+    club: clubId,
+    hasToken: !!tokenCaches[clubId]?.token,
+  };
+  res.json(envStatus);
+});
 // Deprecated stub — чтобы старые кэшированные HTML не спамили 404 (1000 запросов)
 // Возвращает пусто, не бьет в enes.tech
 app.get("/api/user-info", (req, res) => {
