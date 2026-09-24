@@ -8,9 +8,6 @@ const BACKEND_URL = "https://primeapp-2.onrender.com";
 const API_URL =
     `/api/map?office_id=1&limit=9999&_koshkarbayeva=1`;
 
-const USER_INFO_URL_PREFIX =
-    "https://koshkarbayeva.app.enes.tech/api/v2/map/";
-
 const SEED_CAP_TOKEN =
     "";
 
@@ -1179,50 +1176,47 @@ function formatSessionProgress(userInfo) {
     return "";
 }
 
-async function fetchPCUserInfo(pc, _token) {
-    if (!pc?.id) {
-        return null;
+// OPTIMIZED: bulk table 1 request
+function normalizeTableList(data) {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.results)) return data.results;
+    if (Array.isArray(data?.data)) return data.data;
+    if (Array.isArray(data?.items)) return data.items;
+    if (data && typeof data === "object") {
+        const arr = Object.values(data).find(Array.isArray);
+        if (arr) return arr;
     }
+    return [];
+}
 
-    try {
-        return await fetchJson(`${BACKEND_URL}/api/user-info?pc_id=${pc.id}&_koshkarbayeva=1`);
-    } catch (err) {
-        console.warn(`Не удалось получить user_info для ПК ${getPcLabel(pc)}`, err);
-        return null;
-    }
+async function fetchBulkTable() {
+    return fetchJson(`${BACKEND_URL}/api/table?_koshkarbayeva=1`);
 }
 
 async function getSoonPCs(pcs) {
-    const busyPCs = pcs.filter(pc =>
-        getStatus(pc) === "busy"
-    );
-
-    if (busyPCs.length === 0) {
+    const busyPCs = pcs.filter(pc => getStatus(pc) === "busy");
+    if (busyPCs.length === 0) return [];
+    try {
+        const table = await fetchBulkTable();
+        const list = normalizeTableList(table);
+        const byId = new Map();
+        const byNum = new Map();
+        for (const item of list) {
+            if (item.workstation_id != null) byId.set(String(item.workstation_id), item);
+            if (item.id != null) byId.set(String(item.id), item);
+            if (item.num != null) byNum.set(String(item.num), item);
+            if (item.device_id != null) byId.set(String(item.device_id), item);
+        }
+        const pcsWithInfo = busyPCs.map(pc => {
+            const userInfo = byId.get(String(pc.id)) || byNum.get(String(pc.num)) || null;
+            const releaseDate = getReleaseDate({ ...pc, ...userInfo, current_session: userInfo });
+            return { pc, userInfo, releaseDate };
+        });
+        return pcsWithInfo.filter(item => item.releaseDate).sort((a, b) => a.releaseDate - b.releaseDate).slice(0, 10);
+    } catch (err) {
+        console.warn("Bulk table failed:", err);
         return [];
     }
-
-    const token = await getAuthToken();
-    const pcsWithInfo = await Promise.all(
-        busyPCs.map(async pc => {
-            const userInfo = await fetchPCUserInfo(pc, token);
-            const releaseDate = getReleaseDate({
-                ...pc,
-                ...userInfo,
-                current_session: userInfo
-            });
-
-            return {
-                pc,
-                userInfo,
-                releaseDate
-            };
-        })
-    );
-
-    return pcsWithInfo
-        .filter(item => item.releaseDate)
-        .sort((a, b) => a.releaseDate - b.releaseDate)
-        .slice(0, 10);
 }
 
 async function renderSoonList(pcs) {

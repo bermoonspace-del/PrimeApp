@@ -18,64 +18,64 @@ const CLUBS = {
     mapUrl: "https://satpayeva.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://satpayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://satpayeva.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.SATPAYEVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.SATPAYEVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   baitursynova: {
     mapUrl: "https://baitursynova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://baitursynova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://baitursynova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.BAITURSYNOVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.BAITURSYNOVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   primegamehub: {
     mapUrl: "https://primegamehub.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://primegamehub.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://primegamehub.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.PRIMEGAMEHUB_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.PRIMEGAMEHUB_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   koshkarbayeva: {
     mapUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://koshkarbayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.KOSHKARBAYEVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.KOSHKARBAYEVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   kumysbekova: {
     mapUrl: "https://kumysbekova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://kumysbekova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://kumysbekova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.KUMYSBEKOVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.KUMYSBEKOVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   moldagalieva: {
     mapUrl: "https://moldagalieva.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://moldagalieva.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://moldagalieva.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.LOG || "",
-    password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.PAS || "",
+    username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   primekenesary: {
     mapUrl: "https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://primekenesary.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.PRIMEKENESARY_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.PRIMEKENESARY_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   muhamedkhanova: {
     mapUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://muhamedkhanova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.MUHAMEDKHANOVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.MUHAMEDKHANOVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
   bekturova: {
     mapUrl: "https://bekturova.app.enes.tech/api/v2/map_v2/get_map/",
     tokenUrl: "https://bekturova.app.enes.tech/api/v2/user/idm_admin_auth/",
     tableUrl: "https://bekturova.app.enes.tech/api/v2/map/table/",
-    username: () => process.env.LOG || "",
-    password: () => process.env.PAS || "",
+    username: () => process.env.BEKTUROVA_USERNAME || process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.BEKTUROVA_PASSWORD || process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
   },
 };
 
@@ -255,6 +255,17 @@ app.get("/api/table", async (req, res) => {
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
+});
+
+// Deprecated stub — чтобы старые кэшированные HTML не спамили 404 (1000 запросов)
+// Возвращает пусто, не бьет в enes.tech
+app.get("/api/user-info", (req, res) => {
+  res.set("X-Deprecated", "use /api/table");
+  res.json({});
+});
+app.get("/api/user-info/*", (req, res) => {
+  res.set("X-Deprecated", "use /api/table");
+  res.json({});
 });
 
 app.post("/api/bookings", async (req, res) => {
