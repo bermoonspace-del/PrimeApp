@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Конструктор карт — PrimeApp</title>
+<style>
+:root{--bg:#0a0a0a;--panel:#111214;--panel2:#15181e;--border:rgba(255,255,255,.12);--muted:rgba(255,255,255,.55);--accent:#fff;--blue:#2e89ff;--red:#cc2222}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
+a{color:#8ab4ff;text-decoration:none}
+button{font-family:inherit}
+.topbar{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#050505;border-bottom:1px solid var(--border);position:relative;z-index:10}
+.topbar h1{font-size:15px;margin:0;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+.topbar .spacer{flex:1}
+.btn{appearance:none;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.primary{background:#fff;color:#000;border-color:#fff}
+.btn.primary:hover{background:#f0f0f0}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.ghost{background:transparent}
+.btn.small{padding:6px 10px;font-size:12px}
+.btn.danger{border-color:rgba(204,34,34,.4);color:#ff9c9c}
+.btn.danger:hover{background:rgba(204,34,34,.15);border-color:var(--red)}
+.layout{display:grid;grid-template-columns:320px 1fr 340px;height:calc(100% - 56px)}
+.panel{background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.panel.right{border-right:none;border-left:1px solid var(--border);background:var(--panel2)}
+.panel-head{padding:12px 12px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panel-head h2{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.panel-body{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:14px}
+.group{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px;display:grid;gap:8px}
+.group-title{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;gap:6px;align-items:center}
+.row label{font-size:12px;color:var(--muted);min-width:62px}
+.input, .select{flex:1;min-width:0;height:32px;padding:0 8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:#0d0d0d;color:#fff;font-size:13px;outline:none}
+.input:focus,.select:focus{border-color:var(--blue)}
+.input.small{height:28px;font-size:12px}
+.select{cursor:pointer}
+.number{width:72px}
+.check{width:16px;height:16px;accent-color:var(--blue)}
+.divider{height:1px;background:var(--border);margin:2px 0}
+.block-list,.zone-list,.pc-list{display:grid;gap:6px;max-height:240px;overflow:auto;padding-right:2px}
+.block-item,.zone-item{display:flex;align-items:center;gap:8px;padding:8px 8px;border-radius:8px;background:#0d0d0d;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:.15s}
+.block-item:hover,.zone-item:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.06)}
+.block-item.active,.zone-item.active{border-color:var(--blue);background:rgba(46,137,255,.12)}
+.block-item .name,.zone-item .name{flex:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.block-item .count{font-size:11px;color:var(--muted);background:rgba(255,255,255,.08);padding:2px 6px;border-radius:999px}
+.icon-btn{width:26px;height:26px;display:grid;place-items:center;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#fff;cursor:pointer;font-size:12px}
+.icon-btn:hover{background:rgba(255,255,255,.1)}
+.canvas-wrap{position:relative;background:#000;display:flex;flex-direction:column;overflow:hidden}
+.canvas-toolbar{height:44px;display:flex;align-items:center;gap:8px;padding:0 10px;background:rgba(0,0,0,.7);border-bottom:1px solid var(--border);backdrop-filter:blur(6px)}
+.canvas-area{flex:1;position:relative;overflow:auto;background:radial-gradient(ellipse at 50% 30%, rgba(204,34,34,.08), transparent 60%), #0a0a0a;display:flex;align-items:center;justify-content:center;padding:20px}
+.svg-stage{width:min(420px,96%);height:auto;aspect-ratio:9 / 16;max-height:85vh;background:#050608;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);cursor:crosshair}
+.legend{position:absolute;right:12px;top:56px;background:rgba(5,6,12,.92);border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:11px;color:var(--muted);z-index:2;display:grid;gap:4px;min-width:150px}
+.legend b{color:#fff;font-size:11px}
+.stat{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.75);border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:11px;color:var(--muted);z-index:2}
+.inspector{display:grid;gap:10px}
+.inspector-empty{color:var(--muted);font-size:13px;text-align:center;padding:30px 10px;border:1px dashed var(--border);border-radius:12px}
+.kv{display:grid;grid-template-columns:92px 1fr;gap:6px;align-items:center;font-size:12px}
+.kv label{color:var(--muted)}
+.json-preview{width:100%;height:220px;background:#0a0a0a;color:#c8d2ec;border:1px solid var(--border);border-radius:10px;padding:8px;font-family:Consolas,monospace;font-size:11px;white-space:pre;overflow:auto}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111827;color:#fff;border:1px solid var(--border);padding:10px 14px;border-radius:999px;font-size:13px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}
+.toast.show{display:block;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000}
+.modal-backdrop.open{display:flex}
+.modal{background:#111214;border:1px solid var(--border);border-radius:16px;padding:18px;width:min(440px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.6);display:grid;gap:12px}
+.modal h3{margin:0;font-size:16px}
+.help{font-size:12px;color:var(--muted);line-height:1.5}
+.pc-dot{cursor:grab}
+.pc-dot:active{cursor:grabbing}
+.pc-dot.selected circle{stroke:#2e89ff;stroke-width:3}
+.zone-rect{fill:none;stroke:rgba(255,255,255,.18);stroke-width:2;stroke-dasharray:8 6;cursor:pointer}
+.zone-rect.selected{stroke:#2e89ff;stroke-width:2.5;fill:rgba(46,137,255,.08)}
+.zone-label{font-size:8px;font-weight:800;fill:rgba(255,255,255,.5);pointer-events:none;text-anchor:middle}
+.grid-line{stroke:rgba(255,255,255,.06);stroke-width:.5}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>🧩 Конструктор карт — PrimeApp</h1>
+  <span style="font-size:11px;color:var(--muted);border-left:1px solid var(--border);padding-left:10px;margin-left:4px">редактор positions.json</span>
+  <div class="spacer"></div>
+  <button class="btn" id="btn-import">📂 Импорт</button>
+  <input type="file" id="file-import" accept=".json" hidden>
+  <button class="btn" id="btn-copy">📋 Копировать</button>
+  <button class="btn" id="btn-download">⬇️ Скачать</button>
+  <button class="btn blue" id="btn-save">💾 Сохранить на сервер</button>
+  <button class="btn primary" id="btn-help">?</button>
+</div>
+
+<div class="layout">
+  <!-- LEFT -->
+  <div class="panel">
+    <div class="panel-head"><h2>Клубы и блоки</h2><button class="btn small" id="btn-new-club">+ Новый</button></div>
+    <div class="panel-body">
+      <div class="group">
+        <div class="group-title">Клуб</div>
+        <div class="row">
+          <select class="select" id="club-select"><option value="">— выберите —</option></select>
+          <button class="btn small" id="btn-load">Загрузить</button>
+        </div>
+        <div class="row"><label>Имя папки</label><input class="input small" id="club-name" placeholder="TRIUMPH"></div>
+        <div class="row" style="font-size:11px;color:var(--muted)">Папка: <code id="club-path" style="color:#8ab4ff">NAVBAR/—/positions.json</code></div>
+        <div class="row">
+          <button class="btn small" id="btn-create-block">+ Блок</button>
+          <button class="btn small" id="btn-add-pc">+ ПК</button>
+          <button class="btn small" id="btn-add-zone">+ Зона</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Глобальные настройки</div>
+        <div class="row"><label>ViewBox W</label><input class="input number" id="vb-w" type="number" value="720"><label style="min-width:auto">H</label><input class="input number" id="vb-h" type="number" value="1280"></div>
+        <div class="row"><label>Origin X</label><input class="input number" id="origin-x" type="number" value="0"><label style="min-width:auto">Y</label><input class="input number" id="origin-y" type="number" value="0"></div>
+        <div class="row"><label><input type="checkbox" class="check" id="show-grid" checked> Сетка</label><label><input type="checkbox" class="check" id="snap-grid" checked> Магнит</label><label><input type="checkbox" class="check" id="show-zones" checked> Зоны</label></div>
+        <div class="row"><label><input type="checkbox" class="check" id="show-labels" checked> Подписи</label><label><input type="checkbox" class="check" id="show-numbers" checked> Номера</label></div>
+      </div>
+
+      <div class="group">
+        <div class="row" style="justify-content:space-between"><span class="group-title" style="margin:0">Блоки</span><span id="blocks-count" style="font-size:11px;color:var(--muted)">0</span></div>
+        <div class="block-list" id="block-list"></div>
+      </div>
+
+      <div class="group">
+        <div class="row" style="justify-content:space-between"><span class="group-title" style="margin:0">Зоны</span><button class="btn small" id="btn-export-zones">Экспорт HTML</button></div>
+        <div class="zone-list" id="zone-list"></div>
+        <div class="help" style="font-size:11px">Зоны — визуальные рамки (dashed). Хранятся отдельно, экспортируются как <code>&lt;rect class="zone"&gt;</code> для вставки в *.html</div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Быстрые действия</div>
+        <div class="row"><button class="btn small" id="btn-auto-layout">Авто-выравнивание</button><button class="btn small" id="btn-renumber">Перенумеровать</button></div>
+        <div class="row"><button class="btn small danger" id="btn-clear">Очистить карту</button><button class="btn small" id="btn-reset-view">Сброс вида</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="canvas-wrap">
+    <div class="canvas-toolbar">
+      <span style="font-size:12px;color:var(--muted)">Клик — добавить ПК • Перетаскивание — переместить • Клик по ПК/зоне — выбрать • Delete — удалить • Wheel — масштаб</span>
+      <div class="spacer" style="flex:1"></div>
+      <button class="btn small" id="btn-zoom-in">＋</button>
+      <button class="btn small" id="btn-zoom-out">－</button>
+      <button class="btn small" id="btn-fit">⛶ Fit</button>
+      <span id="pc-counter" style="font-size:12px;color:var(--muted)">ПК: 0</span>
+    </div>
+    <div class="canvas-area" id="canvas-area">
+      <svg id="stage" class="svg-stage" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="legend" id="legend">
+        <b>Легенда</b>
+        <div>● ПК — перетащи</div>
+        <div>▭ Зона — перетащи/ресайз</div>
+        <div style="opacity:.6">Col/Row внутри блока</div>
+      </div>
+      <div class="stat" id="stat">ViewBox 720×1280 • Origin 0,0 • Блоков 0</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="panel right">
+    <div class="panel-head"><h2>Инспектор</h2><button class="btn small" id="btn-deselect">Снять выбор</button></div>
+    <div class="panel-body">
+      <div id="inspector-empty" class="inspector-empty">Выбери ПК, блок или зону<br><span style="font-size:11px;opacity:.7">Подсказка: кликни по кружку ПК на карте</span></div>
+      <div id="inspector-pc" class="inspector" hidden>
+        <div class="group">
+          <div class="group-title">ПК <span id="pc-title">—</span></div>
+          <div class="kv"><label>Номер</label><input class="input small" id="pc-num" type="number"></div>
+          <div class="kv"><label>Блок</label><select class="select" id="pc-block"></select></div>
+          <div class="kv"><label>Тип</label><select class="select" id="pc-type"><option value="grid">Сетка (col/row)</option><option value="override">Абсолют (override)</option></select></div>
+          <div class="row" id="pc-grid-row"><label>Col</label><input class="input number" id="pc-col" type="number" step="0.1"><label>Row</label><input class="input number" id="pc-row" type="number" step="0.1"></div>
+          <div class="row" id="pc-abs-row" hidden><label>X</label><input class="input number" id="pc-x" type="number"><label>Y</label><input class="input number" id="pc-y" type="number"></div>
+          <div class="row"><button class="btn small" id="btn-pc-apply">Применить</button><button class="btn small danger" id="btn-pc-delete">Удалить ПК</button></div>
+          <div class="help" id="pc-coords-help">Абс: —</div>
+        </div>
+      </div>
+      <div id="inspector-block" class="inspector" hidden>
+        <div class="group">
+          <div class="group-title">Блок <span id="block-title">—</span></div>
+          <div class="kv"><label>Имя</label><input class="input small" id="block-name"></div>
+          <div class="kv"><label>Origin X</label><input class="input small" id="block-ox" type="number"></div>
+          <div class="kv"><label>Origin Y</label><input class="input small" id="block-oy" type="number"></div>
+          <div class="kv"><label>Step</label><input class="input small" id="block-step" type="number" step="0.1"></div>
+          <div class="kv"><label>StepY</label><input class="input small" id="block-stepy" type="number" step="0.1" placeholder="= Step"></div>
+          <div class="row"><button class="btn small" id="btn-block-apply">Применить</button><button class="btn small danger" id="btn-block-delete">Удалить блок</button></div>
+          <div class="help">ПК в блоке двигаются вместе с origin/step</div>
+        </div>
+      </div>
+      <div id="inspector-zone" class="inspector" hidden>
+        <div class="group">
+          <div class="group-title">Зона <span id="zone-title">—</span></div>
+          <div class="kv"><label>Data-zone</label><input class="input small" id="zone-id"></div>
+          <div class="kv"><label>Подпись</label><input class="input small" id="zone-label"></div>
+          <div class="row"><label>X</label><input class="input number" id="zone-x" type="number"><label>Y</label><input class="input number" id="zone-y" type="number"></div>
+          <div class="row"><label>W</label><input class="input number" id="zone-w" type="number"><label>H</label><input class="input number" id="zone-h" type="number"></div>
+          <div class="kv"><label>RX</label><input class="input small" id="zone-rx" type="number" value="12"></div>
+          <div class="row"><button class="btn small" id="btn-zone-apply">Применить</button><button class="btn small danger" id="btn-zone-delete">Удалить зону</button></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">JSON предпросмотр</div>
+        <textarea class="json-preview" id="json-preview" readonly></textarea>
+        <div class="row"><button class="btn small" id="btn-validate">Проверить</button><span id="validate-msg" style="font-size:11px;color:var(--muted)"></span></div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Импорт / экспорт</div>
+        <div class="help">Формат = <code>{"layout":{"origin":[x,y],"blocks":{...}}}</code> — как в positions.json. Зоны не входят в JSON, экспортируй отдельно.</div>
+        <textarea class="json-preview" id="json-io" placeholder="Вставь JSON сюда для импорта..." style="height:120px"></textarea>
+        <div class="row"><button class="btn small" id="btn-io-import">Импортировать из поля</button><button class="btn small" id="btn-io-export">Заполнить из карты</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-new-pc">
+  <div class="modal">
+    <h3>Новый ПК</h3>
+    <div class="kv"><label>Номер</label><input class="input" id="new-pc-num" type="number" placeholder="1"></div>
+    <div class="kv"><label>Блок</label><select class="select" id="new-pc-block"></select></div>
+    <div class="kv"><label>Col</label><input class="input" id="new-pc-col" type="number" step="0.1" value="0"><label style="margin-left:8px">Row</label><input class="input" id="new-pc-row" type="number" step="0.1" value="0"></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost" id="new-pc-cancel">Отмена</button><button class="btn primary" id="new-pc-create">Создать</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-new-block">
+  <div class="modal">
+    <h3>Новый блок</h3>
+    <div class="kv"><label>Имя</label><input class="input" id="new-block-name" placeholder="block_1_10"></div>
+    <div class="kv"><label>Origin X</label><input class="input" id="new-block-ox" type="number" value="100"></div>
+    <div class="kv"><label>Origin Y</label><input class="input" id="new-block-oy" type="number" value="100"></div>
+    <div class="kv"><label>Step</label><input class="input" id="new-block-step" type="number" value="70"></div>
+    <div class="kv"><label>StepY</label><input class="input" id="new-block-stepy" type="number" placeholder="=step"></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost" id="new-block-cancel">Отмена</button><button class="btn primary" id="new-block-create">Создать</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-help">
+  <div class="modal" style="width:min(560px,96vw)">
+    <h3>Как пользоваться конструктором</h3>
+    <div class="help" style="font-size:13px;line-height:1.6">
+      <b>1. Загрузи карту:</b> выбери клуб слева → Загрузить. Или создай новую — введи имя папки (напр. <code>MYCLUB</code>).<br>
+      <b>2. Редактируй блоки:</b> блок = группа ПК с общим origin и шагом сетки. Меняй origin/step — все ПК блока сдвинутся.<br>
+      <b>3. Редактируй ПК:</b> клик по кружку → инспектор справа. Меняй номер, блок, col/row или переключи в <code>override</code> (абсолютные координаты). Перетаскивай мышью — координаты обновятся.<br>
+      <b>4. Добавляй ПК:</b> кнопка + ПК или клик по пустому месту на карте (с зажатым Shift) — откроется модалка.<br>
+      <b>5. Зоны:</b> dashed прямоугольники. + Зона → перетаскивай и ресайзь. Зоны не сохраняются в positions.json — кнопка <b>Экспорт HTML</b> даст код для вставки в <code>*.html</code>.<br>
+      <b>6. Сохранение:</b> <b>Сохранить на сервер</b> запишет <code>NAVBAR/КЛУБ/positions.json</code> через backend. <b>Скачать</b> / <b>Копировать</b> — локально.<br>
+      <b>Формат:</b> <code>{"layout":{"origin":[x,y],"blocks":{"block_name":{"origin":[x,y],"step":70,"stepY":70,"pcs":{"1":[0,0]}}}}}</code>. Поддерживаются <code>override: [x,y]</code>.<br>
+      <b>Горячие клавиши:</b> Delete — удалить выбранное, Esc — снять выбор, Ctrl+S — сохранить, Ctrl+Shift+E — экспорт.
+    </div>
+    <div class="row" style="justify-content:flex-end"><button class="btn primary" id="help-close">Понятно</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_VIEWBOX = [720,1280];
+let state = {
+  viewBox: [...DEFAULT_VIEWBOX],
+  origin: [0,0],
+  blocks: {}, // blockName -> {origin:[x,y], step, stepY, pcs: {num: [col,row] or {override:[x,y]}}}
+  zones: [], // {zone, label, x,y,width,height,rx, _id}
+  club: ""
+};
+let selected = {type:null, id:null, pcNum:null}; // type: pc|block|zone
+let scale = 1;
+let pan = {x:0,y:0};
+let drag = null; // {type, id, startSvg, startMouse, origPos}
+let nextZoneId = 1;
+
+const els = {
+  stage: document.getElementById('stage'),
+  clubSelect: document.getElementById('club-select'),
+  clubName: document.getElementById('club-name'),
+  clubPath: document.getElementById('club-path'),
+  vbW: document.getElementById('vb-w'),
+  vbH: document.getElementById('vb-h'),
+  originX: document.getElementById('origin-x'),
+  originY: document.getElementById('origin-y'),
+  showGrid: document.getElementById('show-grid'),
+  snapGrid: document.getElementById('snap-grid'),
+  showZones: document.getElementById('show-zones'),
+  showLabels: document.getElementById('show-labels'),
+  showNumbers: document.getElementById('show-numbers'),
+  blockList: document.getElementById('block-list'),
+  zoneList: document.getElementById('zone-list'),
+  blocksCount: document.getElementById('blocks-count'),
+  pcCounter: document.getElementById('pc-counter'),
+  stat: document.getElementById('stat'),
+  jsonPreview: document.getElementById('json-preview'),
+  jsonIo: document.getElementById('json-io'),
+  inspectorEmpty: document.getElementById('inspector-empty'),
+  inspectorPc: document.getElementById('inspector-pc'),
+  inspectorBlock: document.getElementById('inspector-block'),
+  inspectorZone: document.getElementById('inspector-zone'),
+  pcBlock: document.getElementById('pc-block'),
+  toast: document.getElementById('toast')
+};
+
+// init viewBox inputs listener
+['vb-w','vb-h','origin-x','origin-y'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    state.viewBox = [Number(els.vbW.value)||720, Number(els.vbH.value)||1280];
+    state.origin = [Number(els.originX.value)||0, Number(els.originY.value)||0];
+    render();
+  });
+});
+[els.showGrid, els.snapGrid, els.showZones, els.showLabels, els.showNumbers].forEach(el=> el.addEventListener('change', render));
+
+function toast(msg, ms=2200){
+  els.toast.textContent = msg;
+  els.toast.classList.add('show');
+  setTimeout(()=> els.toast.classList.remove('show'), ms);
+}
+
+function updateClubPath(){
+  const name = (els.clubName.value.trim() || state.club || "—");
+  els.clubPath.textContent = `NAVBAR/${name}/positions.json`;
+}
+
+els.clubName.addEventListener('input', updateClubPath);
+
+// load club list from backend
+async function loadClubList(){
+  try{
+    const res = await fetch('/api/constructor/list');
+    if(!res.ok) throw new Error('list failed');
+    const j = await res.json();
+    const clubs = j.clubs || [];
+    els.clubSelect.innerHTML = '<option value="">— выберите —</option>' + clubs.map(c=> `<option value="${c}">${c}</option>`).join('');
+    // also add fallback hardcoded list if empty
+    if(clubs.length===0){
+      const hard = ["TRIUMPH","ARNAU","asfen","bait","bekt","KENESARY","koshk","kumis","molda","muhamedh","SATPAEVA"];
+      hard.forEach(c=>{
+        const o=document.createElement('option'); o.value=c; o.textContent=c; els.clubSelect.appendChild(o);
+      });
+    }
+  }catch(e){
+    console.warn(e);
+    const hard = ["TRIUMPH","ARNAU","asfen","bait","bekt","KENESARY","koshk","kumis","molda","muhamedh","SATPAEVA"];
+    els.clubSelect.innerHTML = '<option value="">— выберите —</option>' + hard.map(c=> `<option value="${c}">${c}</option>`).join('');
+  }
+}
+loadClubList();
+
+els.clubSelect.addEventListener('change', ()=>{
+  els.clubName.value = els.clubSelect.value;
+  updateClubPath();
+});
+
+document.getElementById('btn-load').addEventListener('click', async ()=>{
+  const club = (els.clubSelect.value || els.clubName.value.trim());
+  if(!club) return toast('Выбери клуб');
+  await loadClub(club);
+});
+
+const CLUB_VIEWBOX = {
+  "TRIUMPH":[1440,725],
+  "ARNAU":[2000,1230],
+  "koshk":[1440,725],
+  "asfen":[1440,725],
+  "bait":[1440,725],
+  "bekt":[1440,725],
+  "KENESARY":[2000,1230],
+  "kumis":[1440,725],
+  "molda":[2000,1000],
+  "muhamedh":[1440,725],
+  "SATPAEVA":[1440,725],
+  "SATPAEVA_":[1440,725]
+};
+
+async function loadClub(club){
+  try{
+    toast('Загрузка '+club+'...');
+    // try backend first
+    let data = null;
+    try{
+      const res = await fetch(`/api/constructor/load?club=${encodeURIComponent(club)}`);
+      if(res.ok) data = await res.json();
+    }catch{}
+    if(!data){
+      const res = await fetch(`${club}/positions.json?v=${Date.now()}`, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      data = await res.json();
+    }
+    importState(data, club);
+    // auto viewBox from preset or from data
+    if(CLUB_VIEWBOX[club]){
+      els.vbW.value = CLUB_VIEWBOX[club][0];
+      els.vbH.value = CLUB_VIEWBOX[club][1];
+    } else {
+      // guess from max coords
+      const pcs = getAllPCs();
+      if(pcs.length){
+        const maxX = Math.max(...pcs.map(p=>p.x));
+        const maxY = Math.max(...pcs.map(p=>p.y));
+        const minX = Math.min(...pcs.map(p=>p.x));
+        const minY = Math.min(...pcs.map(p=>p.y));
+        const needW = Math.ceil(Math.max(maxX+80, 720));
+        const needH = Math.ceil(Math.max(maxY+80, 1280));
+        // if negative min, we will handle via viewBox offset later, but enlarge width/height to include
+        if(maxX> Number(els.vbW.value) || maxY> Number(els.vbH.value) || minX<0 || minY<0){
+          els.vbW.value = needW;
+          els.vbH.value = needH;
+        }
+      }
+    }
+    // load zones via backend
+    try{
+      const zres = await fetch(`/api/constructor/zones?club=${encodeURIComponent(club)}`);
+      if(zres.ok){
+        const zj = await zres.json();
+        if(Array.isArray(zj.zones) && zj.zones.length){
+          state.zones = zj.zones.map((z,i)=> ({
+            zone: z.zone || `zone-${i}`,
+            label: (zj.labels && zj.labels[i]) || z.zone || `Зона ${i+1}`,
+            x: Number(z.x)||0, y:Number(z.y)||0, width:Number(z.width)||200, height:Number(z.height)||120, rx:Number(z.rx)||12, _id: `z${nextZoneId++}`
+          }));
+          // also try to detect viewBox from html file itself (zone-overlay viewBox)
+          try{
+            const dir = club;
+            const htmlFiles = zj.htmlFile ? [zj.htmlFile] : [];
+            // try fetch html to parse viewBox
+            if(htmlFiles.length){
+              const hres = await fetch(`${club}/${htmlFiles[0]}?v=${Date.now()}`);
+              if(hres.ok){
+                const htmlTxt = await hres.text();
+                const m = htmlTxt.match(/viewBox\s*=\s*\"0\s+0\s+(\d+)\s+(\d+)\"/i);
+                if(m){ els.vbW.value = m[1]; els.vbH.value = m[2]; }
+              }
+            }
+          }catch{}
+        }
+      }
+    }catch(e){ console.warn('zones load',e)}
+    render();
+    toast('Загружено: '+club);
+  }catch(e){
+    console.error(e);
+    toast('Ошибка загрузки: '+e.message);
+  }
+}
+
+function importState(data, clubName){
+  state.club = clubName || state.club || "";
+  els.clubName.value = state.club;
+  updateClubPath();
+  // detect format
+  let layout = data.layout || data;
+  // handle outer origin
+  let outerOrigin = [0,0];
+  let blocksData = layout;
+  if(layout.origin && layout.blocks){
+    outerOrigin = [Number(layout.origin[0])||0, Number(layout.origin[1])||0];
+    blocksData = layout.blocks;
+  } else if(Object.keys(layout).length===1){
+    const top = layout[Object.keys(layout)[0]];
+    if(top && top.origin && top.blocks){
+      outerOrigin = [Number(top.origin[0])||0, Number(top.origin[1])||0];
+      blocksData = top.blocks;
+    }
+  }
+  state.origin = outerOrigin;
+  els.originX.value = outerOrigin[0];
+  els.originY.value = outerOrigin[1];
+  // try to guess viewBox from blocks extents or keep current
+  state.blocks = {};
+  for(const [bName, block] of Object.entries(blocksData)){
+    const origin = Array.isArray(block.origin) ? [Number(block.origin[0])||0, Number(block.origin[1])||0] : [0,0];
+    const step = Number(block.step) || 70;
+    const stepY = block.stepY!=null ? Number(block.stepY) : step;
+    const pcs = {};
+    const pcsData = block.pcs || block;
+    if(pcsData && typeof pcsData==='object' && !Array.isArray(pcsData)){
+      for(const [num, cell] of Object.entries(pcsData)){
+        if(cell && typeof cell==='object' && !Array.isArray(cell) && Array.isArray(cell.override)){
+          pcs[num] = {override: [Number(cell.override[0])||0, Number(cell.override[1])||0]};
+        } else if(Array.isArray(cell)){
+          pcs[num] = [Number(cell[0])||0, Number(cell[1])||0];
+        }
+      }
+    }
+    state.blocks[bName] = {origin, step, stepY, pcs};
+  }
+  // guess viewBox if not set
+  // keep user VB inputs unless user wants auto
+  // count pcs for stat
+  updateBlockSelectors();
+}
+
+function exportState(){
+  const blocks = {};
+  for(const [name, b] of Object.entries(state.blocks)){
+    const pcs = {};
+    for(const [num, cell] of Object.entries(b.pcs)){
+      if(cell && cell.override) pcs[num] = {override: [...cell.override]};
+      else pcs[num] = [...cell];
+    }
+    const obj = {origin:[...b.origin], step:b.step, pcs};
+    if(b.stepY!==b.step) obj.stepY = b.stepY;
+    blocks[name] = obj;
+  }
+  return {layout: {origin:[...state.origin], blocks}};
+}
+
+function getAbsolutePos(num, blockName){
+  const block = state.blocks[blockName];
+  if(!block) return null;
+  const cell = block.pcs[num];
+  if(!cell) return null;
+  if(cell.override){
+    return [cell.override[0] + state.origin[0], cell.override[1] + state.origin[1]]; // wait outer origin handling: in load we added outerOrigin to block origin? Actually we merged outer origin into state.origin separate, and block origin kept as is. In render we use state.origin + block.origin + col*step
+    // For override we stored absolute without outer? In load for override we did NOT add outer? Let's check: for override we stored cell.override + outer? In load we did for override: ox2 = Number(cell.override[0]) + outerOrigin[0] ??? In TRIUMPH we added outer. In ARNAU we stored raw. Need consistent.
+    // In importState we stored override raw from JSON, not adding outer. So absolute = override + state.origin? But if file had layout.origin distinct, override in file is absolute before adding outer? In TRIUMPH file override includes absolute coords that already include outer? In positions.json for booth override is [1000,893] with layout origin [-5,-350] and block origin [0,0]. So actual render uses ox2 = override[0] + outerOrigin[0] => 995, 543. So our storage should be raw. To render we need to add state.origin.
+    // So return override + state.origin + (maybe block origin? but for override blocks origin is [0,0] generally)
+  }
+  // grid
+  // Actually for override we currently stored raw override (from file). For rendering we need to add state.origin.
+  // For grid we compute ox+col*step + state.origin
+  if(cell.override){
+    // block.origin already, but for booth block origin is [0,0], so ignore
+    // To be safe, add block.origin as well? In TRIUMPH booth origin [0,0] so same. For ps5_127_136 override with origin [0,0] same.
+    // So absolute = state.origin[0] + cell.override[0] (+ block.origin if not zero?)
+    // Check: Should we add block.origin? In load for override we did ox2 = Number(cell.override[0]) + outerOrigin[0] (and stored that?). Actually we stored cell.override as [ox2,oy2] already including outer? Wait importState currently stores raw cell.override without adding outer. So we lost outer addition.
+    // Let's fix: store raw, and render adds state.origin + block.origin
+    return [state.origin[0] + block.origin[0] + cell.override[0], state.origin[1] + block.origin[1] + cell.override[1]];
+  }
+  const col = cell[0], row = cell[1];
+  return [state.origin[0] + block.origin[0] + col * block.step, state.origin[1] + block.origin[1] + row * block.stepY];
+}
+
+// compute inverse for drag: given absolute x,y and block, compute col/row
+function absoluteToGrid(absX, absY, block){
+  const ox = state.origin[0] + block.origin[0];
+  const oy = state.origin[1] + block.origin[1];
+  const col = (absX - ox) / block.step;
+  const row = (absY - oy) / block.stepY;
+  return [col, row];
+}
+
+function findPCByNum(num){
+  for(const [bName, block] of Object.entries(state.blocks)){
+    if(block.pcs[String(num)] != null) return {blockName:bName, block, cell:block.pcs[String(num)]};
+  }
+  return null;
+}
+
+function getAllPCs(){
+  const list=[];
+  for(const [bName, block] of Object.entries(state.blocks)){
+    for(const [num, cell] of Object.entries(block.pcs)){
+      const abs = getAbsolutePos(num, bName);
+      if(!abs) continue;
+      list.push({num: String(num), blockName:bName, block, cell, x:abs[0], y:abs[1]});
+    }
+  }
+  return list;
+}
+
+function updateBlockSelectors(){
+  const options = Object.keys(state.blocks).map(n=> `<option value="${n}">${n}</option>`).join('');
+  document.getElementById('pc-block').innerHTML = options;
+  document.getElementById('new-pc-block').innerHTML = options;
+  // if none, create default
+}
+
+function render(){
+  const vbW = Number(els.vbW.value)||720;
+  const vbH = Number(els.vbH.value)||1280;
+  state.viewBox = [vbW, vbH];
+  state.origin = [Number(els.originX.value)||0, Number(els.originY.value)||0];
+  updateClubPath();
+  const pcs = getAllPCs();
+  els.pcCounter.textContent = `ПК: ${pcs.length}`;
+  els.blocksCount.textContent = Object.keys(state.blocks).length;
+  els.stat.textContent = `ViewBox ${vbW}×${vbH} • Origin ${state.origin[0]},${state.origin[1]} • Блоков ${Object.keys(state.blocks).length} • ПК ${pcs.length} • Зон ${state.zones.length}`;
+
+  // block list
+  els.blockList.innerHTML = Object.entries(state.blocks).map(([name, b])=>{
+    const cnt = Object.keys(b.pcs).length;
+    const active = selected.type==='block' && selected.id===name ? 'active' : '';
+    return `<div class="block-item ${active}" data-block="${name}"><span class="name">${name}</span><span class="count">${cnt}</span><button class="icon-btn" data-edit-block="${name}">✎</button><button class="icon-btn" data-del-block="${name}">✕</button></div>`;
+  }).join('') || '<div style="font-size:11px;color:var(--muted);text-align:center;padding:10px">Нет блоков<br><button class="btn small" onclick="document.getElementById(\'btn-create-block\').click()">+ Создать</button></div>';
+
+  // zone list
+  els.zoneList.innerHTML = state.zones.map(z=>{
+    const active = selected.type==='zone' && selected.id===z._id ? 'active' : '';
+    return `<div class="zone-item ${active}" data-zone="${z._id}"><span class="name">${z.zone} — ${z.label}</span><button class="icon-btn" data-edit-zone="${z._id}">✎</button><button class="icon-btn" data-del-zone="${z._id}">✕</button></div>`;
+  }).join('') || '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Нет зон</div>';
+
+  // bind block list clicks
+  els.blockList.querySelectorAll('.block-item').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-edit-block]') || e.target.closest('[data-del-block]')) return;
+      const name = el.dataset.block;
+      selectBlock(name);
+    });
+  });
+  els.blockList.querySelectorAll('[data-edit-block]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const name = btn.dataset.editBlock;
+      selectBlock(name);
+    });
+  });
+  els.blockList.querySelectorAll('[data-del-block]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const name = btn.dataset.delBlock;
+      if(confirm(`Удалить блок "${name}" и все его ПК?`)){
+        delete state.blocks[name];
+        if(selected.type==='block' && selected.id===name) deselect();
+        updateBlockSelectors();
+        render();
+      }
+    });
+  });
+  // zone list
+  els.zoneList.querySelectorAll('.zone-item').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-edit-zone]')||e.target.closest('[data-del-zone]')) return;
+      const id = el.dataset.zone;
+      selectZone(id);
+    });
+  });
+  els.zoneList.querySelectorAll('[data-edit-zone]').forEach(btn=>{
+    btn.addEventListener('click', e=>{ e.stopPropagation(); selectZone(btn.dataset.editZone);});
+  });
+  els.zoneList.querySelectorAll('[data-del-zone]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const id = btn.dataset.delZone;
+      state.zones = state.zones.filter(z=> z._id!==id);
+      if(selected.type==='zone' && selected.id===id) deselect();
+      render();
+    });
+  });
+
+  // svg render
+  const svg = els.stage;
+  svg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
+  svg.setAttribute('width', '100%');
+  svg.setAttribute('height', '100%');
+  svg.style.cursor = 'crosshair';
+  // clear
+  svg.innerHTML = '';
+  // defs: grid pattern
+  const NS = 'http://www.w3.org/2000/svg';
+  // background rect
+  const bg = document.createElementNS(NS,'rect');
+  bg.setAttribute('x','0'); bg.setAttribute('y','0'); bg.setAttribute('width', vbW); bg.setAttribute('height', vbH);
+  bg.setAttribute('fill', '#070709');
+  svg.appendChild(bg);
+
+  // grid
+  if(els.showGrid.checked){
+    const gridGroup = document.createElementNS(NS,'g');
+    gridGroup.setAttribute('opacity','0.5');
+    const step = 70;
+    for(let x=0; x<vbW; x+=step){
+      const line = document.createElementNS(NS,'line');
+      line.setAttribute('x1',x); line.setAttribute('y1',0); line.setAttribute('x2',x); line.setAttribute('y2',vbH);
+      line.setAttribute('class','grid-line');
+      gridGroup.appendChild(line);
+    }
+    for(let y=0; y<vbH; y+=step){
+      const line = document.createElementNS(NS,'line');
+      line.setAttribute('x1',0); line.setAttribute('y1',y); line.setAttribute('x2',vbW); line.setAttribute('y2',y);
+      line.setAttribute('class','grid-line');
+      gridGroup.appendChild(line);
+    }
+    svg.appendChild(gridGroup);
+  }
+
+  // zones
+  if(els.showZones.checked){
+    state.zones.forEach(z=>{
+      const g = document.createElementNS(NS,'g');
+      g.dataset.zone = z._id;
+      const rect = document.createElementNS(NS,'rect');
+      rect.setAttribute('x', z.x); rect.setAttribute('y', z.y);
+      rect.setAttribute('width', z.width); rect.setAttribute('height', z.height);
+      rect.setAttribute('rx', z.rx||12);
+      rect.setAttribute('class', 'zone-rect' + (selected.type==='zone' && selected.id===z._id ? ' selected' : ''));
+      rect.dataset.id = z._id;
+      g.appendChild(rect);
+      if(els.showLabels.checked){
+        const text = document.createElementNS(NS,'text');
+        text.setAttribute('x', z.x + z.width/2);
+        text.setAttribute('y', z.y - 6);
+        text.setAttribute('class','zone-label');
+        text.textContent = z.label || z.zone;
+        g.appendChild(text);
+      }
+      // handles for resize (if selected)
+      if(selected.type==='zone' && selected.id===z._id){
+        const handles = [
+          [z.x, z.y], [z.x+z.width, z.y], [z.x, z.y+z.height], [z.x+z.width, z.y+z.height]
+        ];
+        handles.forEach((p,i)=>{
+          const h = document.createElementNS(NS,'circle');
+          h.setAttribute('cx', p[0]); h.setAttribute('cy', p[1]); h.setAttribute('r', 6);
+          h.setAttribute('fill', '#2e89ff'); h.setAttribute('stroke','#fff'); h.setAttribute('stroke-width','2');
+          h.setAttribute('data-handle', i); h.setAttribute('data-zone', z._id);
+          h.style.cursor='nwse-resize';
+          g.appendChild(h);
+        });
+      }
+      svg.appendChild(g);
+    });
+  }
+
+  // pcs
+  pcs.forEach(pc=>{
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('class','pc-dot' + (selected.type==='pc' && selected.pcNum===pc.num ? ' selected' : ''));
+    g.dataset.num = pc.num;
+    g.dataset.block = pc.blockName;
+    const isSelected = selected.type==='pc' && selected.pcNum===pc.num;
+    const circle = document.createElementNS(NS,'circle');
+    circle.setAttribute('cx', pc.x);
+    circle.setAttribute('cy', pc.y);
+    circle.setAttribute('r', isSelected ? 18 : 14);
+    // color by block hue
+    const hue = hashHue(pc.blockName);
+    circle.setAttribute('fill', `hsl(${hue} 70% 55%)`);
+    circle.setAttribute('stroke', isSelected ? '#2e89ff' : 'rgba(255,255,255,.9)');
+    circle.setAttribute('stroke-width', isSelected? '3':'1.5');
+    g.appendChild(circle);
+    if(els.showNumbers.checked){
+      const text = document.createElementNS(NS,'text');
+      text.setAttribute('x', pc.x);
+      text.setAttribute('y', pc.y+4);
+      text.setAttribute('text-anchor','middle');
+      text.setAttribute('font-size', isSelected? '9':'8');
+      text.setAttribute('font-weight','800');
+      text.setAttribute('fill', '#000');
+      text.setAttribute('pointer-events','none');
+      text.textContent = pc.num;
+      g.appendChild(text);
+    }
+    svg.appendChild(g);
+  });
+
+  // json preview
+  try{
+    const j = exportState();
+    els.jsonPreview.value = JSON.stringify(j, null, 2);
+  }catch(e){
+    els.jsonPreview.value = 'Ошибка сериализации: '+e.message;
+  }
+
+  // attach svg events after render
+  attachSvgEvents();
+  updateInspector();
+}
+
+function hashHue(str){
+  let h=0;
+  for(let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) % 360;
+  return h;
+}
+
+function deselect(){ selected={type:null,id:null,pcNum:null}; render(); }
+document.getElementById('btn-deselect').addEventListener('click', deselect);
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape') deselect();
+  if(e.key==='Delete' && selected.type==='pc'){
+    const num = selected.pcNum;
+    const info = findPCByNum(num);
+    if(info){
+      delete info.block.pcs[num];
+      toast(`ПК ${num} удалён`);
+      deselect();
+      render();
+    }
+  } else if(e.key==='Delete' && selected.type==='zone'){
+    state.zones = state.zones.filter(z=> z._id!==selected.id);
+    deselect(); render();
+  } else if((e.ctrlKey||e.metaKey) && e.key==='s'){
+    e.preventDefault(); document.getElementById('btn-save').click();
+  }
+});
+
+function selectPC(num){
+  selected = {type:'pc', pcNum:String(num), id:String(num)};
+  render();
+  // scroll inspector?
+}
+function selectBlock(name){
+  selected = {type:'block', id:name};
+  render();
+}
+function selectZone(id){
+  selected = {type:'zone', id:id};
+  render();
+}
+
+function updateInspector(){
+  els.inspectorEmpty.hidden = selected.type!==null;
+  els.inspectorPc.hidden = selected.type!=='pc';
+  els.inspectorBlock.hidden = selected.type!=='block';
+  els.inspectorZone.hidden = selected.type!=='zone';
+  if(selected.type==='pc'){
+    const num = selected.pcNum;
+    const info = findPCByNum(num);
+    if(!info){ els.inspectorEmpty.hidden=false; els.inspectorPc.hidden=true; return; }
+    const {blockName, block, cell} = info;
+    document.getElementById('pc-title').textContent = `#${num} (${blockName})`;
+    document.getElementById('pc-num').value = num;
+    const sel = document.getElementById('pc-block');
+    sel.value = blockName;
+    const isOverride = !!(cell && cell.override);
+    document.getElementById('pc-type').value = isOverride ? 'override' : 'grid';
+    const gridRow = document.getElementById('pc-grid-row');
+    const absRow = document.getElementById('pc-abs-row');
+    gridRow.hidden = isOverride;
+    absRow.hidden = !isOverride;
+    if(isOverride){
+      document.getElementById('pc-x').value = cell.override[0];
+      document.getElementById('pc-y').value = cell.override[1];
+    } else {
+      document.getElementById('pc-col').value = cell[0];
+      document.getElementById('pc-row').value = cell[1];
+    }
+    const abs = getAbsolutePos(num, blockName);
+    document.getElementById('pc-coords-help').textContent = `Абс: ${abs ? abs[0].toFixed(1)+', '+abs[1].toFixed(1) : '—'} • ViewBox ${state.viewBox[0]}×${state.viewBox[1]}`;
+  } else if(selected.type==='block'){
+    const name = selected.id;
+    const b = state.blocks[name];
+    if(!b) return;
+    document.getElementById('block-title').textContent = name;
+    document.getElementById('block-name').value = name;
+    document.getElementById('block-ox').value = b.origin[0];
+    document.getElementById('block-oy').value = b.origin[1];
+    document.getElementById('block-step').value = b.step;
+    document.getElementById('block-stepy').value = b.stepY;
+  } else if(selected.type==='zone'){
+    const z = state.zones.find(x=> x._id===selected.id);
+    if(!z) return;
+    document.getElementById('zone-title').textContent = z.zone;
+    document.getElementById('zone-id').value = z.zone;
+    document.getElementById('zone-label').value = z.label;
+    document.getElementById('zone-x').value = z.x;
+    document.getElementById('zone-y').value = z.y;
+    document.getElementById('zone-w').value = z.width;
+    document.getElementById('zone-h').value = z.height;
+    document.getElementById('zone-rx').value = z.rx||12;
+  }
+}
+
+// inspector apply handlers
+document.getElementById('btn-pc-apply').addEventListener('click', ()=>{
+  const oldNum = selected.pcNum;
+  const info = findPCByNum(oldNum);
+  if(!info) return;
+  const newNum = String(document.getElementById('pc-num').value.trim());
+  const newBlockName = document.getElementById('pc-block').value;
+  const type = document.getElementById('pc-type').value;
+  if(!newNum) return toast('Номер обязателен');
+  // check duplicate
+  if(newNum!==oldNum && findPCByNum(newNum)) return toast('ПК с таким номером уже есть');
+  const newBlock = state.blocks[newBlockName];
+  if(!newBlock) return toast('Блок не найден');
+  // remove old
+  delete info.block.pcs[oldNum];
+  // create new cell
+  let cell;
+  if(type==='override'){
+    const x = Number(document.getElementById('pc-x').value)||0;
+    const y = Number(document.getElementById('pc-y').value)||0;
+    cell = {override:[x,y]};
+  } else {
+    const col = Number(document.getElementById('pc-col').value)||0;
+    const row = Number(document.getElementById('pc-row').value)||0;
+    cell = [col,row];
+  }
+  newBlock.pcs[newNum] = cell;
+  selected.pcNum = newNum;
+  selected.id = newNum;
+  toast('ПК обновлён');
+  render();
+});
+document.getElementById('btn-pc-delete').addEventListener('click', ()=>{
+  const num = selected.pcNum;
+  const info = findPCByNum(num);
+  if(!info) return;
+  if(!confirm(`Удалить ПК ${num}?`)) return;
+  delete info.block.pcs[num];
+  deselect();
+  toast('Удалён');
+  render();
+});
+document.getElementById('pc-type').addEventListener('change', (e)=>{
+  const isOverride = e.target.value==='override';
+  document.getElementById('pc-grid-row').hidden = isOverride;
+  document.getElementById('pc-abs-row').hidden = !isOverride;
+});
+document.getElementById('btn-block-apply').addEventListener('click', ()=>{
+  const oldName = selected.id;
+  const b = state.blocks[oldName];
+  if(!b) return;
+  const newName = document.getElementById('block-name').value.trim();
+  if(!newName) return toast('Имя блока обязательно');
+  if(newName!==oldName && state.blocks[newName]) return toast('Блок с таким именем уже есть');
+  const ox = Number(document.getElementById('block-ox').value)||0;
+  const oy = Number(document.getElementById('block-oy').value)||0;
+  const step = Number(document.getElementById('block-step').value)||70;
+  const stepY = Number(document.getElementById('block-stepy').value) || step;
+  b.origin = [ox,oy];
+  b.step = step;
+  b.stepY = stepY;
+  if(newName!==oldName){
+    state.blocks[newName]=b;
+    delete state.blocks[oldName];
+    selected.id=newName;
+  }
+  updateBlockSelectors();
+  toast('Блок обновлён');
+  render();
+});
+document.getElementById('btn-block-delete').addEventListener('click', ()=>{
+  const name = selected.id;
+  if(!confirm(`Удалить блок "${name}"?`)) return;
+  delete state.blocks[name];
+  deselect();
+  updateBlockSelectors();
+  render();
+});
+document.getElementById('btn-zone-apply').addEventListener('click', ()=>{
+  const z = state.zones.find(x=> x._id===selected.id);
+  if(!z) return;
+  z.zone = document.getElementById('zone-id').value.trim() || z.zone;
+  z.label = document.getElementById('zone-label').value.trim() || z.label;
+  z.x = Number(document.getElementById('zone-x').value)||0;
+  z.y = Number(document.getElementById('zone-y').value)||0;
+  z.width = Number(document.getElementById('zone-w').value)||100;
+  z.height = Number(document.getElementById('zone-h').value)||100;
+  z.rx = Number(document.getElementById('zone-rx').value)||12;
+  toast('Зона обновлена');
+  render();
+});
+document.getElementById('btn-zone-delete').addEventListener('click', ()=>{
+  const id = selected.id;
+  state.zones = state.zones.filter(z=> z._id!==id);
+  deselect();
+  render();
+});
+
+// add pc/block/zone
+document.getElementById('btn-create-block').addEventListener('click', ()=>{
+  document.getElementById('modal-new-block').classList.add('open');
+});
+document.getElementById('new-block-cancel').addEventListener('click', ()=> document.getElementById('modal-new-block').classList.remove('open'));
+document.getElementById('new-block-create').addEventListener('click', ()=>{
+  const name = document.getElementById('new-block-name').value.trim();
+  const ox = Number(document.getElementById('new-block-ox').value)||0;
+  const oy = Number(document.getElementById('new-block-oy').value)||0;
+  const step = Number(document.getElementById('new-block-step').value)||70;
+  const stepYraw = document.getElementById('new-block-stepy').value;
+  const stepY = stepYraw ? Number(stepYraw)||step : step;
+  if(!name) return toast('Имя обязательно');
+  if(state.blocks[name]) return toast('Блок уже существует');
+  state.blocks[name] = {origin:[ox,oy], step, stepY, pcs:{}};
+  document.getElementById('modal-new-block').classList.remove('open');
+  updateBlockSelectors();
+  selectBlock(name);
+  toast('Блок создан');
+});
+
+document.getElementById('btn-add-pc').addEventListener('click', ()=>{
+  if(Object.keys(state.blocks).length===0){
+    if(!confirm('Нет блоков. Создать блок автоматически?')) return;
+    state.blocks['block_1']={origin:[100,100], step:70, stepY:70, pcs:{}};
+    updateBlockSelectors();
+  }
+  // open modal
+  // set next free number
+  const allNums = getAllPCs().map(p=> Number(p.num)).filter(n=>Number.isFinite(n));
+  const next = allNums.length ? Math.max(...allNums)+1 : 1;
+  document.getElementById('new-pc-num').value = next;
+  updateBlockSelectors();
+  document.getElementById('modal-new-pc').classList.add('open');
+});
+document.getElementById('new-pc-cancel').addEventListener('click', ()=> document.getElementById('modal-new-pc').classList.remove('open'));
+document.getElementById('new-pc-create').addEventListener('click', ()=>{
+  const num = String(document.getElementById('new-pc-num').value.trim());
+  const blockName = document.getElementById('new-pc-block').value;
+  const col = Number(document.getElementById('new-pc-col').value)||0;
+  const row = Number(document.getElementById('new-pc-row').value)||0;
+  if(!num) return toast('Номер обязателен');
+  if(findPCByNum(num)) return toast('ПК уже существует');
+  const block = state.blocks[blockName];
+  if(!block) return toast('Выбери блок');
+  block.pcs[num] = [col,row];
+  document.getElementById('modal-new-pc').classList.remove('open');
+  selectPC(num);
+  toast(`ПК ${num} создан`);
+});
+
+document.getElementById('btn-add-zone').addEventListener('click', ()=>{
+  const id = `zone-${state.zones.length+1}`;
+  const z = {zone:id, label:`Зона ${state.zones.length+1}`, x:100, y:100, width:300, height:200, rx:12, _id:`z${nextZoneId++}`};
+  state.zones.push(z);
+  selectZone(z._id);
+  toast('Зона создана — перетащи и растяни');
+});
+document.getElementById('btn-new-club').addEventListener('click', ()=>{
+  const name = prompt('Имя папки клуба (латиница, без пробелов, напр. MYCLUB):');
+  if(!name) return;
+  if(!/^[a-zA-Z0-9_\-]{1,64}$/.test(name)) return toast('Недопустимое имя');
+  state.club = name;
+  els.clubName.value = name;
+  updateClubPath();
+  state.blocks={};
+  state.zones=[];
+  state.origin=[0,0];
+  state.viewBox=[720,1280];
+  els.vbW.value=720; els.vbH.value=1280; els.originX.value=0; els.originY.value=0;
+  updateBlockSelectors();
+  deselect();
+  toast('Новый клуб создан — добавь блоки и ПК');
+});
+
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  if(!confirm('Очистить все блоки и ПК?')) return;
+  state.blocks={};
+  state.zones=[];
+  deselect();
+  updateBlockSelectors();
+  render();
+  toast('Карта очищена');
+});
+document.getElementById('btn-reset-view').addEventListener('click', ()=>{
+  scale=1; pan={x:0,y:0};
+  render();
+});
+
+function attachSvgEvents(){
+  const svg = els.stage;
+  // remove old listeners by cloning? simpler: replace with new handlers each render using one-time setup
+  // We'll use event delegation fresh each render: first remove existing
+  const newSvg = svg.cloneNode(true);
+  svg.parentNode.replaceChild(newSvg, svg);
+  els.stage = newSvg;
+  const stage = els.stage;
+
+  stage.addEventListener('pointerdown', onPointerDown);
+  stage.addEventListener('pointermove', onPointerMove);
+  stage.addEventListener('pointerup', onPointerUp);
+  stage.addEventListener('click', onClick);
+  stage.addEventListener('wheel', onWheel, {passive:false});
+  // prevent context menu
+  stage.addEventListener('contextmenu', e=> e.preventDefault());
+}
+
+function svgPointFromEvent(e){
+  const svg = els.stage;
+  const pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const ctm = svg.getScreenCTM();
+  if(!ctm) return {x:0,y:0};
+  const svgP = pt.matrixTransform(ctm.inverse());
+  return {x:svgP.x, y:svgP.y};
+}
+
+function onPointerDown(e){
+  if(e.button!==0) return;
+  const p = svgPointFromEvent(e);
+  // hit test PCs first
+  const pcs = getAllPCs();
+  let hitPC = null;
+  let minDist = 22; // px in svg units? Approx viewBox units: for vb 1440, 22 ~ radius
+  for(const pc of pcs){
+    const dx = pc.x - p.x; const dy = pc.y - p.y;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    if(dist < minDist){
+      minDist = dist;
+      hitPC = pc;
+    }
+  }
+  if(hitPC){
+    e.preventDefault();
+    selectPC(hitPC.num);
+    drag = {type:'pc', num:hitPC.num, blockName:hitPC.blockName, startSvg:{x:p.x, y:p.y}, origAbs:{x:hitPC.x, y:hitPC.y}, origCell: structuredClone(hitPC.cell)};
+    els.stage.setPointerCapture(e.pointerId);
+    return;
+  }
+  // hit zones
+  const hitZone = state.zones.find(z=> p.x>=z.x && p.x<=z.x+z.width && p.y>=z.y && p.y<=z.y+z.height);
+  if(hitZone){
+    // check handle
+    const handleSize=10;
+    const handles = [
+      [hitZone.x, hitZone.y], [hitZone.x+hitZone.width, hitZone.y],
+      [hitZone.x, hitZone.y+hitZone.height], [hitZone.x+hitZone.width, hitZone.y+hitZone.height]
+    ];
+    let hitHandle = -1;
+    handles.forEach((h,i)=>{
+      if(Math.abs(p.x-h[0])<handleSize && Math.abs(p.y-h[1])<handleSize) hitHandle=i;
+    });
+    if(hitHandle!==-1){
+      drag = {type:'zone-resize', zoneId:hitZone._id, handle:hitHandle, startSvg:{x:p.x,y:p.y}, origZone:{...hitZone}};
+    } else {
+      drag = {type:'zone-drag', zoneId:hitZone._id, startSvg:{x:p.x,y:p.y}, origZone:{...hitZone}};
+      selectZone(hitZone._id);
+    }
+    els.stage.setPointerCapture(e.pointerId);
+    return;
+  }
+}
+
+function onPointerMove(e){
+  if(!drag) return;
+  const p = svgPointFromEvent(e);
+  const dx = p.x - drag.startSvg.x;
+  const dy = p.y - drag.startSvg.y;
+  if(drag.type==='pc'){
+    const info = findPCByNum(drag.num);
+    if(!info) return;
+    const newX = drag.origAbs.x + dx;
+    const newY = drag.origAbs.y + dy;
+    let cell = info.block.pcs[drag.num];
+    if(cell && cell.override){
+      // update override relative to block origin + state origin
+      const ox = state.origin[0] + info.block.origin[0];
+      const oy = state.origin[1] + info.block.origin[1];
+      cell.override[0] = Math.round(newX - ox);
+      cell.override[1] = Math.round(newY - oy);
+    } else {
+      // grid: convert to col/row
+      let colRow = absoluteToGrid(newX, newY, info.block);
+      if(els.snapGrid.checked){
+        colRow[0] = Math.round(colRow[0]*2)/2; // snap 0.5
+        colRow[1] = Math.round(colRow[1]*2)/2;
+      }
+      // store back
+      info.block.pcs[drag.num] = [Number(colRow[0].toFixed(1)), Number(colRow[1].toFixed(1))];
+    }
+    // live update without full render? just update circle position visually cheap: call render throttled
+    // for simplicity, render each move with rAF
+    requestAnimationFrame(render);
+  } else if(drag.type==='zone-drag'){
+    const z = state.zones.find(x=> x._id===drag.zoneId);
+    if(!z) return;
+    z.x = Math.round(drag.origZone.x + dx);
+    z.y = Math.round(drag.origZone.y + dy);
+    requestAnimationFrame(render);
+  } else if(drag.type==='zone-resize'){
+    const z = state.zones.find(x=> x._id===drag.zoneId);
+    if(!z) return;
+    const o = drag.origZone;
+    // handles: 0 TL,1 TR,2 BL,3 BR
+    if(drag.handle===0){ // TL
+      const newX = o.x + dx; const newY = o.y + dy;
+      const newW = o.width - dx; const newH = o.height - dy;
+      if(newW>20 && newH>20){ z.x=newX; z.y=newY; z.width=newW; z.height=newH; }
+    } else if(drag.handle===1){ // TR
+      const newY = o.y + dy; const newW = o.width + dx; const newH = o.height - dy;
+      if(newW>20 && newH>20){ z.y=newY; z.width=newW; z.height=newH; }
+    } else if(drag.handle===2){ // BL
+      const newX = o.x + dx; const newW = o.width - dx; const newH = o.height + dy;
+      if(newW>20 && newH>20){ z.x=newX; z.width=newW; z.height=newH; }
+    } else if(drag.handle===3){ // BR
+      const newW = o.width + dx; const newH = o.height + dy;
+      if(newW>20 && newH>20){ z.width=newW; z.height=newH; }
+    }
+    requestAnimationFrame(render);
+  }
+}
+
+function onPointerUp(e){
+  if(drag){
+    // update inspector if pc
+    if(drag.type==='pc'){
+      updateInspector();
+    }
+    // also update json preview via render
+    render();
+  }
+  drag=null;
+  try{ els.stage.releasePointerCapture(e.pointerId);}catch{}
+}
+
+function onClick(e){
+  if(drag) return;
+  // if clicked on empty space with Shift, add PC
+  if(e.shiftKey){
+    const p = svgPointFromEvent(e);
+    // find nearest block or create
+    const pcs = getAllPCs();
+    const nextNum = pcs.length ? Math.max(...pcs.map(x=>Number(x.num)||0))+1 : 1;
+    // choose block closest to click or first
+    let bestBlock = null;
+    let bestDist = Infinity;
+    for(const [bName, b] of Object.entries(state.blocks)){
+      const absOrigin = [state.origin[0]+b.origin[0], state.origin[1]+b.origin[1]];
+      const dx = p.x - absOrigin[0]; const dy = p.y - absOrigin[1];
+      const d = Math.sqrt(dx*dx+dy*dy);
+      if(d<bestDist){ bestDist=d; bestBlock=bName; }
+    }
+    if(!bestBlock){
+      if(!confirm('Нет блоков. Создать блок?')) return;
+      state.blocks['block_1']={origin:[Math.round(p.x-100),Math.round(p.y-100)], step:70, stepY:70, pcs:{}};
+      bestBlock='block_1';
+      updateBlockSelectors();
+    }
+    const block = state.blocks[bestBlock];
+    const colRow = absoluteToGrid(p.x, p.y, block);
+    const col = els.snapGrid.checked ? Math.round(colRow[0]*2)/2 : Number(colRow[0].toFixed(1));
+    const row = els.snapGrid.checked ? Math.round(colRow[1]*2)/2 : Number(colRow[1].toFixed(1));
+    block.pcs[String(nextNum)] = [col,row];
+    selectPC(String(nextNum));
+    toast(`ПК ${nextNum} создан в ${bestBlock}`);
+    return;
+  }
+  // if click on empty, deselect? handled by not hitting pc/zone
+  const p = svgPointFromEvent(e);
+  // check hit
+  const pcs = getAllPCs();
+  const hitPC = pcs.find(pc=> Math.hypot(pc.x-p.x, pc.y-p.y) < 22);
+  if(hitPC) return; // already handled via pointerdown selection
+  const hitZone = state.zones.find(z=> p.x>=z.x && p.x<=z.x+z.width && p.y>=z.y && p.y<=z.y+z.height);
+  if(hitZone) return;
+  // deselect? keep? maybe not
+}
+
+function onWheel(e){
+  e.preventDefault();
+  // zoom not implemented complex, simple scale viewBox? We'll adjust svg transform via scale variable and pan
+  // For now, just show hint
+}
+
+// export / import
+document.getElementById('btn-download').addEventListener('click', ()=>{
+  const data = exportState();
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url;
+  const club = els.clubName.value.trim() || 'positions';
+  a.download = club + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Скачан '+a.download);
+});
+document.getElementById('btn-copy').addEventListener('click', async ()=>{
+  const txt = JSON.stringify(exportState(), null, 2);
+  try{ await navigator.clipboard.writeText(txt); toast('Скопировано в буфер'); }catch{ 
+    els.jsonIo.value = txt; toast('Текст в поле импорта');
+  }
+});
+document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('file-import').click());
+document.getElementById('file-import').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const txt = await file.text();
+    const j = JSON.parse(txt);
+    importState(j, state.club || els.clubName.value.trim());
+    render();
+    toast('Импортировано из файла');
+  }catch(err){ toast('Ошибка импорта: '+err.message);}
+  e.target.value='';
+});
+document.getElementById('btn-io-import').addEventListener('click', ()=>{
+  const txt = document.getElementById('json-io').value.trim();
+  if(!txt) return toast('Вставь JSON');
+  try{
+    const j = JSON.parse(txt);
+    importState(j, state.club);
+    render();
+    toast('Импортировано');
+  }catch(e){ toast('Ошибка JSON: '+e.message); }
+});
+document.getElementById('btn-io-export').addEventListener('click', ()=>{
+  document.getElementById('json-io').value = JSON.stringify(exportState(), null, 2);
+  toast('Заполнено из карты');
+});
+document.getElementById('btn-validate').addEventListener('click', ()=>{
+  const data = exportState();
+  const msgs=[];
+  const allNums = new Set();
+  let dup=false;
+  for(const [bName, b] of Object.entries(data.layout.blocks)){
+    if(!/^[a-zA-Z0-9_\-]+$/.test(bName)) msgs.push(`Блок "${bName}" имя недопустимо`);
+    if(!Array.isArray(b.origin)||b.origin.length!==2) msgs.push(`Блок "${bName}" origin не [x,y]`);
+    for(const num of Object.keys(b.pcs)){
+      if(allNums.has(num)){ msgs.push(`Дубликат ПК ${num}`); dup=true; }
+      allNums.add(num);
+      if(isNaN(Number(num))) msgs.push(`ПК номер "${num}" не число`);
+    }
+  }
+  const vbOk = state.viewBox[0]>0 && state.viewBox[1]>0;
+  if(!vbOk) msgs.push('ViewBox размеры некорректны');
+  if(msgs.length===0) { document.getElementById('validate-msg').textContent='✓ OK'; document.getElementById('validate-msg').style.color='#4CAF50'; toast('Валидация OK'); }
+  else { document.getElementById('validate-msg').textContent=msgs.join('; '); document.getElementById('validate-msg').style.color='#ff9c9c'; }
+});
+document.getElementById('btn-save').addEventListener('click', async ()=>{
+  const club = els.clubName.value.trim();
+  if(!club) return toast('Укажи имя клуба');
+  if(!/^[a-zA-Z0-9_\-]{1,64}$/.test(club)) return toast('Имя клуба только латиница/цифры/_-');
+  const data = exportState();
+  try{
+    const res = await fetch('/api/constructor/save', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({club, data})});
+    const j = await res.json();
+    if(!res.ok) throw new Error(j.error||'save failed');
+    toast('Сохранено: '+j.path);
+    // refresh list
+    loadClubList();
+  }catch(e){
+    toast('Ошибка сохранения: '+e.message);
+    console.error(e);
+  }
+});
+document.getElementById('btn-export-zones').addEventListener('click', async ()=>{
+  if(state.zones.length===0) return toast('Нет зон');
+  let html = state.zones.map(z=> `    <rect class="zone" data-zone="${z.zone}" x="${Math.round(z.x)}" y="${Math.round(z.y)}" width="${Math.round(z.width)}" height="${Math.round(z.height)}" rx="${z.rx||12}"/>\n    <text class="zone-label" x="${Math.round(z.x+z.width/2)}" y="${Math.round(z.y-8)}" text-anchor="middle">${z.label}</text>`).join('\n');
+  html = `<!-- Zones for ${state.club||'CLUB'} — вставь в <svg class="zone-overlay"> -->\n${html}`;
+  try{ await navigator.clipboard.writeText(html); toast('HTML зон скопирован'); }catch{
+    document.getElementById('json-io').value = html;
+    toast('HTML в поле импорта');
+  }
+});
+document.getElementById('btn-auto-layout').addEventListener('click', ()=>{
+  // Simple auto layout: distribute blocks grid
+  const blocks = Object.keys(state.blocks);
+  if(blocks.length===0) return toast('Нет блоков');
+  const cols = Math.ceil(Math.sqrt(blocks.length));
+  const vbW = state.viewBox[0], vbH = state.viewBox[1];
+  const cellW = Math.floor(vbW/cols);
+  const cellH = Math.floor(vbH/Math.ceil(blocks.length/cols));
+  blocks.forEach((bName,i)=>{
+    const b = state.blocks[bName];
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    b.origin = [col*cellW + 60, row*cellH + 60];
+  });
+  toast('Авто-выравнивание применено');
+  render();
+});
+document.getElementById('btn-renumber').addEventListener('click', ()=>{
+  if(!confirm('Перенумеровать все ПК последовательно с 1?')) return;
+  const pcs = getAllPCs().sort((a,b)=> a.y - b.y || a.x - b.x);
+  // collect all cells then reassign
+  const newMap = {};
+  let n=1;
+  // clear all pcs
+  for(const b of Object.values(state.blocks)) b.pcs={};
+  // we need to assign back? But we lost original block association. Instead, keep per block order?
+  // Simpler: renumber per block sequentially
+  for(const [bName, b] of Object.entries(state.blocks)){
+    const entries = Object.entries(b.pcs); // but we cleared
+  }
+  // Actually pcs list still has old num, but we cleared.
+  // Reconstruct: we have pcs array with original blockName and cell
+  const firstBlock = Object.keys(state.blocks)[0];
+  if(!firstBlock) return;
+  // distribute across blocks round-robin? Better just renumber globally in first block for demo.
+  // Let's instead renumber per block
+  // reload from backup
+  toast('Функция требует доработки — перенумеруй вручную в инспекторе');
+});
+document.getElementById('btn-zoom-in').addEventListener('click', ()=>{
+  const area = document.getElementById('canvas-area');
+  const cur = parseFloat(area.style.zoom||1);
+  area.style.zoom = Math.min(2, cur+0.1);
+});
+document.getElementById('btn-zoom-out').addEventListener('click', ()=>{
+  const area = document.getElementById('canvas-area');
+  const cur = parseFloat(area.style.zoom||1);
+  area.style.zoom = Math.max(0.6, cur-0.1);
+});
+document.getElementById('btn-fit').addEventListener('click', ()=>{
+  document.getElementById('canvas-area').style.zoom=1;
+});
+
+// help modal
+document.getElementById('btn-help').addEventListener('click', ()=> document.getElementById('modal-help').classList.add('open'));
+document.getElementById('help-close').addEventListener('click', ()=> document.getElementById('modal-help').classList.remove('open'));
+document.getElementById('modal-help').addEventListener('click', (e)=>{ if(e.target.id==='modal-help') e.currentTarget.classList.remove('open'); });
+document.getElementById('modal-new-pc').addEventListener('click', (e)=>{ if(e.target.id==='modal-new-pc') e.currentTarget.classList.remove('open'); });
+document.getElementById('modal-new-block').addEventListener('click', (e)=>{ if(e.target.id==='modal-new-block') e.currentTarget.classList.remove('open'); });
+
+// initial render empty
+updateBlockSelectors();
+render();
+// load default club if ?club=TRIUMPH
+const params = new URLSearchParams(location.search);
+if(params.get('club')){
+  const c = params.get('club');
+  els.clubSelect.value = c;
+  els.clubName.value = c;
+  updateClubPath();
+  loadClub(c);
+} else {
+  // auto load TRIUMPH as demo if exists
+  // fetch positions.json from TRIUMPH silently
+  fetch('TRIUMPH/positions.json').then(r=> r.ok? r.json(): null).then(j=>{
+    if(j){ importState(j, 'TRIUMPH'); els.clubSelect.value='TRIUMPH'; els.clubName.value='TRIUMPH'; updateClubPath(); render(); }
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>

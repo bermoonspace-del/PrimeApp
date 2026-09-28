@@ -1,4 +1,4 @@
-:root{--bg:#000;--muted:rgba(255,255,255,0.58);--accent:#fff}
+:root{--bg:#0d0304;--muted:rgba(255,255,255,0.58);--accent:#fff}
 html {
     overflow: hidden;
     height: 100%;
@@ -14,7 +14,11 @@ body {
     box-sizing: border-box;
     touch-action: none;
     position: relative;
-}
+
+    background:#0d0304;
+    background-image:radial-gradient(65% 90% at 0% 52%, rgba(184,13,18,0.95) 0%, rgba(122,10,13,0.65) 25%, rgba(42,5,6,0.35) 55%, rgba(14,4,5,0) 100%),radial-gradient(45% 70% at 88% 55%, rgba(110,14,17,0.7) 0%, rgba(43,6,7,0.35) 50%, rgba(14,4,5,0) 100%),linear-gradient(180deg, #0d0304 0%, #1a0607 30%, #150505 55%, #0a0203 100%);
+    background-attachment:fixed;
+    background-size:cover;}
 body.tg-app {
     padding-top: 120px;
 }
