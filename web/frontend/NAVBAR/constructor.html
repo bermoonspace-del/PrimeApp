@@ -2,1949 +2,1002 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Конструктор карт — PrimeApp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Конструктор карт 1-в-1 — PrimeApp</title>
 <style>
-:root{--bg:#0d0304;--panel:#111214;--panel2:#15181e;--border:rgba(255,255,255,.12);--muted:rgba(255,255,255,.55);--accent:#fff;--blue:#2e89ff;--red:#cc2222}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:#0d0304;background-image:radial-gradient(65% 90% at 0% 52%, rgba(184,13,18,0.95) 0%, rgba(122,10,13,0.65) 25%, rgba(42,5,6,0.35) 55%, rgba(14,4,5,0) 100%),radial-gradient(45% 70% at 88% 55%, rgba(110,14,17,0.7) 0%, rgba(43,6,7,0.35) 50%, rgba(14,4,5,0) 100%),linear-gradient(180deg, #0d0304 0%, #1a0607 30%, #150505 55%, #0a0203 100%);background-attachment:fixed;background-size:cover;color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
-a{color:#8ab4ff;text-decoration:none}
-button{font-family:inherit}
-.topbar{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#050505;border-bottom:1px solid var(--border);position:relative;z-index:10}
-.topbar h1{font-size:15px;margin:0;font-weight:800;letter-spacing:.02em;white-space:nowrap}
-.topbar .spacer{flex:1}
-.btn{appearance:none;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);transform:translateY(-1px)}
-.btn:active{transform:translateY(0) scale(.98)}
+:root{
+  --bg:#0d0304; --panel:#141114; --panel2:#0a0a0c; --border:rgba(255,255,255,.12);
+  --muted:rgba(255,255,255,.55); --accent:#fff; --blue:#2e89ff;
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;
+  display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+#topbar{background:#050505;border-bottom:1px solid var(--border);padding:calc(8px + var(--sat)) 10px 8px;z-index:30}
+#toprow{display:flex;gap:8px;align-items:center}
+#clubSel{flex:1;min-width:0;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.16);
+  background:#111;color:#fff;font-size:15px;font-weight:700;padding:0 10px}
+.iconbtn{flex:0 0 auto;min-width:44px;height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,.06);color:#fff;font-size:18px;font-weight:800;cursor:pointer}
+.iconbtn:active{transform:scale(.96)}
+#btnSave{background:#fff;color:#000;border-color:#fff;position:relative}
+#btnSave.dirty::after{content:"";position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#F20D0D}
+#statusrow{display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding-bottom:2px}
+.chip{flex:0 0 auto;font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;
+  border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--muted);white-space:nowrap}
+.chip.ok{color:#9fe8a9;border-color:rgba(76,175,80,.4)}
+.chip.warn{color:#ffcf8a;border-color:rgba(255,152,0,.45)}
+#modes{display:flex;gap:6px;margin-top:8px}
+.modebtn{flex:1;height:46px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.05);
+  color:#fff;font-size:13px;font-weight:800;cursor:pointer;line-height:1.25}
+.modebtn.active{background:#fff;color:#000;border-color:#fff}
+#work{flex:1;display:flex;min-height:0;position:relative}
+#phoneWrap{flex:1;display:flex;align-items:center;justify-content:center;min-width:0;padding:10px;
+  background:radial-gradient(ellipse at 50% 20%, rgba(204,34,34,.10), transparent 60%)}
+#phone{position:relative;width:390px;max-width:100%;height:100%;max-height:780px;background:#000;
+  border:1px solid rgba(255,255,255,.14);border-radius:26px;overflow:hidden;
+  box-shadow:0 24px 70px rgba(0,0,0,.55);display:flex;flex-direction:column}
+#stage{position:relative;flex:1;overflow:hidden;background:#000;touch-action:none;min-height:0;
+ -webkit-user-select:none;user-select:none}
+.pc-h,.zh{-webkit-touch-callout:none}
+#dbg{font-size:11px;color:var(--muted);padding:4px 2px 0;white-space:pre-wrap;word-break:break-word}
+#live{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+#editLayer{position:absolute;inset:0}
+#editLayer.view{pointer-events:none;visibility:hidden}
+#zoneSvg{position:absolute;inset:0;width:100%;height:100%}
+#pcLayer,#zhLayer{position:absolute;inset:0}
+.pc-h{position:absolute;width:17px;height:17px;border-radius:50%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;
+  background:#555;border:1px solid rgba(255,255,255,.5);cursor:grab;touch-action:none;z-index:5}
+.pc-h.sel{box-shadow:0 0 0 3px var(--blue),0 0 14px var(--blue);z-index:8}
+.pc-h.dim{opacity:.18}
+.zone-h{fill:rgba(46,137,255,.07);stroke:rgba(255,255,255,.35);stroke-width:1.5;stroke-dasharray:6 4;cursor:grab}
+.zone-h.sel{stroke:var(--blue);stroke-width:2.5;fill:rgba(46,137,255,.14)}
+.zh{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--blue);
+  border:2px solid #fff;transform:translate(-50%,-50%);z-index:9;touch-action:none;
+  box-shadow:0 2px 10px rgba(0,0,0,.5)}
+#zoombar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px;background:#050505;
+  border-top:1px solid var(--border)}
+#zoombar button{flex:1;height:42px;border-radius:10px;border:1px solid var(--border);
+  background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+#zoomPct{flex:0 0 64px;text-align:center;font-size:12px;color:var(--muted);font-weight:700}
+#sheet{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--border);
+  padding-bottom:var(--sab);max-height:44%;display:flex;flex-direction:column;min-height:0}
+#tabs{display:flex;gap:6px;padding:8px 10px 0}
+.tabbtn{flex:1;height:42px;border-radius:10px 10px 0 0;border:1px solid transparent;border-bottom:0;
+  background:transparent;color:var(--muted);font-size:13px;font-weight:800;cursor:pointer}
+.tabbtn.active{background:var(--panel2);color:#fff;border-color:var(--border)}
+#panes{flex:1;overflow-y:auto;background:var(--panel2);border-top:1px solid var(--border);
+  padding:10px;-webkit-overflow-scrolling:touch;min-height:0}
+.pane{display:none}
+.pane.active{display:block}
+.fld{display:grid;gap:4px;margin-bottom:10px}
+.fld>label{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.inrow{display:flex;gap:8px}
+input[type=text],input[type=number],select{height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.16);
+  background:#0d0d0d;color:#fff;font-size:15px;padding:0 10px;min-width:0;width:100%}
+.btnrow{display:flex;gap:8px;margin-bottom:10px}
+.btn{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.07);
+  color:#fff;font-size:14px;font-weight:800;padding:10px;cursor:pointer}
+.btn:active{transform:scale(.98)}
 .btn.primary{background:#fff;color:#000;border-color:#fff}
-.btn.primary:hover{background:#f0f0f0}
-.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
-.btn.ghost{background:transparent}
-.btn.small{padding:6px 10px;font-size:12px}
-.btn.danger{border-color:rgba(204,34,34,.4);color:#ff9c9c}
-.btn.danger:hover{background:rgba(204,34,34,.15);border-color:var(--red)}
-.layout{display:grid;grid-template-columns:320px 1fr 340px;height:calc(100% - 56px)}
-.panel{background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.panel.right{border-right:none;border-left:1px solid var(--border);background:var(--panel2)}
-.panel-head{padding:12px 12px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
-.panel-head h2{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
-.panel-body{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:14px}
-.group{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px;display:grid;gap:8px}
-.group-title{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.row{display:flex;gap:6px;align-items:center}
-.row label{font-size:12px;color:var(--muted);min-width:62px}
-.input, .select{flex:1;min-width:0;height:32px;padding:0 8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:#0d0d0d;color:#fff;font-size:13px;outline:none}
-.input:focus,.select:focus{border-color:var(--blue)}
-.input.small{height:28px;font-size:12px}
-.select{cursor:pointer}
-.number{width:72px}
-.check{width:16px;height:16px;accent-color:var(--blue)}
-.divider{height:1px;background:var(--border);margin:2px 0}
-.block-list,.zone-list,.pc-list{display:grid;gap:6px;max-height:240px;overflow:auto;padding-right:2px}
-.block-item,.zone-item{display:flex;align-items:center;gap:8px;padding:8px 8px;border-radius:8px;background:#0d0d0d;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:.15s}
-.block-item:hover,.zone-item:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.06)}
-.block-item.active,.zone-item.active{border-color:var(--blue);background:rgba(46,137,255,.12)}
-.block-item .name,.zone-item .name{flex:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.block-item .count{font-size:11px;color:var(--muted);background:rgba(255,255,255,.08);padding:2px 6px;border-radius:999px}
-.icon-btn{width:26px;height:26px;display:grid;place-items:center;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#fff;cursor:pointer;font-size:12px}
-.icon-btn:hover{background:rgba(255,255,255,.1)}
-.canvas-wrap{position:relative;background:#000;display:flex;flex-direction:column;overflow:hidden}
-.canvas-toolbar{height:44px;display:flex;align-items:center;gap:8px;padding:0 10px;background:rgba(0,0,0,.7);border-bottom:1px solid var(--border);backdrop-filter:blur(6px)}
-.canvas-area{flex:1;position:relative;overflow:auto;background:radial-gradient(ellipse at 50% 30%, rgba(204,34,34,.08), transparent 60%), #0a0a0a;display:flex;align-items:center;justify-content:center;padding:20px}
-.svg-stage{width:min(420px,96%);height:auto;aspect-ratio:9 / 16;max-height:85vh;background:#050608;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);cursor:crosshair}
-.legend{position:absolute;right:12px;top:56px;background:rgba(5,6,12,.92);border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:11px;color:var(--muted);z-index:2;display:grid;gap:4px;min-width:150px}
-.legend b{color:#fff;font-size:11px}
-.stat{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.75);border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:11px;color:var(--muted);z-index:2}
-.inspector{display:grid;gap:10px}
-.inspector-empty{color:var(--muted);font-size:13px;text-align:center;padding:30px 10px;border:1px dashed var(--border);border-radius:12px}
-.kv{display:grid;grid-template-columns:92px 1fr;gap:6px;align-items:center;font-size:12px}
-.kv label{color:var(--muted)}
-.json-preview{width:100%;height:220px;background:#0a0a0a;color:#c8d2ec;border:1px solid var(--border);border-radius:10px;padding:8px;font-family:Consolas,monospace;font-size:11px;white-space:pre;overflow:auto}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111827;color:#fff;border:1px solid var(--border);padding:10px 14px;border-radius:999px;font-size:13px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}
-.toast.show{display:block;animation:fadeIn .2s}
-@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000}
-.modal-backdrop.open{display:flex}
-.modal{background:#111214;border:1px solid var(--border);border-radius:16px;padding:18px;width:min(440px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.6);display:grid;gap:12px}
-.modal h3{margin:0;font-size:16px}
-.help{font-size:12px;color:var(--muted);line-height:1.5}
-.pc-dot{cursor:grab}
-.pc-dot:active{cursor:grabbing}
-.pc-dot.selected circle{stroke:#2e89ff;stroke-width:3}
-.zone-rect{fill:none;stroke:rgba(255,255,255,.18);stroke-width:2;stroke-dasharray:8 6;cursor:pointer}
-.zone-rect.selected{stroke:#2e89ff;stroke-width:2.5;fill:rgba(46,137,255,.08)}
-.zone-label{font-size:8px;font-weight:800;fill:rgba(255,255,255,.5);pointer-events:none;text-anchor:middle}
-.grid-line{stroke:rgba(255,255,255,.06);stroke-width:.5}
-.marquee-rect{fill:rgba(46,137,255,0.15);stroke:#2e89ff;stroke-width:1.5;stroke-dasharray:4 4;pointer-events:none}
-.pc-dot.multi-selected circle{stroke:#2e89ff;stroke-width:3;filter:drop-shadow(0 0 6px rgba(46,137,255,0.6))}
-.zone-rect.multi-selected{stroke:#2e89ff;stroke-width:2.5;fill:rgba(46,137,255,0.12)}
+.btn.danger{color:#ff9c9c;border-color:rgba(242,13,13,.45)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.btn.small{min-height:40px;font-size:13px}
+.checkrow{display:flex;align-items:center;gap:10px;min-height:46px;font-size:14px;font-weight:600}
+.checkrow input{width:24px;height:24px;accent-color:var(--blue)}
+.blockitem{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;margin-bottom:6px;background:#0d0d0d;cursor:pointer}
+.blockitem.active{border-color:var(--blue)}
+.blockitem .nm{flex:1;font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blockitem .ct{font-size:12px;color:var(--muted);background:rgba(255,255,255,.08);padding:3px 9px;border-radius:999px}
+.zoneitem{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;margin-bottom:6px;background:#0d0d0d;cursor:pointer}
+.zoneitem.active{border-color:var(--blue)}
+.zoneitem .nm{flex:1;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#jsonPrev{width:100%;height:180px;background:#000;color:#c8d2ec;border:1px solid var(--border);
+  border-radius:10px;padding:8px;font-family:Consolas,monospace;font-size:11px}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 10px}
+#toast{position:fixed;left:50%;bottom:calc(18px + var(--sab));transform:translateX(-50%);background:#16161c;
+  border:1px solid var(--border);padding:12px 18px;border-radius:999px;font-size:14px;font-weight:600;
+  z-index:999;box-shadow:0 10px 30px rgba(0,0,0,.5);display:none;max-width:92vw;text-align:center}
+#toast.show{display:block}
+#helpModal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;
+  justify-content:center;z-index:1000;padding:18px}
+#helpModal.open{display:flex}
+#helpCard{background:#141114;border:1px solid var(--border);border-radius:18px;padding:18px;
+  width:min(480px,94vw);max-height:84dvh;overflow-y:auto;font-size:14px;line-height:1.65}
+#helpCard h3{margin:0 0 8px}
+@media (min-width:1100px){
+  #sheet{width:360px;max-height:none;border-top:0;border-left:1px solid var(--border)}
+}
+@media (max-width:699px){
+  #phoneWrap{padding:0}
+  #phone{width:100%;max-height:none;height:100%;border:0;border-radius:0}
+  .modebtn{font-size:12px}
+}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <h1>🧩 Конструктор карт — PrimeApp</h1>
-  <span style="font-size:11px;color:var(--muted);border-left:1px solid var(--border);padding-left:10px;margin-left:4px">редактор positions.json</span>
-  <div class="spacer"></div>
-  <button class="btn" id="btn-import">📂 Импорт</button>
-  <input type="file" id="file-import" accept=".json" hidden>
-  <button class="btn" id="btn-copy">📋 Копировать</button>
-  <button class="btn" id="btn-download">⬇️ Скачать</button>
-  <button class="btn blue" id="btn-save">💾 Сохранить на сервер</button>
-  <button class="btn primary" id="btn-help">?</button>
-</div>
-
-<div class="layout">
-  <!-- LEFT -->
-  <div class="panel">
-    <div class="panel-head"><h2>Клубы и блоки</h2><button class="btn small" id="btn-new-club">+ Новый</button></div>
-    <div class="panel-body">
-      <div class="group">
-        <div class="group-title">Клуб</div>
-        <div class="row">
-          <select class="select" id="club-select"><option value="">— выберите —</option></select>
-          <button class="btn small" id="btn-load">Загрузить</button>
+<header id="topbar">
+  <div id="toprow">
+    <select id="clubSel" aria-label="Клуб"></select>
+    <button class="iconbtn" id="btnReload" title="Перезагрузить живую карту">⟳</button>
+    <button class="iconbtn" id="btnUndo" title="Отменить">↶</button>
+    <button class="iconbtn" id="btnHelp" title="Помощь">?</button>
+    <button class="iconbtn" id="btnSave" title="Сохранить">💾</button>
+  </div>
+  <div id="statusrow">
+    <span class="chip" id="chipApi">API: …</span>
+    <span class="chip" id="chipFit">1:1: …</span>
+    <span class="chip" id="chipVb">viewBox: …</span>
+    <span class="chip" id="chipCount">ПК: 0</span>
+  </div>
+  <div id="dbg" hidden></div>
+  <div id="modes">
+    <button class="modebtn" data-mode="pan">🖐<br>Панорама</button>
+    <button class="modebtn active" data-mode="pc">🖱<br>ПК</button>
+    <button class="modebtn" data-mode="zone">◻<br>Зоны</button>
+    <button class="modebtn" data-mode="add">＋<br>Добавить</button>
+    <button class="modebtn" data-mode="view">👁<br>Телефон</button>
+  </div>
+</header>
+<main id="work">
+  <div id="phoneWrap">
+    <div id="phone">
+      <div id="stage">
+        <iframe id="live" title="Живая карта клуба"></iframe>
+        <div id="editLayer">
+          <svg id="zoneSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div id="pcLayer"></div>
+          <div id="zhLayer"></div>
         </div>
-        <div class="row"><label>Имя папки</label><input class="input small" id="club-name" placeholder="TRIUMPH"></div>
-        <div class="row" style="font-size:11px;color:var(--muted)">Папка: <code id="club-path" style="color:#8ab4ff">NAVBAR/—/positions.json</code></div>
-        <div class="row">
-          <button class="btn small" id="btn-create-block">+ Блок</button>
-          <button class="btn small" id="btn-add-pc">+ ПК</button>
-          <button class="btn small" id="btn-add-zone">+ Зона</button>
-        </div>
       </div>
-
-      <div class="group">
-        <div class="group-title">Глобальные настройки</div>
-        <div class="row"><label>ViewBox W</label><input class="input number" id="vb-w" type="number" value="720"><label style="min-width:auto">H</label><input class="input number" id="vb-h" type="number" value="1280"></div>
-        <div class="row"><label>Origin X</label><input class="input number" id="origin-x" type="number" value="0"><label style="min-width:auto">Y</label><input class="input number" id="origin-y" type="number" value="0"></div>
-        <div class="row"><label><input type="checkbox" class="check" id="show-grid" checked> Сетка</label><label><input type="checkbox" class="check" id="snap-grid" checked> Магнит</label><label><input type="checkbox" class="check" id="show-zones" checked> Зоны</label></div>
-        <div class="row"><label><input type="checkbox" class="check" id="show-labels" checked> Подписи</label><label><input type="checkbox" class="check" id="show-numbers" checked> Номера</label></div>
-      </div>
-
-      <div class="group">
-        <div class="row" style="justify-content:space-between"><span class="group-title" style="margin:0">Блоки</span><span id="blocks-count" style="font-size:11px;color:var(--muted)">0</span></div>
-        <div class="block-list" id="block-list"></div>
-      </div>
-
-      <div class="group">
-        <div class="row" style="justify-content:space-between"><span class="group-title" style="margin:0">Зоны</span><button class="btn small" id="btn-export-zones">Экспорт HTML</button></div>
-        <div class="zone-list" id="zone-list"></div>
-        <div class="help" style="font-size:11px">Зоны — визуальные рамки (dashed). Хранятся отдельно, экспортируются как <code>&lt;rect class="zone"&gt;</code> для вставки в *.html</div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">Быстрые действия</div>
-        <div class="row"><button class="btn small" id="btn-select-all">Выделить всё (Ctrl+A)</button><button class="btn small" id="btn-clear-selection">Снять выделение (Esc)</button></div>
-        <div class="row"><button class="btn small" id="btn-auto-layout">Авто-выравнивание</button><button class="btn small" id="btn-renumber">Перенумеровать</button></div>
-        <div class="row"><button class="btn small danger" id="btn-clear">Очистить карту</button><button class="btn small" id="btn-reset-view">Сброс вида</button></div>
-        <div class="help" style="font-size:11px">Shift+клик — добавить в выделение, Shift+тянуть фон — рамка, перетаскивание выделенного — двигает всю группу, Delete — удалить группу</div>
+      <div id="zoombar">
+        <button id="zOut">−</button>
+        <button id="zFit">⛶ 1:1</button>
+        <span id="zoomPct">100%</span>
+        <button id="zIn">＋</button>
       </div>
     </div>
   </div>
-
-  <!-- CENTER -->
-  <div class="canvas-wrap">
-    <div class="canvas-toolbar">
-      <span style="font-size:12px;color:var(--muted)">Перетащи фон — панорама • Колесо — зум • Клик ПК/зону — выбор • Shift+клик — новый ПК • Delete — удалить</span>
-      <div class="spacer" style="flex:1"></div>
-      <button class="btn small" id="btn-zoom-in">＋</button>
-      <button class="btn small" id="btn-zoom-out">－</button>
-      <button class="btn small" id="btn-fit">⛶ Fit</button>
-      <span id="pc-counter" style="font-size:12px;color:var(--muted)">ПК: 0</span>
+  <aside id="sheet">
+    <div id="tabs">
+      <button class="tabbtn active" data-tab="sel">Выбор</button>
+      <button class="tabbtn" data-tab="blocks">Блоки</button>
+      <button class="tabbtn" data-tab="zones">Зоны</button>
+      <button class="tabbtn" data-tab="json">JSON</button>
     </div>
-    <div class="canvas-area" id="canvas-area">
-      <svg id="stage" class="svg-stage" xmlns="http://www.w3.org/2000/svg"></svg>
-      <div class="legend" id="legend">
-        <b>Легенда</b>
-        <div>● ПК — перетащи</div>
-        <div>▭ Зона — перетащи/ресайз</div>
-        <div style="opacity:.6">Col/Row внутри блока</div>
-      </div>
-      <div class="stat" id="stat">ViewBox 720×1280 • Origin 0,0 • Блоков 0</div>
-    </div>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="panel right">
-    <div class="panel-head"><h2>Инспектор</h2><button class="btn small" id="btn-deselect">Снять выбор</button></div>
-    <div class="panel-body">
-      <div id="inspector-empty" class="inspector-empty">Выбери ПК, блок или зону<br><span style="font-size:11px;opacity:.7">Подсказка: кликни по кружку ПК на карте</span></div>
-      <div id="inspector-pc" class="inspector" hidden>
-        <div class="group">
-          <div class="group-title">ПК <span id="pc-title">—</span></div>
-          <div class="kv"><label>Номер</label><input class="input small" id="pc-num" type="number"></div>
-          <div class="kv"><label>Блок</label><select class="select" id="pc-block"></select></div>
-          <div class="kv"><label>Тип</label><select class="select" id="pc-type"><option value="grid">Сетка (col/row)</option><option value="override">Абсолют (override)</option></select></div>
-          <div class="row" id="pc-grid-row"><label>Col</label><input class="input number" id="pc-col" type="number" step="1" min="0"><label>Row</label><input class="input number" id="pc-row" type="number" step="1" min="0"></div>
-          <div class="row" id="pc-abs-row" hidden><label>X</label><input class="input number" id="pc-x" type="number"><label>Y</label><input class="input number" id="pc-y" type="number"></div>
-          <div class="row"><button class="btn small" id="btn-pc-apply">Применить</button><button class="btn small danger" id="btn-pc-delete">Удалить ПК</button></div>
-          <div class="help" id="pc-coords-help">Абс: —</div>
+    <div id="panes">
+      <section class="pane active" id="pane-sel"><div id="selBody"></div></section>
+      <section class="pane" id="pane-blocks">
+        <p class="hint">Блок — группа ПК с общим началом и шагом. Тап по блоку выбирает его целью для режима ＋, повторный тап подсвечивает его ПК на карте.</p>
+        <div class="btnrow"><button class="btn small" id="btnAddBlock">+ Блок</button><button class="btn small" id="btnAddCenter">＋ ПК в центр</button></div>
+        <div id="blockList"></div>
+      </section>
+      <section class="pane" id="pane-zones">
+        <p class="hint">Зоны — пунктирные рамки с карты телефона. Двигайте за тело, размер — за синие круглые ручки. Сохраняются прямо в HTML карты.</p>
+        <div class="btnrow"><button class="btn small" id="btnAddZone">+ Зона</button></div>
+        <div id="zoneList"></div>
+      </section>
+      <section class="pane" id="pane-json">
+        <div class="btnrow">
+          <button class="btn small" id="btnCopyJson">📋 Копировать</button>
+          <button class="btn small" id="btnValidate">✓ Проверить</button>
         </div>
-      </div>
-      <div id="inspector-block" class="inspector" hidden>
-        <div class="group">
-          <div class="group-title">Блок <span id="block-title">—</span></div>
-          <div class="kv"><label>Имя</label><input class="input small" id="block-name"></div>
-          <div class="kv"><label>Origin X</label><input class="input small" id="block-ox" type="number"></div>
-          <div class="kv"><label>Origin Y</label><input class="input small" id="block-oy" type="number"></div>
-          <div class="kv"><label>Step</label><input class="input small" id="block-step" type="number" step="1" min="1"></div>
-          <div class="kv"><label>StepY</label><input class="input small" id="block-stepy" type="number" step="1" min="1" placeholder="= Step"></div>
-          <div class="row"><button class="btn small" id="btn-block-apply">Применить</button><button class="btn small danger" id="btn-block-delete">Удалить блок</button></div>
-          <div class="help">ПК в блоке двигаются вместе с origin/step</div>
-        </div>
-      </div>
-      <div id="inspector-zone" class="inspector" hidden>
-        <div class="group">
-          <div class="group-title">Зона <span id="zone-title">—</span></div>
-          <div class="kv"><label>Data-zone</label><input class="input small" id="zone-id"></div>
-          <div class="kv"><label>Подпись</label><input class="input small" id="zone-label"></div>
-          <div class="row"><label>X</label><input class="input number" id="zone-x" type="number"><label>Y</label><input class="input number" id="zone-y" type="number"></div>
-          <div class="row"><label>W</label><input class="input number" id="zone-w" type="number"><label>H</label><input class="input number" id="zone-h" type="number"></div>
-          <div class="kv"><label>RX</label><input class="input small" id="zone-rx" type="number" value="12"></div>
-          <div class="row"><button class="btn small" id="btn-zone-apply">Применить</button><button class="btn small danger" id="btn-zone-delete">Удалить зону</button></div>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">JSON предпросмотр</div>
-        <textarea class="json-preview" id="json-preview" readonly></textarea>
-        <div class="row"><button class="btn small" id="btn-validate">Проверить</button><span id="validate-msg" style="font-size:11px;color:var(--muted)"></span></div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">Импорт / экспорт</div>
-        <div class="help">Формат = <code>{"layout":{"origin":[x,y],"blocks":{...}}}</code> — как в positions.json. Зоны не входят в JSON, экспортируй отдельно.</div>
-        <textarea class="json-preview" id="json-io" placeholder="Вставь JSON сюда для импорта..." style="height:120px"></textarea>
-        <div class="row"><button class="btn small" id="btn-io-import">Импортировать из поля</button><button class="btn small" id="btn-io-export">Заполнить из карты</button></div>
-      </div>
+        <div class="fld"><label>positions.json (предпросмотр)</label><textarea id="jsonPrev" readonly></textarea></div>
+        <div class="hint" id="validMsg"></div>
+      </section>
     </div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="modal-new-pc">
-  <div class="modal">
-    <h3>Новый ПК</h3>
-    <div class="kv"><label>Номер</label><input class="input" id="new-pc-num" type="number" placeholder="1"></div>
-    <div class="kv"><label>Блок</label><select class="select" id="new-pc-block"></select></div>
-    <div class="kv"><label>Col</label><input class="input" id="new-pc-col" type="number" step="1" value="0"><label style="margin-left:8px">Row</label><input class="input" id="new-pc-row" type="number" step="1" value="0"></div>
-    <div class="row" style="justify-content:flex-end"><button class="btn ghost" id="new-pc-cancel">Отмена</button><button class="btn primary" id="new-pc-create">Создать</button></div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="modal-new-block">
-  <div class="modal">
-    <h3>Новый блок</h3>
-    <div class="kv"><label>Имя</label><input class="input" id="new-block-name" placeholder="block_1_10"></div>
-    <div class="kv"><label>Origin X</label><input class="input" id="new-block-ox" type="number" value="100"></div>
-    <div class="kv"><label>Origin Y</label><input class="input" id="new-block-oy" type="number" value="100"></div>
-    <div class="kv"><label>Step</label><input class="input" id="new-block-step" type="number" value="70" step="1" min="1"></div>
-    <div class="kv"><label>StepY</label><input class="input" id="new-block-stepy" type="number" placeholder="=step" step="1" min="1"></div>
-    <div class="row" style="justify-content:flex-end"><button class="btn ghost" id="new-block-cancel">Отмена</button><button class="btn primary" id="new-block-create">Создать</button></div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="modal-help">
-  <div class="modal" style="width:min(560px,96vw)">
-    <h3>Как пользоваться конструктором</h3>
-    <div class="help" style="font-size:13px;line-height:1.6">
-      <b>1. Загрузи карту:</b> выбери клуб слева → Загрузить. Или создай новую — введи имя папки (напр. <code>MYCLUB</code>).<br>
-      <b>2. Редактируй блоки:</b> блок = группа ПК с общим origin и шагом сетки. Меняй origin/step — все ПК блока сдвинутся.<br>
-      <b>3. Редактируй ПК:</b> клик по кружку → инспектор справа. Меняй номер, блок, col/row или переключи в <code>override</code> (абсолютные координаты). Перетаскивай мышью — координаты обновятся.<br>
-      <b>4. Добавляй ПК:</b> кнопка + ПК или клик по пустому месту на карте (с зажатым Shift) — откроется модалка.<br>
-      <b>5. Зоны:</b> dashed прямоугольники. + Зона → перетаскивай и ресайзь. Зоны не сохраняются в positions.json — кнопка <b>Экспорт HTML</b> даст код для вставки в <code>*.html</code>.<br>
-      <b>6. Сохранение:</b> <b>Сохранить на сервер</b> запишет <code>NAVBAR/КЛУБ/positions.json</code> через backend. <b>Скачать</b> / <b>Копировать</b> — локально.<br>
-      <b>Формат:</b> <code>{"layout":{"origin":[x,y],"blocks":{"block_name":{"origin":[x,y],"step":70,"stepY":70,"pcs":{"1":[0,0]}}}}}</code>. Поддерживаются <code>override: [x,y]</code>.<br>
-      <b>Навигация:</b> перетащи фон — панорама, колесо — зум к курсору, кнопки +/− — зум, Fit — сброс, стрелки — панорама, Space+тянуть — панорама.<br>
-      <b>Горячие клавиши:</b> Delete — удалить выбранное, Esc — снять выбор, Ctrl+S — сохранить, Ctrl+0 — сброс вида.
-    </div>
-    <div class="row" style="justify-content:flex-end"><button class="btn primary" id="help-close">Понятно</button></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
+  </aside>
+</main>
+<div id="toast"></div>
+<div id="helpModal"><div id="helpCard">
+  <h3>Как пользоваться</h3>
+  <div>• <b>👁 Телефон</b> — живые пиксели карты как на телефоне. В остальных режимах ручки лежат <b>ровно поверх</b> них: что двигаете, то и встанет на телефоне.<br>• <b>🖱 ПК</b> — тап выбирает, тяни двигает. Вкладка «Выбор»: номер, блок, координаты, удалить.<br>• <b>◻ Зоны</b> — двигать за тело, размер — за синие круглые ручки.<br>• <b>＋</b> — тап по карте создаёт ПК в выбранном блоке (вкладка «Блоки»).<br>• <b>🖐</b> — двигать карту пальцем, щипок — масштаб. Кнопки ⛶/＋/− дублируют.<br>• Чип <b>1:1 ✓</b> — ручки сверены с живой картой. Если ⚠ — доверяйте режиму 👁.<br>• <b>💾</b> сохраняет positions.json и зоны в HTML, затем перезагружает живую карту для проверки. <b>↶</b> — отмена.</div>
+  <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="helpClose">Понятно</button></div>
+</div></div>
 <script>
-const DEFAULT_VIEWBOX = [720,1280];
-let state = {
-  viewBox: [...DEFAULT_VIEWBOX],
-  origin: [0,0],
-  blocks: {}, // blockName -> {origin:[x,y], step, stepY, pcs: {num: [col,row] or {override:[x,y]}}}
-  zones: [], // {zone, label, x,y,width,height,rx, _id}
-  club: ""
-};
-let selected = {type:null, id:null, pcNum:null}; // type: pc|block|zone
-let multiPcs = new Set(); // Set<string> pc nums
-let multiZones = new Set(); // Set<string> zone _id
-let marquee = null; // {x1,y1,x2,y2, active}
-let isMarquee = false;
-let scale = 1;
-let pan = {x:0,y:0};
-let drag = null; // {type, id, startSvg, startMouse, origPos}
-let nextZoneId = 1;
-
-const els = {
-  stage: document.getElementById('stage'),
-  clubSelect: document.getElementById('club-select'),
-  clubName: document.getElementById('club-name'),
-  clubPath: document.getElementById('club-path'),
-  vbW: document.getElementById('vb-w'),
-  vbH: document.getElementById('vb-h'),
-  originX: document.getElementById('origin-x'),
-  originY: document.getElementById('origin-y'),
-  showGrid: document.getElementById('show-grid'),
-  snapGrid: document.getElementById('snap-grid'),
-  showZones: document.getElementById('show-zones'),
-  showLabels: document.getElementById('show-labels'),
-  showNumbers: document.getElementById('show-numbers'),
-  blockList: document.getElementById('block-list'),
-  zoneList: document.getElementById('zone-list'),
-  blocksCount: document.getElementById('blocks-count'),
-  pcCounter: document.getElementById('pc-counter'),
-  stat: document.getElementById('stat'),
-  jsonPreview: document.getElementById('json-preview'),
-  jsonIo: document.getElementById('json-io'),
-  inspectorEmpty: document.getElementById('inspector-empty'),
-  inspectorPc: document.getElementById('inspector-pc'),
-  inspectorBlock: document.getElementById('inspector-block'),
-  inspectorZone: document.getElementById('inspector-zone'),
-  pcBlock: document.getElementById('pc-block'),
-  toast: document.getElementById('toast')
-};
-
-// init viewBox inputs listener
-['vb-w','vb-h','origin-x','origin-y'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', ()=>{
-    state.viewBox = [Number(els.vbW.value)||720, Number(els.vbH.value)||1280];
-    state.origin = [Number(els.originX.value)||0, Number(els.originY.value)||0];
-    render();
-  });
-});
-[els.showGrid, els.snapGrid, els.showZones, els.showLabels, els.showNumbers].forEach(el=> el.addEventListener('change', render));
-
-function toast(msg, ms=2200){
-  els.toast.textContent = msg;
-  els.toast.classList.add('show');
-  setTimeout(()=> els.toast.classList.remove('show'), ms);
+"use strict";
+var CLUBS=[
+ {dir:"TRIUMPH",html:"TRIUMPH.html",label:"Кабанбай Батыра 11"},
+ {dir:"ARNAU",html:"ARNAU.html",label:"Керей Жанибек 14/2"},
+ {dir:"SATPAEVA",html:"SATPAVEA.html",label:"Сатпаева 15"},
+ {dir:"koshk",html:"koshk.html",label:"Кошкарбаева 36"},
+ {dir:"bait",html:"bait.html",label:"Байтурсынова 30"},
+ {dir:"KENESARY",html:"kenesary.html",label:"Кенесары 42"},
+ {dir:"kumis",html:"kumys.html",label:"Кумисбекова 9а"},
+ {dir:"molda",html:"molda.html",label:"Молдагалиева 7"},
+ {dir:"asfen",html:"asfen.html",label:"Асфендиярова 1"},
+ {dir:"muhamedh",html:"muh.html",label:"Мухамедханова 25"},
+ {dir:"bekt",html:"bekt.html",label:"Бектурова 11Б"},
+ {dir:"aqtau",html:"aqtau.html",label:"Актау"},
+ {dir:"krg",html:"krg.html",label:"Караганда"}
+];
+var S={club:"",htmlFile:"",origin:[0,0],blocks:{},zones:[],
+ vb:{minX:0,minY:0,w:1440,h:725},fit:{},renderedBg:{},
+ mode:"pc",sel:null,targetBlock:"",snap:true,blockMove:false,hlBlock:"",
+ demo:false,posDirty:false,zoneDirty:false,undo:[],maxRes:0,calibrated:false,liveCount:0};
+var Z={s:1,tx:0,ty:0};
+function $(id){return document.getElementById(id);}
+var els={clubSel:$("clubSel"),live:$("live"),stage:$("stage"),editLayer:$("editLayer"),
+ zoneSvg:$("zoneSvg"),pcLayer:$("pcLayer"),zhLayer:$("zhLayer"),toast:$("toast"),
+ chipApi:$("chipApi"),chipFit:$("chipFit"),chipVb:$("chipVb"),chipCount:$("chipCount"),
+ zoomPct:$("zoomPct"),selBody:$("selBody"),blockList:$("blockList"),zoneList:$("zoneList"),
+ jsonPrev:$("jsonPrev"),validMsg:$("validMsg"),btnSave:$("btnSave")};
+function toast(m,ms){els.toast.textContent=m;els.toast.classList.add("show");
+ clearTimeout(toast._t);toast._t=setTimeout(function(){els.toast.classList.remove("show");},ms||2400);}
+function escH(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function r1(v){return Math.round((+v+Number.EPSILON)*10)/10;}
+/* ---------- positions.json ---------- */
+function importState(data,club){
+ S.club=club||S.club;S.origin=[0,0];S.blocks={};S.fit={};S.renderedBg={};
+ S.sel=null;S.zones=[];S.calibrated=false;S.demo=false;
+ S.posDirty=false;S.zoneDirty=false;S.undo=[];S.targetBlock="";S.hlBlock="";
+ var lay=data&&data.layout?data.layout:data;
+ if(lay&&lay.origin&&lay.blocks){S.origin=[+lay.origin[0]||0,+lay.origin[1]||0];lay=lay.blocks;}
+ else if(lay&&typeof lay==="object"){var ks=Object.keys(lay);
+  if(ks.length===1&&lay[ks[0]]&&lay[ks[0]].blocks){var t=lay[ks[0]];
+   S.origin=[+t.origin[0]||0,+t.origin[1]||0];lay=t.blocks;}}
+ var entries=Object.entries(lay||{});
+ for(var i=0;i<entries.length;i++){var bn=entries[i][0],b=entries[i][1];
+  if(!b||typeof b!=="object")continue;
+  var o=Array.isArray(b.origin)?[+b.origin[0]||0,+b.origin[1]||0]:[0,0];
+  var st=+b.step||70;var sty=(b.stepY!=null&&+b.stepY>0)?+b.stepY:st;
+  var pcs={};var src=b.pcs||{};
+  if(src&&typeof src==="object"&&!Array.isArray(src)){
+   var se=Object.entries(src);
+   for(var j=0;j<se.length;j++){var n=se[j][0],c=se[j][1];
+    if(c&&typeof c==="object"&&!Array.isArray(c)&&Array.isArray(c.override))
+     pcs[n]={override:[+c.override[0]||0,+c.override[1]||0]};
+    else if(Array.isArray(c))pcs[n]=[+c[0]||0,+c[1]||0];}}
+  S.blocks[bn]={origin:o,step:st,stepY:sty,pcs:pcs};}
+ var names=Object.keys(S.blocks);if(names.length)S.targetBlock=names[0];
 }
-
-function updateClubPath(){
-  const name = (els.clubName.value.trim() || state.club || "—");
-  els.clubPath.textContent = `NAVBAR/${name}/positions.json`;
-}
-
-els.clubName.addEventListener('input', updateClubPath);
-
-// load club list from backend
-async function loadClubList(){
-  try{
-    const res = await fetch('/api/constructor/list');
-    if(!res.ok) throw new Error('list failed');
-    const j = await res.json();
-    const clubs = j.clubs || [];
-    els.clubSelect.innerHTML = '<option value="">— выберите —</option>' + clubs.map(c=> `<option value="${c}">${c}</option>`).join('');
-    // also add fallback hardcoded list if empty
-    if(clubs.length===0){
-      const hard = ["TRIUMPH","ARNAU","asfen","bait","bekt","KENESARY","koshk","kumis","molda","muhamedh","SATPAEVA"];
-      hard.forEach(c=>{
-        const o=document.createElement('option'); o.value=c; o.textContent=c; els.clubSelect.appendChild(o);
-      });
-    }
-  }catch(e){
-    console.warn(e);
-    const hard = ["TRIUMPH","ARNAU","asfen","bait","bekt","KENESARY","koshk","kumis","molda","muhamedh","SATPAEVA"];
-    els.clubSelect.innerHTML = '<option value="">— выберите —</option>' + hard.map(c=> `<option value="${c}">${c}</option>`).join('');
-  }
-}
-loadClubList();
-
-els.clubSelect.addEventListener('change', ()=>{
-  els.clubName.value = els.clubSelect.value;
-  updateClubPath();
-});
-
-document.getElementById('btn-load').addEventListener('click', async ()=>{
-  const club = (els.clubSelect.value || els.clubName.value.trim());
-  if(!club) return toast('Выбери клуб');
-  await loadClub(club);
-});
-
-const CLUB_VIEWBOX = {
-  "TRIUMPH":[1440,725],
-  "ARNAU":[2000,1230],
-  "koshk":[1440,725],
-  "asfen":[1440,725],
-  "bait":[1440,725],
-  "bekt":[2556,1179],
-  "KENESARY":[2000,1230],
-  "kumis":[1440,725],
-  "molda":[2000,1000],
-  "muhamedh":[1440,725],
-  "SATPAEVA":[1440,725],
-  "SATPAEVA_":[1440,725]
-};
-const MAP_BOUNDS = {w:2556, h:1179};
-function clampPan(){
-  const vbW = Number(els.vbW.value)||2556;
-  const vbH = Number(els.vbH.value)||1179;
-  const scaledW = vbW / scale;
-  const scaledH = vbH / scale;
-  // For bekt, use fixed 2556x1179 bounds, for others use vbW/vbH as bounds
-  const isBekt = (state.club==='bekt' || els.clubName.value.trim()==='bekt');
-  const boundW = isBekt ? 2556 : vbW;
-  const boundH = isBekt ? 1179 : vbH;
-  const maxX = Math.max(0, boundW - scaledW);
-  const maxY = Math.max(0, boundH - scaledH);
-  pan.x = Math.max(0, Math.min(maxX, pan.x));
-  pan.y = Math.max(0, Math.min(maxY, pan.y));
-}
-
-async function loadClub(club){
-  try{
-    toast('Загрузка '+club+'...');
-    // try backend first
-    let data = null;
-    try{
-      const res = await fetch(`/api/constructor/load?club=${encodeURIComponent(club)}`);
-      if(res.ok) data = await res.json();
-    }catch{}
-    if(!data){
-      const res = await fetch(`${club}/positions.json?v=${Date.now()}`, {cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      data = await res.json();
-    }
-    importState(data, club);
-    // auto viewBox: use preset but ensure it contains all PCs (fix: previously preset 720x1280 was too small for bekt's 104 PCs at x~1800)
-    let needW = 720, needH = 1280;
-    const allPcsForView = getAllPCs();
-    if(allPcsForView.length){
-      const maxX = Math.max(...allPcsForView.map(p=>p.x));
-      const maxY = Math.max(...allPcsForView.map(p=>p.y));
-      const minX = Math.min(...allPcsForView.map(p=>p.x));
-      const minY = Math.min(...allPcsForView.map(p=>p.y));
-      needW = Math.ceil(Math.max(maxX+80, 720));
-      needH = Math.ceil(Math.max(maxY+80, 1280));
-      // also handle negative coords
-      if(minX < 0) needW = Math.ceil(Math.max(needW, maxX - minX + 80));
-      if(minY < 0) needH = Math.ceil(Math.max(needH, maxY - minY + 80));
-    }
-    if(CLUB_VIEWBOX[club]){
-      els.vbW.value = CLUB_VIEWBOX[club][0];
-      els.vbH.value = CLUB_VIEWBOX[club][1];
-      // enlarge if preset too small to contain PCs (fix clustering when viewBox too small)
-      if(allPcsForView.length){
-        const curW = Number(els.vbW.value)||720;
-        const curH = Number(els.vbH.value)||1280;
-        if(needW > curW || needH > curH){
-          els.vbW.value = Math.max(curW, needW);
-          els.vbH.value = Math.max(curH, needH);
-        }
-      }
-    } else {
-      // no preset, use needed
-      if(allPcsForView.length){
-        els.vbW.value = needW;
-        els.vbH.value = needH;
-      }
-    }
-    // adjust pan to show negative coords if needed
-    try{
-      const pcs2 = getAllPCs();
-      if(pcs2.length){
-        const minX = Math.min(...pcs2.map(p=>p.x));
-        const minY = Math.min(...pcs2.map(p=>p.y));
-        if(minX < 0 || minY < 0){
-          pan.x = Math.min(0, minX - 20);
-          pan.y = Math.min(0, minY - 20);
-        } else {
-          pan.x = 0; pan.y = 0;
-        }
-        clampPan();
-      } else {
-        pan.x=0; pan.y=0;
-      }
-    }catch(e){ pan.x=0; pan.y=0; }
-    // load zones via backend
-    try{
-      const zres = await fetch(`/api/constructor/zones?club=${encodeURIComponent(club)}`);
-      if(zres.ok){
-        const zj = await zres.json();
-        if(Array.isArray(zj.zones) && zj.zones.length){
-          state.zones = zj.zones.map((z,i)=> ({
-            zone: z.zone || `zone-${i}`,
-            label: (zj.labels && zj.labels[i]) || z.zone || `Зона ${i+1}`,
-            x: Number(z.x)||0, y:Number(z.y)||0, width:Number(z.width)||200, height:Number(z.height)||120, rx:Number(z.rx)||12, _id: `z${nextZoneId++}`
-          }));
-          // also try to detect viewBox from html file itself (zone-overlay viewBox)
-          try{
-            const dir = club;
-            const htmlFiles = zj.htmlFile ? [zj.htmlFile] : [];
-            // try fetch html to parse viewBox
-            if(htmlFiles.length){
-              const hres = await fetch(`${club}/${htmlFiles[0]}?v=${Date.now()}`);
-              if(hres.ok){
-                const htmlTxt = await hres.text();
-                const m = htmlTxt.match(/viewBox\s*=\s*\"0\s+0\s+(\d+)\s+(\d+)\"/i);
-                if(m){ els.vbW.value = m[1]; els.vbH.value = m[2]; }
-              }
-            }
-          }catch{}
-        }
-      }
-    }catch(e){ console.warn('zones load',e)}
-    render();
-    toast('Загружено: '+club);
-  }catch(e){
-    console.error(e);
-    toast('Ошибка загрузки: '+e.message);
-  }
-}
-
-function importState(data, clubName){
-  state.club = clubName || state.club || "";
-  els.clubName.value = state.club;
-  updateClubPath();
-  // detect format
-  let layout = data.layout || data;
-  // handle outer origin
-  let outerOrigin = [0,0];
-  let blocksData = layout;
-  if(layout.origin && layout.blocks){
-    outerOrigin = [Number(layout.origin[0])||0, Number(layout.origin[1])||0];
-    blocksData = layout.blocks;
-  } else if(Object.keys(layout).length===1){
-    const top = layout[Object.keys(layout)[0]];
-    if(top && top.origin && top.blocks){
-      outerOrigin = [Number(top.origin[0])||0, Number(top.origin[1])||0];
-      blocksData = top.blocks;
-    }
-  }
-  state.origin = outerOrigin;
-  els.originX.value = outerOrigin[0];
-  els.originY.value = outerOrigin[1];
-  // try to guess viewBox from blocks extents or keep current
-  state.blocks = {};
-  for(const [bName, block] of Object.entries(blocksData)){
-    const origin = Array.isArray(block.origin) ? [Number(block.origin[0])||0, Number(block.origin[1])||0] : [0,0];
-    const step = Number(block.step) || 70;
-    const stepY = block.stepY!=null ? Number(block.stepY) : step;
-    const pcs = {};
-    const pcsData = block.pcs || block;
-    if(pcsData && typeof pcsData==='object' && !Array.isArray(pcsData)){
-      for(const [num, cell] of Object.entries(pcsData)){
-        if(cell && typeof cell==='object' && !Array.isArray(cell) && Array.isArray(cell.override)){
-          pcs[num] = {override: [Number(cell.override[0])||0, Number(cell.override[1])||0]};
-        } else if(Array.isArray(cell)){
-          pcs[num] = [Number(cell[0])||0, Number(cell[1])||0];
-        }
-      }
-    }
-    state.blocks[bName] = {origin, step, stepY, pcs};
-  }
-  // guess viewBox if not set
-  // keep user VB inputs unless user wants auto
-  // count pcs for stat
-  updateBlockSelectors();
-}
-
 function exportState(){
-  const blocks = {};
-  for(const [name, b] of Object.entries(state.blocks)){
-    const pcs = {};
-    for(const [num, cell] of Object.entries(b.pcs)){
-      if(cell && cell.override) pcs[num] = {override: [...cell.override]};
-      else pcs[num] = [...cell];
-    }
-    const obj = {origin:[...b.origin], step:b.step, pcs};
-    if(b.stepY!==b.step) obj.stepY = b.stepY;
-    blocks[name] = obj;
-  }
-  return {layout: {origin:[...state.origin], blocks}};
+ var blocks={};var be=Object.entries(S.blocks);
+ for(var i=0;i<be.length;i++){var n=be[i][0],b=be[i][1];var pcs={};
+  var pe=Object.entries(b.pcs);
+  for(var j=0;j<pe.length;j++){var num=pe[j][0],c=pe[j][1];
+   pcs[num]=c&&c.override?{override:[r1(c.override[0]),r1(c.override[1])]}:[r1(c[0]),r1(c[1])];}
+  var o={origin:[r1(b.origin[0]),r1(b.origin[1])],step:b.step,pcs:pcs};
+  if(b.stepY!==b.step)o.stepY=b.stepY;blocks[n]=o;}
+ return {layout:{origin:[r1(S.origin[0]),r1(S.origin[1])],blocks:blocks}};
 }
-
-function getAbsolutePos(num, blockName){
-  const block = state.blocks[blockName];
-  if(!block) return null;
-  const cell = block.pcs[num];
-  if(!cell) return null;
-  if(cell.override){
-    return [cell.override[0] + state.origin[0], cell.override[1] + state.origin[1]]; // wait outer origin handling: in load we added outerOrigin to block origin? Actually we merged outer origin into state.origin separate, and block origin kept as is. In render we use state.origin + block.origin + col*step
-    // For override we stored absolute without outer? In load for override we did NOT add outer? Let's check: for override we stored cell.override + outer? In load we did for override: ox2 = Number(cell.override[0]) + outerOrigin[0] ??? In TRIUMPH we added outer. In ARNAU we stored raw. Need consistent.
-    // In importState we stored override raw from JSON, not adding outer. So absolute = override + state.origin? But if file had layout.origin distinct, override in file is absolute before adding outer? In TRIUMPH file override includes absolute coords that already include outer? In positions.json for booth override is [1000,893] with layout origin [-5,-350] and block origin [0,0]. So actual render uses ox2 = override[0] + outerOrigin[0] => 995, 543. So our storage should be raw. To render we need to add state.origin.
-    // So return override + state.origin + (maybe block origin? but for override blocks origin is [0,0] generally)
-  }
-  // grid
-  // Actually for override we currently stored raw override (from file). For rendering we need to add state.origin.
-  // For grid we compute ox+col*step + state.origin
-  if(cell.override){
-    // block.origin already, but for booth block origin is [0,0], so ignore
-    // To be safe, add block.origin as well? In TRIUMPH booth origin [0,0] so same. For ps5_127_136 override with origin [0,0] same.
-    // So absolute = state.origin[0] + cell.override[0] (+ block.origin if not zero?)
-    // Check: Should we add block.origin? In load for override we did ox2 = Number(cell.override[0]) + outerOrigin[0] (and stored that?). Actually we stored cell.override as [ox2,oy2] already including outer? Wait importState currently stores raw cell.override without adding outer. So we lost outer addition.
-    // Let's fix: store raw, and render adds state.origin + block.origin
-    return [state.origin[0] + block.origin[0] + cell.override[0], state.origin[1] + block.origin[1] + cell.override[1]];
-  }
-  const col = cell[0], row = cell[1];
-  return [state.origin[0] + block.origin[0] + col * block.step, state.origin[1] + block.origin[1] + row * block.stepY];
+function cellFormula(c,b){
+ if(c&&c.override)return [S.origin[0]+c.override[0],S.origin[1]+c.override[1]];
+ return [S.origin[0]+b.origin[0]+c[0]*b.step,S.origin[1]+b.origin[1]+c[1]*b.stepY];
 }
-
-// compute inverse for drag: given absolute x,y and block, compute col/row
-function absoluteToGrid(absX, absY, block){
-  const ox = state.origin[0] + block.origin[0];
-  const oy = state.origin[1] + block.origin[1];
-  const col = (absX - ox) / block.step;
-  const row = (absY - oy) / block.stepY;
-  return [col, row];
+function formulaOf(num,bn){var b=S.blocks[bn];if(!b)return null;
+ var c=b.pcs[num];if(c==null)return null;return cellFormula(c,b);}
+function fitOf(bn){return S.fit[bn]||{ax:1,bx:0,ay:1,by:0};}
+function vbOf(num,bn){var f=formulaOf(num,bn);if(!f)return null;
+ var ft=fitOf(bn);return [ft.ax*f[0]+ft.bx,ft.ay*f[1]+ft.by];}
+function findPC(num){num=String(num);
+ var be=Object.entries(S.blocks);
+ for(var i=0;i<be.length;i++)if(be[i][1].pcs[num]!=null)return {bn:be[i][0],b:be[i][1]};
+ return null;}
+function allPCs(){var out=[];var be=Object.entries(S.blocks);
+ for(var i=0;i<be.length;i++){var ns=Object.keys(be[i][1].pcs);
+  for(var j=0;j<ns.length;j++)out.push({num:ns[j],bn:be[i][0]});}
+ return out;}
+function nextNum(){var ns=allPCs().map(function(p){return +p.num;}).filter(Number.isFinite);
+ return String(ns.length?Math.max.apply(null,ns)+1:1);}
+function cellFromFormula(b,fx,fy,wasOv){
+ var isOv=!!(wasOv&&wasOv.override);
+ if(isOv){var x=fx-S.origin[0],y=fy-S.origin[1];
+  if(S.snap){x=Math.round(x);y=Math.round(y);}
+  return {override:[r1(x),r1(y)]};}
+ var c=(fx-S.origin[0]-b.origin[0])/b.step,r=(fy-S.origin[1]-b.origin[1])/b.stepY;
+ if(S.snap){c=Math.round(c);r=Math.round(r);}
+ return [r1(c),r1(r)];
 }
-
-function findPCByNum(num){
-  for(const [bName, block] of Object.entries(state.blocks)){
-    if(block.pcs[String(num)] != null) return {blockName:bName, block, cell:block.pcs[String(num)]};
+/* ---------- undo ---------- */
+function pushUndo(){S.undo.push({pos:exportState(),zones:clone(S.zones)});
+ if(S.undo.length>60)S.undo.shift();}
+function doUndo(){var s=S.undo.pop();if(!s)return toast("Нечего отменять");
+ S.zones=clone(s.zones||[]);S.origin=s.pos.layout.origin;S.blocks={};
+ var be=Object.entries(s.pos.layout.blocks);
+ for(var i=0;i<be.length;i++)S.blocks[be[i][0]]=
+  {origin:be[i][1].origin,step:be[i][1].step,stepY:be[i][1].stepY||be[i][1].step,pcs:clone(be[i][1].pcs)};
+ S.posDirty=true;S.zoneDirty=true;S.sel=null;renderAll();toast("Отменено");}
+/* ---------- iframe: живая карта ---------- */
+function liveDoc(){try{return els.live.contentDocument||null;}catch(e){return null;}}
+function liveWin(){try{return els.live.contentWindow||null;}catch(e){return null;}}
+function injectHooks(){
+ var d=liveDoc(),w=liveWin();if(!d||!w)return false;
+ try{
+  w.openPC=function(){};w.openBookingForm=function(){};w.__ctorNoNav=true;
+  if(!d.getElementById("ctor-hooks")){
+   var st=d.createElement("style");st.id="ctor-hooks";
+   st.textContent=".popup{display:none!important}.ctor-dim .zone{opacity:.22}.ctor-dim .zone-label{opacity:.22}";
+   d.head.appendChild(st);
+   d.addEventListener("click",function(e){
+    if(w.__ctorNoNav){var a=e.target&&e.target.closest?e.target.closest('a[href^="tel:"]'):null;
+     if(a){e.preventDefault();e.stopPropagation();}};},true);
   }
-  return null;
+  return true;
+ }catch(e){return false;}
 }
-
-function getAllPCs(){
-  const list=[];
-  for(const [bName, block] of Object.entries(state.blocks)){
-    for(const [num, cell] of Object.entries(block.pcs)){
-      const abs = getAbsolutePos(num, bName);
-      if(!abs) continue;
-      list.push({num: String(num), blockName:bName, block, cell, x:abs[0], y:abs[1]});
-    }
-  }
-  return list;
+function setDim(dimm){var d=liveDoc();if(!d)return;
+ try{d.documentElement.classList.toggle("ctor-dim",!!dimm);}catch(e){}}
+function liveSvg(){var d=liveDoc();if(!d)return null;
+ return d.querySelector(".zone-overlay")||d.querySelector(".map-svg")||null;}
+function livePcs(){var d=liveDoc();if(!d)return [];
+ try{return Array.prototype.slice.call(d.querySelectorAll("#pcs .pc"));}catch(e){return [];}}
+function parseVB(s){var p=String(s||"").trim().split(/[\s,]+/).map(Number);
+ if(p.length!==4||p.some(function(v){return !Number.isFinite(v);})||p[2]<=0||p[3]<=0)return null;
+ return {minX:p[0],minY:p[1],w:p[2],h:p[3]};}
+/* ---------- геометрия ---------- */
+function placeEditLayer(){
+ var svg=liveSvg();var d=liveDoc();if(!svg||!d)return false;
+ var pcsBox=null;try{pcsBox=d.getElementById("pcs");}catch(e){}
+ if(!pcsBox)return false;
+ var rs=els.stage.getBoundingClientRect();
+ var rp=pcsBox.getBoundingClientRect();
+ if(rp.width<2||rp.height<2||rs.width<2)return false;
+ var L={x:(rp.left-rs.left)/Z.s,y:(rp.top-rs.top)/Z.s,w:rp.width/Z.s,h:rp.height/Z.s};
+ els.editLayer.style.left=L.x+"px";els.editLayer.style.top=L.y+"px";
+ els.editLayer.style.width=Math.max(1,L.w)+"px";els.editLayer.style.height=Math.max(1,L.h)+"px";
+ return true;
 }
-
-function updateBlockSelectors(){
-  const options = Object.keys(state.blocks).map(n=> `<option value="${n}">${n}</option>`).join('');
-  document.getElementById('pc-block').innerHTML = options;
-  document.getElementById('new-pc-block').innerHTML = options;
-  // if none, create default
+function clientToVB(cx,cy){
+ var r=els.editLayer.getBoundingClientRect();
+ return {x:S.vb.minX+(cx-r.left)/r.width*S.vb.w,y:S.vb.minY+(cy-r.top)/r.height*S.vb.h};
 }
-
-function render(){
-  const vbW = Number(els.vbW.value)||720;
-  const vbH = Number(els.vbH.value)||1280;
-  state.viewBox = [vbW, vbH];
-  state.origin = [Number(els.originX.value)||0, Number(els.originY.value)||0];
-  updateClubPath();
-  const pcs = getAllPCs();
-  els.pcCounter.textContent = `ПК: ${pcs.length}`;
-  els.blocksCount.textContent = Object.keys(state.blocks).length;
-  els.stat.textContent = `ViewBox ${vbW}×${vbH} • Origin ${state.origin[0]},${state.origin[1]} • Блоков ${Object.keys(state.blocks).length} • ПК ${pcs.length} • Зон ${state.zones.length}`;
-
-  // block list
-  els.blockList.innerHTML = Object.entries(state.blocks).map(([name, b])=>{
-    const cnt = Object.keys(b.pcs).length;
-    const active = selected.type==='block' && selected.id===name ? 'active' : '';
-    return `<div class="block-item ${active}" data-block="${name}"><span class="name">${name}</span><span class="count">${cnt}</span><button class="icon-btn" data-edit-block="${name}">✎</button><button class="icon-btn" data-del-block="${name}">✕</button></div>`;
-  }).join('') || '<div style="font-size:11px;color:var(--muted);text-align:center;padding:10px">Нет блоков<br><button class="btn small" onclick="document.getElementById(\'btn-create-block\').click()">+ Создать</button></div>';
-
-  // zone list
-  els.zoneList.innerHTML = state.zones.map(z=>{
-    const active = (selected.type==='zone' && selected.id===z._id) || multiZones.has(z._id) ? 'active' : '';
-    return `<div class="zone-item ${active}" data-zone="${z._id}"><span class="name">${z.zone} — ${z.label}</span><button class="icon-btn" data-edit-zone="${z._id}">✎</button><button class="icon-btn" data-del-zone="${z._id}">✕</button></div>`;
-  }).join('') || '<div style="font-size:11px;color:var(--muted);text-align:center;padding:6px">Нет зон</div>';
-
-  // bind block list clicks
-  els.blockList.querySelectorAll('.block-item').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      if(e.target.closest('[data-edit-block]') || e.target.closest('[data-del-block]')) return;
-      const name = el.dataset.block;
-      selectBlock(name);
-    });
-  });
-  els.blockList.querySelectorAll('[data-edit-block]').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      const name = btn.dataset.editBlock;
-      selectBlock(name);
-    });
-  });
-  els.blockList.querySelectorAll('[data-del-block]').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      const name = btn.dataset.delBlock;
-      if(confirm(`Удалить блок "${name}" и все его ПК?`)){
-        delete state.blocks[name];
-        if(selected.type==='block' && selected.id===name) deselect();
-        updateBlockSelectors();
-        render();
-      }
-    });
-  });
-  // zone list
-  els.zoneList.querySelectorAll('.zone-item').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      if(e.target.closest('[data-edit-zone]')||e.target.closest('[data-del-zone]')) return;
-      const id = el.dataset.zone;
-      selectZone(id);
-    });
-  });
-  els.zoneList.querySelectorAll('[data-edit-zone]').forEach(btn=>{
-    btn.addEventListener('click', e=>{ e.stopPropagation(); selectZone(btn.dataset.editZone);});
-  });
-  els.zoneList.querySelectorAll('[data-del-zone]').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      const id = btn.dataset.delZone;
-      state.zones = state.zones.filter(z=> z._id!==id);
-      if(selected.type==='zone' && selected.id===id) deselect();
-      render();
-    });
-  });
-
-  // svg render
-  const svg = els.stage;
-  const scaledW = vbW / scale;
-  const scaledH = vbH / scale;
-  const vbX = pan.x;
-  const vbY = pan.y;
-  svg.setAttribute('viewBox', `${vbX} ${vbY} ${scaledW} ${scaledH}`);
-  svg.setAttribute('width', '100%');
-  svg.setAttribute('height', '100%');
-  svg.style.cursor = (drag && drag.type==='pan') ? 'grabbing' : 'crosshair';
-  // clear
-  svg.innerHTML = '';
-  // defs: grid pattern
-  const NS = 'http://www.w3.org/2000/svg';
-  // background rect
-  const isBektBounds = (state.club==='bekt' || els.clubName.value.trim()==='bekt');
-  const bgW = isBektBounds ? 2556 : scaledW;
-  const bgH = isBektBounds ? 1179 : scaledH;
-  const bgX = isBektBounds ? 0 : vbX;
-  const bgY = isBektBounds ? 0 : vbY;
-  const bg = document.createElementNS(NS,'rect');
-  bg.setAttribute('x', String(bgX)); bg.setAttribute('y', String(bgY)); bg.setAttribute('width', String(bgW)); bg.setAttribute('height', String(bgH));
-  bg.setAttribute('fill', '#070709');
-  // border for bounded map
-  if(isBektBounds){
-    const border = document.createElementNS(NS,'rect');
-    border.setAttribute('x','0'); border.setAttribute('y','0'); border.setAttribute('width','2556'); border.setAttribute('height','1179');
-    border.setAttribute('fill','none'); border.setAttribute('stroke','rgba(255,255,255,0.15)'); border.setAttribute('stroke-width','4'); border.setAttribute('stroke-dasharray','12 8');
-    svg.appendChild(border);
-  }
-  svg.appendChild(bg);
-
-  // grid
-  if(els.showGrid.checked){
-    const gridGroup = document.createElementNS(NS,'g');
-    gridGroup.setAttribute('opacity','0.5');
-    const step = 70;
-    const isBektGrid = (state.club==='bekt' || els.clubName.value.trim()==='bekt');
-    const gStartX = isBektGrid ? 0 : Math.floor(vbX / step) * step;
-    const gEndX = isBektGrid ? 2556 : Math.ceil((vbX + scaledW) / step) * step;
-    const gStartY = isBektGrid ? 0 : Math.floor(vbY / step) * step;
-    const gEndY = isBektGrid ? 1179 : Math.ceil((vbY + scaledH) / step) * step;
-    const gVbX = isBektGrid ? 0 : vbX;
-    const gVbY = isBektGrid ? 0 : vbY;
-    const gScaledW = isBektGrid ? 2556 : scaledW;
-    const gScaledH = isBektGrid ? 1179 : scaledH;
-    for(let x=gStartX; x<=gEndX; x+=step){
-      const line = document.createElementNS(NS,'line');
-      line.setAttribute('x1',x); line.setAttribute('y1',gVbY); line.setAttribute('x2',x); line.setAttribute('y2',gVbY+gScaledH);
-      line.setAttribute('class','grid-line');
-      gridGroup.appendChild(line);
-    }
-    for(let y=gStartY; y<=gEndY; y+=step){
-      const line = document.createElementNS(NS,'line');
-      line.setAttribute('x1',gVbX); line.setAttribute('y1',y); line.setAttribute('x2',gVbX+gScaledW); line.setAttribute('y2',y);
-      line.setAttribute('class','grid-line');
-      gridGroup.appendChild(line);
-    }
-    svg.appendChild(gridGroup);
-  }
-
-  // zones
-  if(els.showZones.checked){
-    state.zones.forEach(z=>{
-      const g = document.createElementNS(NS,'g');
-      g.dataset.zone = z._id;
-      const rect = document.createElementNS(NS,'rect');
-      rect.setAttribute('x', z.x); rect.setAttribute('y', z.y);
-      rect.setAttribute('width', z.width); rect.setAttribute('height', z.height);
-      rect.setAttribute('rx', z.rx||12);
-      const zoneSel = isZoneSelected(z._id);
-      rect.setAttribute('class', 'zone-rect' + (zoneSel ? ' selected' + (multiZones.has(z._id) ? ' multi-selected' : '') : ''));
-      rect.dataset.id = z._id;
-      g.appendChild(rect);
-      if(els.showLabels.checked){
-        const text = document.createElementNS(NS,'text');
-        text.setAttribute('x', z.x + z.width/2);
-        text.setAttribute('y', z.y - 6);
-        text.setAttribute('class','zone-label');
-        text.textContent = z.label || z.zone;
-        g.appendChild(text);
-      }
-      // handles for resize (if selected)
-      if(selected.type==='zone' && selected.id===z._id){
-        const handles = [
-          [z.x, z.y], [z.x+z.width, z.y], [z.x, z.y+z.height], [z.x+z.width, z.y+z.height]
-        ];
-        handles.forEach((p,i)=>{
-          const h = document.createElementNS(NS,'circle');
-          h.setAttribute('cx', p[0]); h.setAttribute('cy', p[1]); h.setAttribute('r', 6);
-          h.setAttribute('fill', '#2e89ff'); h.setAttribute('stroke','#fff'); h.setAttribute('stroke-width','2');
-          h.setAttribute('data-handle', i); h.setAttribute('data-zone', z._id);
-          h.style.cursor='nwse-resize';
-          g.appendChild(h);
-        });
-      }
-      svg.appendChild(g);
-    });
-  }
-
-  // pcs
-  pcs.forEach(pc=>{
-    const g = document.createElementNS(NS,'g');
-    const pcSel = isPcSelected(pc.num);
-    g.setAttribute('class','pc-dot' + (pcSel ? ' selected' + (multiPcs.has(String(pc.num)) ? ' multi-selected' : '') : ''));
-    g.dataset.num = pc.num;
-    g.dataset.block = pc.blockName;
-    const isSelected = isPcSelected(pc.num);
-    const circle = document.createElementNS(NS,'circle');
-    circle.setAttribute('cx', pc.x);
-    circle.setAttribute('cy', pc.y);
-    circle.setAttribute('r', isSelected ? 18 : 14);
-    // color by block hue
-    const hue = hashHue(pc.blockName);
-    circle.setAttribute('fill', `hsl(${hue} 70% 55%)`);
-    circle.setAttribute('stroke', isSelected ? '#2e89ff' : 'rgba(255,255,255,.9)');
-    circle.setAttribute('stroke-width', isSelected? '3':'1.5');
-    g.appendChild(circle);
-    if(els.showNumbers.checked){
-      const text = document.createElementNS(NS,'text');
-      text.setAttribute('x', pc.x);
-      text.setAttribute('y', pc.y+4);
-      text.setAttribute('text-anchor','middle');
-      text.setAttribute('font-size', isSelected? '9':'8');
-      text.setAttribute('font-weight','800');
-      text.setAttribute('fill', '#000');
-      text.setAttribute('pointer-events','none');
-      text.textContent = pc.num;
-      g.appendChild(text);
-    }
-    svg.appendChild(g);
-  });
-
-  // marquee rect
-  if(marquee && marquee.active){
-    const NS2 = 'http://www.w3.org/2000/svg';
-    const mr = document.createElementNS(NS2,'rect');
-    const x = Math.min(marquee.x1, marquee.x2);
-    const y = Math.min(marquee.y1, marquee.y2);
-    const w = Math.abs(marquee.x2 - marquee.x1);
-    const h = Math.abs(marquee.y2 - marquee.y1);
-    mr.setAttribute('x', x); mr.setAttribute('y', y); mr.setAttribute('width', w); mr.setAttribute('height', h);
-    mr.setAttribute('class','marquee-rect');
-    svg.appendChild(mr);
-  }
-
-  // json preview
+function vbToPct(x,y){return [(x-S.vb.minX)/S.vb.w*100,(y-S.vb.minY)/S.vb.h*100];}
+/* ---------- калибровка ---------- */
+function linFit(pairs){
+ if(pairs.length===0)return {a:1,b:0,res:0};
+ if(pairs.length===1)return {a:1,b:pairs[0][1]-pairs[0][0],res:0};
+ var sx=0,sy=0,i;for(i=0;i<pairs.length;i++){sx+=pairs[i][0];sy+=pairs[i][1];}
+ var mx=sx/pairs.length,my=sy/pairs.length,num=0,den=0;
+ for(i=0;i<pairs.length;i++){num+=(pairs[i][0]-mx)*(pairs[i][1]-my);den+=(pairs[i][0]-mx)*(pairs[i][0]-mx);}
+ var a=den>1e-9?num/den:1,b=my-a*mx,res=0;
+ for(i=0;i<pairs.length;i++)res=Math.max(res,Math.abs(a*pairs[i][0]+b-pairs[i][1]));
+ return {a:a,b:b,res:res};
+}
+function calibrate(){
+ var svg=liveSvg();if(!svg)return false;
+ var vb=parseVB(svg.getAttribute("viewBox"));if(!vb)return false;
+ S.vb=vb;
+ if(!placeEditLayer())return false;
+ var nodes=livePcs();
+ var rendered={};
+ for(var i=0;i<nodes.length;i++){var el=nodes[i];
+  var n=el.dataset?el.dataset.num:null;if(n==null||n==="")continue;
+  var l=parseFloat(el.style.left),t=parseFloat(el.style.top);
+  if(!Number.isFinite(l)||!Number.isFinite(t))continue;
+  rendered[String(n)]={x:vb.minX+l/100*vb.w,y:vb.minY+t/100*vb.h,
+   bg:el.style.backgroundColor||"",fg:el.style.color||""};}
+ S.liveCount=nodes.length;
+ S.renderedBg={};
+ var rk=Object.keys(rendered);
+ for(i=0;i<rk.length;i++)S.renderedBg[rk[i]]={bg:rendered[rk[i]].bg,fg:rendered[rk[i]].fg};
+ // зоны по порядку документа
+ var order=[];
+ try{order=Array.prototype.slice.call(liveDoc().querySelectorAll("rect.zone, text.zone-label"));}catch(e){}
+ var zones=[],cur=null;
+ for(i=0;i<order.length;i++){var nd=order[i];
+  var tag=(nd.tagName||"").toLowerCase();
+  if(tag==="rect"){cur={el:nd,zone:nd.getAttribute("data-zone")||"",
+   x:+nd.getAttribute("x")||0,y:+nd.getAttribute("y")||0,
+   w:+nd.getAttribute("width")||0,h:+nd.getAttribute("height")||0,
+   rx:+(nd.getAttribute("rx")||12)||0,label:""};zones.push(cur);}
+  else if(cur){cur.label=(nd.textContent||"").trim();}}
+ for(i=0;i<zones.length;i++){var z=zones[i],sx=0,sy=0;
   try{
-    const j = exportState();
-    els.jsonPreview.value = JSON.stringify(j, null, 2);
-  }catch(e){
-    els.jsonPreview.value = 'Ошибка сериализации: '+e.message;
-  }
-
-  // attach svg events after render
-  attachSvgEvents();
-  updateInspector();
+   var m=z.el.getScreenCTM();
+   if(m){var p=new DOMPoint(z.x,z.y).matrixTransform(m);
+    var e=clientToVB(p.x,p.y);sx=e.x-z.x;sy=e.y-z.y;
+    if(Math.abs(sx)<0.5)sx=0;if(Math.abs(sy)<0.5)sy=0;}
+  }catch(_){}
+  z.sx=sx;z.sy=sy;
+ }
+ // фит по блокам
+ S.fit={};S.maxRes=0;
+ var be=Object.entries(S.blocks);
+ for(i=0;i<be.length;i++){var bn=be[i][0],b=be[i][1];
+  var xs=[],ys=[],ns=Object.keys(b.pcs);
+  for(var j=0;j<ns.length;j++){var f=formulaOf(ns[j],bn),r2=rendered[String(ns[j])];
+   if(f&&r2){xs.push([f[0],r2.x]);ys.push([f[1],r2.y]);}}
+  var fx=linFit(xs),fy=linFit(ys);
+  S.fit[bn]={ax:fx.a,bx:fx.b,ay:fy.a,by:fy.b,n:xs.length,res:Math.max(fx.res,fy.res)};
+  S.maxRes=Math.max(S.maxRes,fx.res,fy.res);
+ }
+ if(!S.zones.length){
+  S.zones=zones.map(function(z){return {zone:z.zone,label:z.label,
+   x:r1(z.x+z.sx),y:r1(z.y+z.sy),w:Math.round(z.w),h:Math.round(z.h),rx:z.rx,sx:z.sx,sy:z.sy};});
+ }
+ S.calibrated=true;S.demo=(nodes.length===0);
+ return true;
 }
-
-function hashHue(str){
-  let h=0;
-  for(let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) % 360;
-  return h;
+/* ---------- рендер оверлея ---------- */
+function renderPanels(){renderSel();renderBlocks();renderZones();renderJson();}
+var S_SIG=null,ZH_SIG=null,zlabG=null;
+function overlaySig(){return S.club+"#"+allPCs().map(function(p){return p.num+"@"+p.bn;}).sort().join(",")+"#"+S.zones.map(function(z){return z.zone;}).join(",");}
+function zhSig(){return (S.sel?S.sel.kind+":"+S.sel.id:"-")+"|"+S.mode;}
+function findZone(id){for(var i=0;i<S.zones.length;i++)if(S.zones[i].zone===id)return S.zones[i];return null;}
+function renderOverlay(fast){
+ var NS="http://www.w3.org/2000/svg",i;
+ els.zoneSvg.setAttribute("viewBox",S.vb.minX+" "+S.vb.minY+" "+S.vb.w+" "+S.vb.h);
+ els.zoneSvg.setAttribute("preserveAspectRatio","none");
+ var inZone=S.mode==="zone";
+ // --- структура: только если изменился состав (иначе узлы двигаем на месте, жест не рвётся) ---
+ if(overlaySig()!==S_SIG){
+  els.zoneSvg.innerHTML="";
+  for(i=0;i<S.zones.length;i++){
+   var r0=document.createElementNS(NS,"rect");
+   r0.setAttribute("rx",S.zones[i].rx||12);
+   r0.setAttribute("data-zone",S.zones[i].zone);
+   r0.setAttribute("class","zone-h");els.zoneSvg.appendChild(r0);}
+  zlabG=document.createElementNS(NS,"g");els.zoneSvg.appendChild(zlabG);
+  els.pcLayer.innerHTML="";
+  var pcs0=allPCs();
+  for(i=0;i<pcs0.length;i++){var d0=document.createElement("div");
+   d0.className="pc-h";d0.setAttribute("data-num",pcs0[i].num);
+   d0.textContent=pcs0[i].num;els.pcLayer.appendChild(d0);}
+  els.zhLayer.innerHTML="";
+  S_SIG=overlaySig();ZH_SIG=null;
+ }
+ // --- зоны: двигаем атрибуты на месте ---
+ var zmap={},rl=els.zoneSvg.querySelectorAll("rect.zone-h"),ri;
+ for(ri=0;ri<rl.length;ri++)zmap[rl[ri].getAttribute("data-zone")]=rl[ri];
+ for(i=0;i<S.zones.length;i++){var z=S.zones[i],rr=zmap[z.zone];if(!rr)continue;
+  rr.setAttribute("x",z.x);rr.setAttribute("y",z.y);
+  rr.setAttribute("width",Math.max(1,z.w));rr.setAttribute("height",Math.max(1,z.h));
+  var selZ=S.sel&&S.sel.kind==="zone"&&S.sel.id===z.zone;
+  rr.setAttribute("class","zone-h"+(selZ?" sel":""));
+  rr.setAttribute("opacity",inZone||selZ?"1":"0.55");}
+ if(zlabG){zlabG.innerHTML="";
+  for(i=0;i<S.zones.length;i++){var z2=S.zones[i];
+   var selZ2=S.sel&&S.sel.kind==="zone"&&S.sel.id===z2.zone;
+   if(inZone||selZ2){var t=document.createElementNS(NS,"text");
+    t.setAttribute("x",z2.x+z2.w/2);t.setAttribute("y",z2.y-8);
+    t.setAttribute("text-anchor","middle");
+    t.setAttribute("style","font-size:22px;font-weight:800;fill:rgba(255,255,255,.75);pointer-events:none");
+    t.textContent=z2.label||z2.zone;zlabG.appendChild(t);}}}
+ // --- ПК: двигаем на месте ---
+ var showPc=S.mode!=="zone";
+ var pmap={},be=Object.entries(S.blocks),bi;
+ for(bi=0;bi<be.length;bi++){var bns=Object.keys(be[bi][1].pcs),nj;
+  for(nj=0;nj<bns.length;nj++)pmap[bns[nj]]=be[bi][0];}
+ var nodes=els.pcLayer.children,ni;
+ for(ni=0;ni<nodes.length;ni++){var nd=nodes[ni],num=nd.getAttribute("data-num"),bn=pmap[num];
+  var v=bn?vbOf(num,bn):null;
+  if(!v){nd.style.display="none";continue;}nd.style.display="";
+  var pt=vbToPct(v[0],v[1]);
+  nd.style.left=pt[0]+"%";nd.style.top=pt[1]+"%";
+  var selP=S.sel&&S.sel.kind==="pc"&&S.sel.id===String(num);
+  nd.className="pc-h"+(selP?" sel":"")+(((S.hlBlock&&S.hlBlock!==bn)||!showPc)?" dim":"");
+  var c=S.renderedBg[String(num)];
+  if(c&&c.bg){nd.style.background=c.bg;nd.style.color=c.fg||"#fff";}
+  else if(S.demo){nd.style.background="#666";nd.style.color="#fff";}
+  else{nd.style.background="";nd.style.color="";}}
+ // --- ручки зон: пересоздаём только при смене выбора/режима, иначе двигаем ---
+ var zs=zhSig();
+ if(zs!==ZH_SIG){
+  els.zhLayer.innerHTML="";
+  if(inZone&&S.sel&&S.sel.kind==="zone"){
+   var zz=findZone(S.sel.id);
+   if(zz){var cs=[[zz.x,zz.y],[zz.x+zz.w,zz.y],[zz.x,zz.y+zz.h],[zz.x+zz.w,zz.y+zz.h]];
+    for(i=0;i<4;i++){var cp=vbToPct(cs[i][0],cs[i][1]);
+     var h=document.createElement("div");h.className="zh";h.setAttribute("data-corner",i);
+     h.style.left=cp[0]+"%";h.style.top=cp[1]+"%";els.zhLayer.appendChild(h);}}}
+  ZH_SIG=zs;
+ }else if(inZone&&S.sel&&S.sel.kind==="zone"){
+  var zz2=findZone(S.sel.id);
+  if(zz2){var cs2=[[zz2.x,zz2.y],[zz2.x+zz2.w,zz2.y],[zz2.x,zz2.y+zz2.h],[zz2.x+zz2.w,zz2.y+zz2.h]];
+   var zhc=els.zhLayer.children;
+   for(i=0;i<4&&i<zhc.length;i++){var cp2=vbToPct(cs2[i][0],cs2[i][1]);
+    zhc[i].style.left=cp2[0]+"%";zhc[i].style.top=cp2[1]+"%";}}
+ }
+ var pcs=allPCs();
+ els.chipVb.textContent="viewBox: "+S.vb.minX+" "+S.vb.minY+" "+S.vb.w+"×"+S.vb.h;
+ els.chipCount.textContent="ПК: "+pcs.length;
+ if(S.calibrated&&!S.demo){
+  if(S.maxRes<=6){els.chipFit.className="chip ok";els.chipFit.textContent="1:1 ✓ Δ"+S.maxRes.toFixed(1);}
+  else{els.chipFit.className="chip warn";els.chipFit.textContent="1:1 ⚠ Δ"+S.maxRes.toFixed(0)+" — сверь в 👁";}
+ }else if(S.demo){els.chipFit.className="chip warn";els.chipFit.textContent="демо (нет API)";}
+ else{els.chipFit.className="chip";els.chipFit.textContent="1:1: …";}
+ if(!fast)renderPanels();
 }
-
-function deselect(){ selected={type:null,id:null,pcNum:null}; multiPcs.clear(); multiZones.clear(); render(); }
-function clearMulti(){ multiPcs.clear(); multiZones.clear(); }
-function isPcSelected(num){ return multiPcs.has(String(num)) || (selected.type==='pc' && selected.pcNum===String(num)); }
-function isZoneSelected(id){ return multiZones.has(String(id)) || (selected.type==='zone' && selected.id===String(id)); }
-function togglePcMulti(num){
-  const s = String(num);
-  if(multiPcs.has(s)) multiPcs.delete(s);
-  else multiPcs.add(s);
-  // keep primary as last toggled for inspector
-  if(multiPcs.size===1){
-    const only = Array.from(multiPcs)[0];
-    selected={type:'pc', pcNum:only, id:only};
-  } else if(multiPcs.size===0 && multiZones.size===0){
-    deselect();
-  }
+function renderAll(){renderOverlay();markDirty();}
+function markDirty(){els.btnSave.classList.toggle("dirty",S.posDirty||S.zoneDirty);}
+/* ---------- инспектор ---------- */
+function renderSel(){
+ var b=els.selBody;
+ if(!S.sel){
+  b.innerHTML='<p class="hint">Тапните ПК или зону на карте. Режим ＋ — создать ПК тапом. Режим 🖐 — двигать карту.</p>'+
+  '<div class="checkrow"><input type="checkbox" id="ckSnap"'+(S.snap?" checked":"")+'><label for="ckSnap">Магнит (ровные ряды)</label></div>'+
+  '<div class="checkrow"><input type="checkbox" id="ckBlock"'+(S.blockMove?" checked":"")+'><label for="ckBlock">Двигать целым блоком</label></div>';
+  bindSelChecks();return;
+ }
+ if(S.sel.kind==="pc"){
+  var num=String(S.sel.id),f=findPC(num);
+  if(!f){S.sel=null;renderSel();return;}
+  var v=vbOf(num,f.bn),cell=f.b.pcs[num];
+  var isOv=!!(cell&&cell.override);
+  var opts=Object.keys(S.blocks).map(function(n){
+   return '<option value="'+escH(n)+'"'+(n===f.bn?" selected":"")+'>'+escH(n)+"</option>";}).join("");
+  b.innerHTML=
+   '<div class="fld"><label>ПК №'+escH(num)+" · "+escH(f.bn)+"</label>"+
+   '<div class="inrow"><input type="number" id="pcNum" value="'+escH(num)+'">'+
+   "<button class=\"btn small\" id=\"pcRen\">№</button></div></div>"+
+   '<div class="fld"><label>Блок</label><select id="pcBlock">'+opts+"</select></div>"+
+   '<div class="fld"><label>'+(isOv?"Координаты (абсолют)":"Колонка / ряд")+'</label><div class="inrow">'+
+   (isOv?'<input type="number" id="pcX" value="'+r1(cell.override[0])+'"><input type="number" id="pcY" value="'+r1(cell.override[1])+'">'
+    :'<input type="number" id="pcC" value="'+r1(cell[0])+'" step="1"><input type="number" id="pcR" value="'+r1(cell[1])+'" step="1">')+
+   "</div></div>"+
+   '<div class="hint">На карте: '+(v?v[0].toFixed(1)+", "+v[1].toFixed(1):"—")+"</div>"+
+   '<div class="fld"><label>Сдвинуть (без перетаскивания)</label><div class="inrow">'+
+   '<button class="btn small" id="nL">◀</button><button class="btn small" id="nU">▲</button>'+
+   '<button class="btn small" id="nD">▼</button><button class="btn small" id="nR">▶</button></div></div>'+
+   '<div class="btnrow"><button class="btn small blue" id="pcApply">Применить</button>'+
+   '<button class="btn small" id="pcType">'+(isOv?"→ в сетку":"→ в абсолют")+"</button></div>"+
+   '<div class="btnrow"><button class="btn small danger" id="pcDel">Удалить ПК</button></div>'+
+   '<div class="checkrow"><input type="checkbox" id="ckSnap"'+(S.snap?" checked":"")+'><label for="ckSnap">Магнит</label></div>'+
+   '<div class="checkrow"><input type="checkbox" id="ckBlock"'+(S.blockMove?" checked":"")+'><label for="ckBlock">Двигать блоком</label></div>';
+  $("pcRen").onclick=function(){var nn=String($("pcNum").value.trim());
+   if(!nn||nn===num)return;if(findPC(nn))return toast("ПК "+nn+" уже есть");
+   pushUndo();f.b.pcs[nn]=f.b.pcs[num];delete f.b.pcs[num];S.sel.id=nn;S.posDirty=true;renderAll();};
+  $("pcApply").onclick=function(){
+   var nb=$("pcBlock").value;if(!S.blocks[nb])return toast("Нет блока");
+   pushUndo();
+   if(isOv){var x=+$("pcX").value||0,y=+$("pcY").value||0;
+    if(nb!==f.bn)delete f.b.pcs[num];
+    S.blocks[nb].pcs[num]={override:[x,y]};}
+   else{var c=Math.round(+$("pcC").value||0),rr=Math.round(+$("pcR").value||0);
+    if(nb!==f.bn){var keep=formulaOf(num,f.bn);delete f.b.pcs[num];
+     var t=S.blocks[nb],ft=fitOf(nb);
+     var fx=(keep[0]-ft.bx)/(ft.ax||1),fy=(keep[1]-ft.by)/(ft.ay||1);
+     S.blocks[nb].pcs[num]=[Math.round((fx-S.origin[0]-t.origin[0])/t.step),Math.round((fy-S.origin[1]-t.origin[1])/t.stepY)];
+    }else S.blocks[nb].pcs[num]=[c,rr];}
+   S.posDirty=true;renderAll();toast("ПК обновлён");};
+  $("pcType").onclick=function(){pushUndo();
+   var keep2=formulaOf(num,f.bn),t2=f.b;
+   if(isOv){f.b.pcs[num]=[Math.round((keep2[0]-S.origin[0]-t2.origin[0])/t2.step),Math.round((keep2[1]-S.origin[1]-t2.origin[1])/t2.stepY)];}
+   else{f.b.pcs[num]={override:[Math.round(keep2[0]-S.origin[0]),Math.round(keep2[1]-S.origin[1])]};}
+   S.posDirty=true;renderAll();};
+  $("pcDel").onclick=function(){if(!confirm("Удалить ПК "+num+"?"))return;
+   pushUndo();delete f.b.pcs[num];S.sel=null;S.posDirty=true;renderAll();};
+  (function(ff,nn){
+   function nudge(dx,dy){pushUndo();var cc=ff.b.pcs[nn];
+    if(cc&&cc.override){cc.override=[Math.round(cc.override[0]+dx*10),Math.round(cc.override[1]+dy*10)];}
+    else if(cc){cc[0]=Math.round(cc[0]+dx);cc[1]=Math.round(cc[1]+dy);}
+    S.posDirty=true;renderAll();}
+   $("nL").onclick=function(){nudge(-1,0);};$("nU").onclick=function(){nudge(0,-1);};
+   $("nD").onclick=function(){nudge(0,1);};$("nR").onclick=function(){nudge(1,0);};
+  })(f,num);
+  bindSelChecks();return;
+ }
+ if(S.sel.kind==="zone"){
+  var z=null,i;
+  for(i=0;i<S.zones.length;i++)if(S.zones[i].zone===S.sel.id)z=S.zones[i];
+  if(!z){S.sel=null;renderSel();return;}
+  b.innerHTML='<div class="fld"><label>Зона</label><div class="inrow"><input type="text" id="zId" value="'+escH(z.zone)+'">'+
+   '<input type="text" id="zLb" value="'+escH(z.label)+'"></div></div>'+
+   '<div class="fld"><label>X / Y</label><div class="inrow"><input type="number" id="zX" value="'+Math.round(z.x)+'">'+
+   '<input type="number" id="zY" value="'+Math.round(z.y)+'"></div></div>'+
+   '<div class="fld"><label>Ширина / высота</label><div class="inrow"><input type="number" id="zW" value="'+Math.round(z.w)+'">'+
+   '<input type="number" id="zH" value="'+Math.round(z.h)+'"></div></div>'+
+   '<div class="btnrow"><button class="btn small blue" id="zApply">Применить</button>'+
+   '<button class="btn small danger" id="zDel">Удалить</button></div>';
+  (function(zz){
+   $("zApply").onclick=function(){pushUndo();
+    zz.zone=$("zId").value.trim()||zz.zone;zz.label=$("zLb").value.trim();
+    zz.x=+$("zX").value||0;zz.y=+$("zY").value||0;
+    zz.w=Math.max(20,+$("zW").value||100);zz.h=Math.max(20,+$("zH").value||100);
+    S.sel.id=zz.zone;S.zoneDirty=true;renderAll();};
+   $("zDel").onclick=function(){if(!confirm("Удалить зону?"))return;
+    pushUndo();S.zones=S.zones.filter(function(q){return q!==zz;});
+    S.sel=null;S.zoneDirty=true;renderAll();};
+  })(z);
+  return;
+ }
 }
-function toggleZoneMulti(id){
-  const s = String(id);
-  if(multiZones.has(s)) multiZones.delete(s);
-  else multiZones.add(s);
-  if(multiZones.size===1 && multiPcs.size===0){
-    selected={type:'zone', id:s};
-  }
+function bindSelChecks(){
+ var s=$("ckSnap"),bl=$("ckBlock");
+ if(s)s.onchange=function(){S.snap=s.checked;};
+ if(bl)bl.onchange=function(){S.blockMove=bl.checked;};
 }
-function selectAll(){
-  const pcs = getAllPCs();
-  pcs.forEach(pc=> multiPcs.add(String(pc.num)));
-  state.zones.forEach(z=> multiZones.add(z._id));
-  if(pcs.length) selected={type:'pc', pcNum:String(pcs[0].num), id:String(pcs[0].num)};
-  else if(state.zones.length) selected={type:'zone', id:state.zones[0]._id};
-  render();
-  toast('Выделено ПК:'+multiPcs.size+' Зон:'+multiZones.size);
+function renderBlocks(){
+ var be=Object.entries(S.blocks);
+ els.blockList.innerHTML=be.map(function(e){
+  return '<div class="blockitem'+(S.targetBlock===e[0]?" active":"")+'" data-b="'+escH(e[0])+'">'+
+  '<span class="nm">'+escH(e[0])+'</span><span class="ct">'+Object.keys(e[1].pcs).length+"</span></div>";}).join("")||
+  '<p class="hint">Нет блоков — создайте первый.</p>';
+ var items=els.blockList.querySelectorAll(".blockitem");
+ for(var i=0;i<items.length;i++)(function(el){
+  el.onclick=function(){S.targetBlock=el.getAttribute("data-b");
+   S.hlBlock=(S.hlBlock===S.targetBlock)?"":S.targetBlock;renderOverlay();};
+ })(items[i]);
 }
-function getMarqueeSelected(){
-  if(!marquee) return;
-  const x1 = Math.min(marquee.x1, marquee.x2), x2 = Math.max(marquee.x1, marquee.x2);
-  const y1 = Math.min(marquee.y1, marquee.y2), y2 = Math.max(marquee.y1, marquee.y2);
-  // select PCs inside
-  getAllPCs().forEach(pc=>{
-    if(pc.x>=x1 && pc.x<=x2 && pc.y>=y1 && pc.y<=y2) multiPcs.add(String(pc.num));
-  });
-  state.zones.forEach(z=>{
-    const cx = z.x + z.width/2, cy = z.y + z.height/2;
-    if(cx>=x1 && cx<=x2 && cy>=y1 && cy<=y2) multiZones.add(z._id);
-    // also if zone rect intersects marquee
-    else if(!(z.x+z.width < x1 || z.x > x2 || z.y+z.height < y1 || z.y > y2)) multiZones.add(z._id);
-  });
+function renderZones(){
+ els.zoneList.innerHTML=S.zones.map(function(z){
+  return '<div class="zoneitem'+(S.sel&&S.sel.kind==="zone"&&S.sel.id===z.zone?" active":"")+'" data-z="'+escH(z.zone)+'">'+
+  '<span class="nm">'+escH(z.label||z.zone)+"</span></div>";}).join("")||'<p class="hint">Зон нет.</p>';
+ var items=els.zoneList.querySelectorAll(".zoneitem");
+ for(var i=0;i<items.length;i++)(function(el){
+  el.onclick=function(){S.sel={kind:"zone",id:el.getAttribute("data-z")};setMode("zone");renderOverlay();
+   var t=document.querySelector('[data-tab="sel"]');if(t)t.click();};
+ })(items[i]);
 }
-document.getElementById('btn-deselect').addEventListener('click', deselect);
-document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape') deselect();
-  if((e.ctrlKey||e.metaKey) && (e.key==='a' || e.key==='A')){
-    e.preventDefault();
-    selectAll();
-    return;
-  }
-  if(e.key==='Delete'){
-    if(multiPcs.size>0 || multiZones.size>0){
-      if(confirm(`Удалить ${multiPcs.size} ПК и ${multiZones.size} зон?`)){
-        multiPcs.forEach(num=>{
-          const info = findPCByNum(num);
-          if(info) delete info.block.pcs[num];
-        });
-        state.zones = state.zones.filter(z=> !multiZones.has(z._id));
-        multiPcs.clear(); multiZones.clear(); deselect(); render(); toast('Удалено выбранное');
-      }
-      return;
-    }
-    if(selected.type==='pc'){
-      const num = selected.pcNum;
-      const info = findPCByNum(num);
-      if(info){
-        delete info.block.pcs[num];
-        toast(`ПК ${num} удалён`);
-        deselect();
-        render();
-      }
-    } else if(selected.type==='zone'){
-      state.zones = state.zones.filter(z=> z._id!==selected.id);
-      deselect(); render();
-    }
-  } else if((e.ctrlKey||e.metaKey) && e.key==='s'){
-    e.preventDefault(); document.getElementById('btn-save').click();
-  }
-});
-
-function selectPC(num){
-  selected = {type:'pc', pcNum:String(num), id:String(num)};
-  render();
-  // scroll inspector?
+function renderJson(){
+ try{els.jsonPrev.value=JSON.stringify(exportState(),null,2);}catch(e){els.jsonPrev.value="ошибка: "+e.message;}
 }
-function selectBlock(name){
-  selected = {type:'block', id:name};
-  render();
+/* ---------- указатели ---------- */
+var ptrs={},drag=null,pinch=null,rafPend=false;
+function queueRender(){if(rafPend)return;rafPend=true;
+ requestAnimationFrame(function(){rafPend=false;renderOverlay(true);});}
+function applyView(){
+ els.stage.style.transform="translate("+Z.tx+"px,"+Z.ty+"px) scale("+Z.s+")";
+ els.stage.style.transformOrigin="0 0";
+ els.zoomPct.textContent=Math.round(Z.s*100)+"%";
 }
-function selectZone(id){
-  selected = {type:'zone', id:id};
-  render();
+function zoomAt(cx,cy,f){
+ var ns=Math.min(6,Math.max(0.5,Z.s*f));if(ns===Z.s)return;
+ var r=els.stage.getBoundingClientRect();
+ var lx=(cx-r.left)/Z.s,ly=(cy-r.top)/Z.s;
+ var ox=r.left-Z.tx,oy=r.top-Z.ty;
+ Z.s=ns;Z.tx=cx-ox-lx*ns;Z.ty=cy-oy-ly*ns;
+ applyView();placeEditLayer();queueRender();
 }
-
-function updateInspector(){
-  // show multi info if needed
-  if(multiPcs.size>1 || multiZones.size>1 || (multiPcs.size>0 && multiZones.size>0)){
-    els.inspectorEmpty.hidden = true;
-    els.inspectorPc.hidden = true;
-    els.inspectorBlock.hidden = true;
-    els.inspectorZone.hidden = true;
-    // create or update multi info
-    let el = document.getElementById('inspector-multi');
-    if(!el){
-      el = document.createElement('div');
-      el.id='inspector-multi';
-      el.className='inspector';
-      document.querySelector('.panel.right .panel-body').prepend(el);
-    }
-    el.hidden=false;
-    el.innerHTML = `<div class="group"><div class="group-title">Выделено</div><div style="font-size:13px">ПК: ${multiPcs.size} &nbsp; Зон: ${multiZones.size}</div><div class="row"><button class="btn small" id="btn-multi-move">Двигать вместе</button><button class="btn small danger" id="btn-multi-delete">Удалить выбранные</button></div><div class="help">Перетаскивание любого выделенного переместит всю группу. Для зон — ресайз одного меняет все.</div></div>`;
-    // bind buttons
-    const delBtn = document.getElementById('btn-multi-delete');
-    if(delBtn) delBtn.onclick = ()=>{
-      if(!confirm('Удалить '+multiPcs.size+' ПК и '+multiZones.size+' зон?')) return;
-      multiPcs.forEach(num=>{
-        const info = findPCByNum(num);
-        if(info) delete info.block.pcs[num];
-      });
-      state.zones = state.zones.filter(z=> !multiZones.has(z._id));
-      multiPcs.clear(); multiZones.clear(); deselect(); render(); toast('Удалено');
-    };
-    return;
-  } else {
-    const el = document.getElementById('inspector-multi');
-    if(el) el.hidden=true;
-  }
-  els.inspectorEmpty.hidden = selected.type!==null;
-  els.inspectorPc.hidden = selected.type!=='pc';
-  els.inspectorBlock.hidden = selected.type!=='block';
-  els.inspectorZone.hidden = selected.type!=='zone';
-  if(selected.type==='pc'){
-    const num = selected.pcNum;
-    const info = findPCByNum(num);
-    if(!info){ els.inspectorEmpty.hidden=false; els.inspectorPc.hidden=true; return; }
-    const {blockName, block, cell} = info;
-    document.getElementById('pc-title').textContent = `#${num} (${blockName})`;
-    document.getElementById('pc-num').value = num;
-    const sel = document.getElementById('pc-block');
-    sel.value = blockName;
-    const isOverride = !!(cell && cell.override);
-    document.getElementById('pc-type').value = isOverride ? 'override' : 'grid';
-    const gridRow = document.getElementById('pc-grid-row');
-    const absRow = document.getElementById('pc-abs-row');
-    gridRow.hidden = isOverride;
-    absRow.hidden = !isOverride;
-    if(isOverride){
-      document.getElementById('pc-x').value = cell.override[0];
-      document.getElementById('pc-y').value = cell.override[1];
-    } else {
-      document.getElementById('pc-col').value = cell[0];
-      document.getElementById('pc-row').value = cell[1];
-    }
-    const abs = getAbsolutePos(num, blockName);
-    document.getElementById('pc-coords-help').textContent = `Абс: ${abs ? abs[0].toFixed(1)+', '+abs[1].toFixed(1) : '—'} • ViewBox ${state.viewBox[0]}×${state.viewBox[1]}`;
-  } else if(selected.type==='block'){
-    const name = selected.id;
-    const b = state.blocks[name];
-    if(!b) return;
-    document.getElementById('block-title').textContent = name;
-    document.getElementById('block-name').value = name;
-    document.getElementById('block-ox').value = b.origin[0];
-    document.getElementById('block-oy').value = b.origin[1];
-    document.getElementById('block-step').value = b.step;
-    document.getElementById('block-stepy').value = b.stepY;
-  } else if(selected.type==='zone'){
-    const z = state.zones.find(x=> x._id===selected.id);
-    if(!z) return;
-    document.getElementById('zone-title').textContent = z.zone;
-    document.getElementById('zone-id').value = z.zone;
-    document.getElementById('zone-label').value = z.label;
-    document.getElementById('zone-x').value = z.x;
-    document.getElementById('zone-y').value = z.y;
-    document.getElementById('zone-w').value = z.width;
-    document.getElementById('zone-h').value = z.height;
-    document.getElementById('zone-rx').value = z.rx||12;
-  }
+function touchUndo(d){if(!d.touched){d.touched=true;pushUndo();}}
+var DBG=false;
+try{DBG=new URLSearchParams(location.search).get("debug")==="1";}catch(e){}
+function dbg(m){if(!DBG)return;try{var d=$("dbg");d.hidden=false;d.textContent=m;}catch(_){}}
+function clsOf(t){try{
+ if(!t)return "?";
+ var s=t.id?"#"+t.id:"";
+ var c=t.className&&t.className.baseVal!==undefined?t.className.baseVal:t.className;
+ if(c&&typeof c==="string")s+="."+String(c).split(" ")[0];
+ return s||(t.tagName||"?");
+}catch(_){return "?";}}
+function stageDown(e){
+ dbg("down "+S.mode+" ← "+clsOf(e.target));
+ try{els.stage.setPointerCapture(e.pointerId);}catch(_){}
+ ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
+ var keys=Object.keys(ptrs);
+ if(keys.length===2){
+  var p0=ptrs[keys[0]],p1=ptrs[keys[1]];
+  pinch={d:Math.hypot(p0.x-p1.x,p0.y-p1.y)};drag=null;return;
+ }
+ if(S.mode==="view")return;
+ var t=e.target;
+ var pcH=t&&t.closest?t.closest(".pc-h"):null;
+ var zhH=t&&t.closest?t.closest(".zh"):null;
+ var zr=t&&t.closest?t.closest("rect.zone-h"):null;
+ if(zhH&&S.mode==="zone"){
+  var z0=S.sel?findZone(S.sel.id):null;
+  if(!z0)return;
+  drag={type:"zres",z:z0,corner:+zhH.getAttribute("data-corner"),
+   start:clientToVB(e.clientX,e.clientY),orig:clone(z0),touched:false};
+  if(e.cancelable)e.preventDefault();return;
+ }
+ if(pcH&&(S.mode==="pc"||S.mode==="add")){
+  var num=pcH.getAttribute("data-num"),f=findPC(num);if(!f)return;
+  S.sel={kind:"pc",id:num};
+  drag={type:"pc",num:num,bn:f.bn,start:clientToVB(e.clientX,e.clientY),touched:false,cells0:null};
+  if(S.blockMove){drag.cells0={};
+   var ns=Object.keys(f.b.pcs);
+   for(var k=0;k<ns.length;k++)drag.cells0[ns[k]]=clone(f.b.pcs[ns[k]]);}
+  else{drag.cells0={};drag.cells0[num]=clone(f.b.pcs[num]);}
+  renderOverlay(true);if(e.cancelable)e.preventDefault();return;
+ }
+ if(zr&&S.mode==="zone"){
+  var dz=zr.getAttribute("data-zone"),zz=findZone(dz);
+  if(zz){S.sel={kind:"zone",id:zz.zone};
+   drag={type:"zmove",z:zz,start:clientToVB(e.clientX,e.clientY),orig:clone(zz),touched:false};
+   renderOverlay(true);if(e.cancelable)e.preventDefault();return;}
+ }
+ if(S.mode==="add"){
+  var p=clientToVB(e.clientX,e.clientY);
+  if(p.x<S.vb.minX-S.vb.w*0.1||p.x>S.vb.minX+S.vb.w*1.1||
+     p.y<S.vb.minY-S.vb.h*0.1||p.y>S.vb.minY+S.vb.h*1.1)
+   return toast("Тапните по карте");
+  addPCAt(p.x,p.y);return;
+ }
+ if(S.mode==="pan"){drag={type:"pan",sx:e.clientX,sy:e.clientY,otx:Z.tx,oty:Z.ty};return;}
+ if(S.mode==="pc"&&!pcH){if(S.sel){S.sel=null;renderAll();}return;}
+ if(S.mode==="zone"&&!zr){if(S.sel){S.sel=null;renderAll();}return;}
 }
-
-// inspector apply handlers
-document.getElementById('btn-pc-apply').addEventListener('click', ()=>{
-  const oldNum = selected.pcNum;
-  const info = findPCByNum(oldNum);
-  if(!info) return;
-  const newNum = String(document.getElementById('pc-num').value.trim());
-  const newBlockName = document.getElementById('pc-block').value;
-  const type = document.getElementById('pc-type').value;
-  if(!newNum) return toast('Номер обязателен');
-  // check duplicate
-  if(newNum!==oldNum && findPCByNum(newNum)) return toast('ПК с таким номером уже есть');
-  const newBlock = state.blocks[newBlockName];
-  if(!newBlock) return toast('Блок не найден');
-  // remove old
-  delete info.block.pcs[oldNum];
-  // create new cell
-  let cell;
-  if(type==='override'){
-    const x = Number(document.getElementById('pc-x').value)||0;
-    const y = Number(document.getElementById('pc-y').value)||0;
-    cell = {override:[x,y]};
-  } else {
-    const col = Math.round(Number(document.getElementById('pc-col').value)||0);
-    const row = Math.round(Number(document.getElementById('pc-row').value)||0);
-    cell = [col,row];
-  }
-  newBlock.pcs[newNum] = cell;
-  selected.pcNum = newNum;
-  selected.id = newNum;
-  toast('ПК обновлён');
-  render();
-});
-document.getElementById('btn-pc-delete').addEventListener('click', ()=>{
-  const num = selected.pcNum;
-  const info = findPCByNum(num);
-  if(!info) return;
-  if(!confirm(`Удалить ПК ${num}?`)) return;
-  delete info.block.pcs[num];
-  deselect();
-  toast('Удалён');
-  render();
-});
-document.getElementById('pc-type').addEventListener('change', (e)=>{
-  const isOverride = e.target.value==='override';
-  document.getElementById('pc-grid-row').hidden = isOverride;
-  document.getElementById('pc-abs-row').hidden = !isOverride;
-});
-document.getElementById('btn-block-apply').addEventListener('click', ()=>{
-  const oldName = selected.id;
-  const b = state.blocks[oldName];
-  if(!b) return;
-  const newName = document.getElementById('block-name').value.trim();
-  if(!newName) return toast('Имя блока обязательно');
-  if(newName!==oldName && state.blocks[newName]) return toast('Блок с таким именем уже есть');
-  const ox = Number(document.getElementById('block-ox').value)||0;
-  const oy = Number(document.getElementById('block-oy').value)||0;
-  let step = Number(document.getElementById('block-step').value)||70; if(step<1) step=1;
-  let stepY = Number(document.getElementById('block-stepy').value) || step; if(stepY<1) stepY=1;
-  b.origin = [ox,oy];
-  b.step = step;
-  b.stepY = stepY;
-  if(newName!==oldName){
-    state.blocks[newName]=b;
-    delete state.blocks[oldName];
-    selected.id=newName;
-  }
-  updateBlockSelectors();
-  toast('Блок обновлён');
-  render();
-});
-document.getElementById('btn-block-delete').addEventListener('click', ()=>{
-  const name = selected.id;
-  if(!confirm(`Удалить блок "${name}"?`)) return;
-  delete state.blocks[name];
-  deselect();
-  updateBlockSelectors();
-  render();
-});
-document.getElementById('btn-zone-apply').addEventListener('click', ()=>{
-  const z = state.zones.find(x=> x._id===selected.id);
-  if(!z) return;
-  z.zone = document.getElementById('zone-id').value.trim() || z.zone;
-  z.label = document.getElementById('zone-label').value.trim() || z.label;
-  z.x = Number(document.getElementById('zone-x').value)||0;
-  z.y = Number(document.getElementById('zone-y').value)||0;
-  z.width = Number(document.getElementById('zone-w').value)||100;
-  z.height = Number(document.getElementById('zone-h').value)||100;
-  z.rx = Number(document.getElementById('zone-rx').value)||12;
-  toast('Зона обновлена');
-  render();
-});
-document.getElementById('btn-zone-delete').addEventListener('click', ()=>{
-  const id = selected.id;
-  state.zones = state.zones.filter(z=> z._id!==id);
-  deselect();
-  render();
-});
-
-// add pc/block/zone
-document.getElementById('btn-create-block').addEventListener('click', ()=>{
-  document.getElementById('modal-new-block').classList.add('open');
-});
-document.getElementById('new-block-cancel').addEventListener('click', ()=> document.getElementById('modal-new-block').classList.remove('open'));
-document.getElementById('new-block-create').addEventListener('click', ()=>{
-  const name = document.getElementById('new-block-name').value.trim();
-  const ox = Number(document.getElementById('new-block-ox').value)||0;
-  const oy = Number(document.getElementById('new-block-oy').value)||0;
-  let step = Number(document.getElementById('new-block-step').value)||70; if(step<1) step=1;
-  const stepYraw = document.getElementById('new-block-stepy').value;
-  const stepY = stepYraw ? Number(stepYraw)||step : step;
-  if(!name) return toast('Имя обязательно');
-  if(state.blocks[name]) return toast('Блок уже существует');
-  state.blocks[name] = {origin:[ox,oy], step, stepY, pcs:{}};
-  document.getElementById('modal-new-block').classList.remove('open');
-  updateBlockSelectors();
-  selectBlock(name);
-  toast('Блок создан');
-});
-
-document.getElementById('btn-add-pc').addEventListener('click', ()=>{
-  if(Object.keys(state.blocks).length===0){
-    if(!confirm('Нет блоков. Создать блок автоматически?')) return;
-    state.blocks['block_1']={origin:[100,100], step:70, stepY:70, pcs:{}};
-    updateBlockSelectors();
-  }
-  // open modal
-  // set next free number
-  const allNums = getAllPCs().map(p=> Number(p.num)).filter(n=>Number.isFinite(n));
-  const next = allNums.length ? Math.max(...allNums)+1 : 1;
-  document.getElementById('new-pc-num').value = next;
-  updateBlockSelectors();
-  document.getElementById('modal-new-pc').classList.add('open');
-});
-document.getElementById('new-pc-cancel').addEventListener('click', ()=> document.getElementById('modal-new-pc').classList.remove('open'));
-document.getElementById('new-pc-create').addEventListener('click', ()=>{
-  const num = String(document.getElementById('new-pc-num').value.trim());
-  const blockName = document.getElementById('new-pc-block').value;
-  const col = Math.round(Number(document.getElementById('new-pc-col').value)||0);
-    const row = Math.round(Number(document.getElementById('new-pc-row').value)||0);
-  if(!num) return toast('Номер обязателен');
-  if(findPCByNum(num)) return toast('ПК уже существует');
-  const block = state.blocks[blockName];
-  if(!block) return toast('Выбери блок');
-  block.pcs[num] = [col,row];
-  document.getElementById('modal-new-pc').classList.remove('open');
-  selectPC(num);
-  toast(`ПК ${num} создан`);
-});
-
-document.getElementById('btn-add-zone').addEventListener('click', ()=>{
-  const id = `zone-${state.zones.length+1}`;
-  const z = {zone:id, label:`Зона ${state.zones.length+1}`, x:100, y:100, width:300, height:200, rx:12, _id:`z${nextZoneId++}`};
-  state.zones.push(z);
-  selectZone(z._id);
-  toast('Зона создана — перетащи и растяни');
-});
-document.getElementById('btn-new-club').addEventListener('click', ()=>{
-  const name = prompt('Имя папки клуба (латиница, без пробелов, напр. MYCLUB):');
-  if(!name) return;
-  if(!/^[a-zA-Z0-9_\-]{1,64}$/.test(name)) return toast('Недопустимое имя');
-  state.club = name;
-  els.clubName.value = name;
-  updateClubPath();
-  state.blocks={};
-  state.zones=[];
-  state.origin=[0,0];
-  state.viewBox=[720,1280];
-  els.vbW.value=720; els.vbH.value=1280; els.originX.value=0; els.originY.value=0;
-  updateBlockSelectors();
-  deselect();
-  toast('Новый клуб создан — добавь блоки и ПК');
-});
-
-document.getElementById('btn-clear').addEventListener('click', ()=>{
-  if(!confirm('Очистить все блоки и ПК?')) return;
-  state.blocks={};
-  state.zones=[];
-  deselect();
-  updateBlockSelectors();
-  render();
-  toast('Карта очищена');
-});
-document.getElementById('btn-reset-view').addEventListener('click', ()=>{
-  scale=1; pan={x:0,y:0};
-  render();
-});
-
-function attachSvgEvents(){
-  const svg = els.stage;
-  // remove old listeners by cloning? simpler: replace with new handlers each render using one-time setup
-  // We'll use event delegation fresh each render: first remove existing
-  const newSvg = svg.cloneNode(true);
-  svg.parentNode.replaceChild(newSvg, svg);
-  els.stage = newSvg;
-  const stage = els.stage;
-
-  stage.addEventListener('pointerdown', onPointerDown);
-  stage.addEventListener('pointermove', onPointerMove);
-  stage.addEventListener('pointerup', onPointerUp);
-  stage.addEventListener('click', onClick);
-  stage.addEventListener('wheel', onWheel, {passive:false});
-  // prevent context menu
-  stage.addEventListener('contextmenu', e=> e.preventDefault());
+function stageMove(e){
+ if(!ptrs[e.pointerId])return;
+ ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
+ var keys=Object.keys(ptrs);
+ if(pinch&&keys.length>=2){
+  var p0=ptrs[keys[0]],p1=ptrs[keys[1]];
+  var d=Math.hypot(p0.x-p1.x,p0.y-p1.y);
+  if(d>0&&pinch.d>0)zoomAt((p0.x+p1.x)/2,(p0.y+p1.y)/2,d/pinch.d);
+  pinch.d=d;return;
+ }
+ if(!drag)return;
+ if(drag.type==="pan"){Z.tx=drag.otx+(e.clientX-drag.sx);Z.ty=drag.oty+(e.clientY-drag.sy);
+  applyView();placeEditLayer();queueRender();return;}
+ var p=clientToVB(e.clientX,e.clientY);
+ if(!Number.isFinite(p.x+p.y))return;
+ var dx=p.x-drag.start.x,dy=p.y-drag.start.y;
+ if(!dx&&!dy)return;
+ drag.moved=true;
+ if(drag.type==="pc"){
+  touchUndo(drag);
+  var b=S.blocks[drag.bn];if(!b)return;
+  var ft=fitOf(drag.bn);
+  var names=Object.keys(drag.cells0);
+  for(var i=0;i<names.length;i++){var n=names[i],c0=drag.cells0[n];
+   var f0=cellFormula(c0,b);
+   b.pcs[n]=cellFromFormula(b,f0[0]+dx/(ft.ax||1),f0[1]+dy/(ft.ay||1),c0);}
+  S.posDirty=true;markDirty();queueRender();return;
+ }
+ if(drag.type==="zmove"){
+  touchUndo(drag);
+  drag.z.x=Math.round(drag.orig.x+dx);drag.z.y=Math.round(drag.orig.y+dy);
+  S.zoneDirty=true;markDirty();queueRender();return;
+ }
+ if(drag.type==="zres"){
+  touchUndo(drag);
+  var o=drag.orig,z=drag.z,c=drag.corner;
+  var nx=o.x,ny=o.y,nw=o.w,nh=o.h;
+  if(c===0){nx=o.x+dx;ny=o.y+dy;nw=o.w-dx;nh=o.h-dy;}
+  else if(c===1){ny=o.y+dy;nw=o.w+dx;nh=o.h-dy;}
+  else if(c===2){nx=o.x+dx;nw=o.w-dx;nh=o.h+dy;}
+  else if(c===3){nw=o.w+dx;nh=o.h+dy;}
+  if(nw>20&&nh>20){z.x=Math.round(nx);z.y=Math.round(ny);z.w=Math.round(nw);z.h=Math.round(nh);}
+  S.zoneDirty=true;markDirty();queueRender();return;
+ }
 }
-
-function svgPointFromEvent(e){
-  const svg = els.stage;
-  const pt = svg.createSVGPoint();
-  pt.x = e.clientX; pt.y = e.clientY;
-  const ctm = svg.getScreenCTM();
-  if(!ctm) return {x:0,y:0};
-  const svgP = pt.matrixTransform(ctm.inverse());
-  return {x:svgP.x, y:svgP.y};
+function stageUp(e){
+ dbg("up"+(drag?" "+drag.type+(drag.moved?" moved":" tap"):""));
+ delete ptrs[e.pointerId];
+ if(Object.keys(ptrs).length<2)pinch=null;
+ if(drag&&(drag.type==="pc"||drag.type==="zmove"||drag.type==="zres"))renderAll();
+ drag=null;
 }
-
-function onPointerDown(e){
-  // Ctrl+A handled globally, allow right button for context? Only left
-  if(e.button!==0 && e.button!==1) return;
-  const p = svgPointFromEvent(e);
-  const isShift = e.shiftKey;
-  const isCtrl = e.ctrlKey || e.metaKey;
-  // hit test PCs first
-  const pcs = getAllPCs();
-  let hitPC = null;
-  let minDist = 22; // px in svg units? Approx viewBox units: for vb 1440, 22 ~ radius
-  for(const pc of pcs){
-    const dx = pc.x - p.x; const dy = pc.y - p.y;
-    const dist = Math.sqrt(dx*dx+dy*dy);
-    if(dist < minDist){
-      minDist = dist;
-      hitPC = pc;
-    }
-  }
-  if(hitPC){
-    e.preventDefault();
-    if(isShift || isCtrl){
-      // toggle multi
-      if(multiPcs.has(String(hitPC.num)) || multiZones.size>0){
-        togglePcMulti(hitPC.num);
-      } else {
-        // if no multi yet, add primary to multi then toggle
-        if(selected.type==='pc' && !multiPcs.has(selected.pcNum)){
-          multiPcs.add(String(selected.pcNum));
-        }
-        togglePcMulti(hitPC.num);
-      }
-      render();
-      // if now multi, drag all
-      if(multiPcs.size>0){
-        const allPcs = Array.from(multiPcs).map(num=>{ const info=findPCByNum(num); return {num, info, origAbs:getAbsolutePos(num, info?info.blockName:null), origCell:info?structuredClone(info.block.pcs[num]):null}; }).filter(x=>x.info);
-        const allZones = Array.from(multiZones).map(id=> state.zones.find(z=>z._id===id)).filter(Boolean);
-        const origZones = allZones.map(z=> ({...z}));
-        drag = {type:'pc-multi', pcs: allPcs, origZones: origZones, zoneIds: Array.from(multiZones), startSvg:{x:p.x, y:p.y}};
-        els.stage.setPointerCapture(e.pointerId);
-        return;
-      }
-      selectPC(hitPC.num);
-    } else {
-      // if clicked pc is already in multi selection, drag whole group
-      if(multiPcs.has(String(hitPC.num))){
-        const allPcs = Array.from(multiPcs).map(num=>{ const info=findPCByNum(num); return {num, info, origAbs:getAbsolutePos(num, info?info.blockName:null), origCell:info?structuredClone(info.block.pcs[num]):null}; }).filter(x=>x.info);
-        const allZones = Array.from(multiZones).map(id=> state.zones.find(z=>z._id===id)).filter(Boolean);
-        const origZones = allZones.map(z=> ({...z}));
-        drag = {type:'pc-multi', pcs: allPcs, origZones: origZones, zoneIds: Array.from(multiZones), startSvg:{x:p.x, y:p.y}};
-        els.stage.setPointerCapture(e.pointerId);
-        return;
-      }
-      // single selection: clear multi
-      multiPcs.clear(); multiZones.clear();
-      selectPC(hitPC.num);
-    }
-    drag = {type:'pc', num:hitPC.num, blockName:hitPC.blockName, startSvg:{x:p.x, y:p.y}, origAbs:{x:hitPC.x, y:hitPC.y}, origCell: structuredClone(hitPC.cell)};
-    els.stage.setPointerCapture(e.pointerId);
-    return;
-  }
-  // hit zones
-  const hitZone = state.zones.find(z=> p.x>=z.x && p.x<=z.x+z.width && p.y>=z.y && p.y<=z.y+z.height);
-  if(hitZone){
-    // check handle
-    const handleSize=10;
-    const handles = [
-      [hitZone.x, hitZone.y], [hitZone.x+hitZone.width, hitZone.y],
-      [hitZone.x, hitZone.y+hitZone.height], [hitZone.x+hitZone.width, hitZone.y+hitZone.height]
-    ];
-    let hitHandle = -1;
-    handles.forEach((h,i)=>{
-      if(Math.abs(p.x-h[0])<handleSize && Math.abs(p.y-h[1])<handleSize) hitHandle=i;
-    });
-    if(hitHandle!==-1){
-      // if multi zones selected and hit zone is in selection, resize all
-      if(multiZones.has(hitZone._id) && multiZones.size>1){
-        const allZones = Array.from(multiZones).map(id=> state.zones.find(z=>z._id===id)).filter(Boolean);
-        drag = {type:'zone-resize-multi', zoneId:hitZone._id, handle:hitHandle, startSvg:{x:p.x,y:p.y}, origZones: allZones.map(z=> ({...z}))};
-      } else {
-        drag = {type:'zone-resize', zoneId:hitZone._id, handle:hitHandle, startSvg:{x:p.x,y:p.y}, origZone:{...hitZone}};
-      }
-    } else {
-      if(isShift || isCtrl){
-        if(multiZones.has(hitZone._id) || multiPcs.size>0){
-          toggleZoneMulti(hitZone._id);
-        } else {
-          if(selected.type==='zone' && !multiZones.has(selected.id)) multiZones.add(String(selected.id));
-          toggleZoneMulti(hitZone._id);
-        }
-        render();
-        if(multiZones.size>0){
-          const allZones = Array.from(multiZones).map(id=> state.zones.find(z=>z._id===id)).filter(Boolean);
-          const allPcs = Array.from(multiPcs).map(num=>{ const info=findPCByNum(num); const cell=info?info.block.pcs[num]:null; return {num, info, origAbs:getAbsolutePos(num, info?info.blockName:null), origCell: cell? (Array.isArray(cell)? [...cell] : {override:[...cell.override]}) : null}; }).filter(x=>x.info);
-          drag = {type:'zone-drag-multi', pcs: allPcs, zoneIds: Array.from(multiZones), startSvg:{x:p.x,y:p.y}, origZones: allZones.map(z=> ({...z}))};
-          els.stage.setPointerCapture(e.pointerId);
-          return;
-        }
-        selectZone(hitZone._id);
-      } else {
-        if(multiZones.has(hitZone._id)){
-          const allZones = Array.from(multiZones).map(id=> state.zones.find(z=>z._id===id)).filter(Boolean);
-          drag = {type:'zone-drag-multi', zoneIds: Array.from(multiZones), startSvg:{x:p.x,y:p.y}, origZones: allZones.map(z=> ({...z}))};
-          els.stage.setPointerCapture(e.pointerId);
-          return;
-        }
-        multiPcs.clear(); multiZones.clear();
-        selectZone(hitZone._id);
-      }
-      drag = {type:'zone-drag', zoneId:hitZone._id, startSvg:{x:p.x,y:p.y}, origZone:{...hitZone}};
-      // keep multi for drag-multi already handled
-      if(drag.type==='zone-drag'){
-        // if we already set drag multi, don't overwrite
-      }
-    }
-    els.stage.setPointerCapture(e.pointerId);
-    return;
-  }
-  // marquee selection if Shift held, else pan
-  if(isShift){
-    marquee = {x1:p.x, y1:p.y, x2:p.x, y2:p.y, active:true};
-    isMarquee = true;
-    drag = {type:'marquee', startSvg:{x:p.x, y:p.y}};
-    try{ els.stage.setPointerCapture(e.pointerId);}catch{}
-    e.preventDefault();
-    return;
-  }
-  // pan: start dragging view if empty background (left or middle button)
-  if(e.button===0 || e.button===1){
-    drag = {type:'pan', startSvg:{x:p.x, y:p.y}, origPan:{x:pan.x, y:pan.y}};
-    try{ els.stage.setPointerCapture(e.pointerId);}catch{}
-    els.stage.style.cursor='grabbing';
-    e.preventDefault();
-  }
+function addPCAt(vbx,vby){
+ if(!Number.isFinite(vbx+vby))return toast("Нет привязки к карте — дождитесь калибровки");
+ var names=Object.keys(S.blocks);
+ if(!names.length)return toast("Сначала создайте блок");
+ var bn=S.targetBlock&&S.blocks[S.targetBlock]?S.targetBlock:names[0];
+ var b=S.blocks[bn],ft=fitOf(bn);
+ var fx=(vbx-ft.bx)/(ft.ax||1),fy=(vby-ft.by)/(ft.ay||1);
+ var num=nextNum();
+ var vals=Object.keys(b.pcs).map(function(k){return b.pcs[k];});
+ var useOv=(b.step<=1&&b.origin[0]===0&&b.origin[1]===0)||
+  (vals.length&&vals.every(function(c){return c&&c.override;}));
+ pushUndo();
+ b.pcs[num]=cellFromFormula(b,fx,fy,useOv?{override:[0,0]}:[0,0]);
+ S.sel={kind:"pc",id:num};S.posDirty=true;renderAll();
+ toast("ПК "+num+" → "+bn);
 }
-
-function onPointerMove(e){
-  if(!drag) return;
-  const p = svgPointFromEvent(e);
-  const dx = p.x - drag.startSvg.x;
-  const dy = p.y - drag.startSvg.y;
-  if(drag.type==='marquee'){
-    marquee.x2 = p.x; marquee.y2 = p.y;
-    render();
-    return;
-  }
-  if(drag.type==='pan'){
-    const dx = p.x - drag.startSvg.x;
-    const dy = p.y - drag.startSvg.y;
-    pan.x = drag.origPan.x - dx;
-    pan.y = drag.origPan.y - dy;
-    clampPan();
-    requestAnimationFrame(render);
-  } else if(drag.type==='pc'){
-    const info = findPCByNum(drag.num);
-    if(!info) return;
-    const newX = drag.origAbs.x + dx;
-    const newY = drag.origAbs.y + dy;
-    let cell = info.block.pcs[drag.num];
-    if(cell && cell.override){
-      // update override relative to block origin + state origin
-      const ox = state.origin[0] + info.block.origin[0];
-      const oy = state.origin[1] + info.block.origin[1];
-      cell.override[0] = Math.round(newX - ox);
-      cell.override[1] = Math.round(newY - oy);
-    } else {
-      // grid: convert to col/row
-      let colRow = absoluteToGrid(newX, newY, info.block);
-      if(els.snapGrid.checked){
-        colRow[0] = Math.round(colRow[0]); // snap 1
-        colRow[1] = Math.round(colRow[1]);
-      }
-      // store back
-      info.block.pcs[drag.num] = [Math.round(colRow[0]), Math.round(colRow[1])];
-    }
-    // live update without full render? just update circle position visually cheap: call render throttled
-    // for simplicity, render each move with rAF
-    requestAnimationFrame(render);
-  } else if(drag.type==='zone-drag'){
-    const z = state.zones.find(x=> x._id===drag.zoneId);
-    if(!z) return;
-    z.x = Math.round(drag.origZone.x + dx);
-    z.y = Math.round(drag.origZone.y + dy);
-    requestAnimationFrame(render);
-  } else if(drag.type==='zone-resize'){
-    const z = state.zones.find(x=> x._id===drag.zoneId);
-    if(!z) return;
-    const o = drag.origZone;
-    // handles: 0 TL,1 TR,2 BL,3 BR
-    if(drag.handle===0){ // TL
-      const newX = o.x + dx; const newY = o.y + dy;
-      const newW = o.width - dx; const newH = o.height - dy;
-      if(newW>20 && newH>20){ z.x=newX; z.y=newY; z.width=newW; z.height=newH; }
-    } else if(drag.handle===1){ // TR
-      const newY = o.y + dy; const newW = o.width + dx; const newH = o.height - dy;
-      if(newW>20 && newH>20){ z.y=newY; z.width=newW; z.height=newH; }
-    } else if(drag.handle===2){ // BL
-      const newX = o.x + dx; const newW = o.width - dx; const newH = o.height + dy;
-      if(newW>20 && newH>20){ z.x=newX; z.width=newW; z.height=newH; }
-    } else if(drag.handle===3){ // BR
-      const newW = o.width + dx; const newH = o.height + dy;
-      if(newW>20 && newH>20){ z.width=newW; z.height=newH; }
-    }
-    requestAnimationFrame(render);
-  } else if(drag.type==='pc-multi'){
-    // move all selected PCs by delta in grid units (fix pile-up: use origCell directly)
-    drag.pcs.forEach(item=>{
-      const info = item.info;
-      if(!info) return;
-      const origCell = item.origCell;
-      if(origCell && typeof origCell==='object' && !Array.isArray(origCell) && Array.isArray(origCell.override)){
-        // override: add dx/dy directly (override is absolute offset)
-        const cell = info.block.pcs[item.num];
-        if(cell && cell.override){
-          cell.override[0] = Math.round(origCell.override[0] + dx);
-          cell.override[1] = Math.round(origCell.override[1] + dy);
-        } else {
-          // fallback
-          const newX = item.origAbs.x + dx;
-          const newY = item.origAbs.y + dy;
-          const ox = state.origin[0] + info.block.origin[0];
-          const oy = state.origin[1] + info.block.origin[1];
-          info.block.pcs[item.num] = {override: [Math.round(newX - ox), Math.round(newY - oy)]};
-        }
-      } else if(Array.isArray(origCell)){
-        let newCol = origCell[0] + dx / info.block.step;
-        let newRow = origCell[1] + dy / info.block.stepY;
-        if(els.snapGrid.checked){
-          newCol = Math.round(newCol);
-          newRow = Math.round(newRow);
-        }
-        info.block.pcs[item.num] = [Math.round(newCol), Math.round(newRow)];
-      } else {
-        // fallback via absolute
-        const newX = item.origAbs.x + dx;
-        const newY = item.origAbs.y + dy;
-        let colRow = absoluteToGrid(newX, newY, info.block);
-        if(els.snapGrid.checked){
-          colRow[0] = Math.round(colRow[0]);
-          colRow[1] = Math.round(colRow[1]);
-        }
-        info.block.pcs[item.num] = [Math.round(colRow[0]), Math.round(colRow[1])];
-      }
-    });
-    // also move all selected zones together with PCs
-    if(multiZones.size>0 && drag.pcs.length>0){
-      // use same dx/dy for zones
-      state.zones.forEach(z=>{
-        if(multiZones.has(z._id)){
-          const orig = drag.origZones ? drag.origZones.find(o=> o._id===z._id) : null;
-          if(orig){
-            z.x = Math.round(orig.x + dx);
-            z.y = Math.round(orig.y + dy);
-          } else {
-            // fallback: if we didn't store origZones for pc-multi, compute from current
-            // Try to find orig in drag.pcs? No, for pc-multi we didn't store zones
-            // So we need to store origZones in drag for pc-multi as well
-          }
-        }
-      });
-    }
-    requestAnimationFrame(render);
-  } else if(drag.type==='zone-drag-multi'){
-    // move zones
-    drag.origZones.forEach((orig, idx)=>{
-      const z = state.zones.find(x=> x._id===drag.zoneIds[idx]);
-      if(!z) return;
-      z.x = Math.round(orig.x + dx);
-      z.y = Math.round(orig.y + dy);
-    });
-    // also move all selected PCs by same delta
-    if(multiPcs.size>0){
-      // need orig PC positions stored in drag? For zone drag we didn't store PCs, so we need to handle
-      // If drag was started from zone, we stored origZones but not pcs, so we need to move PCs by dx/dy using stored origAbs if available, else compute
-      if(drag.pcs){
-        drag.pcs.forEach(item=>{
-          const info = item.info;
-          if(!info) return;
-          const newX = item.origAbs.x + dx;
-          const newY = item.origAbs.y + dy;
-          let cell = info.block.pcs[item.num];
-          if(cell && cell.override){
-            const ox = state.origin[0] + info.block.origin[0];
-            const oy = state.origin[1] + info.block.origin[1];
-            cell.override[0] = Math.round(newX - ox);
-            cell.override[1] = Math.round(newY - oy);
-          } else {
-            let colRow = absoluteToGrid(newX, newY, info.block);
-            if(els.snapGrid.checked){
-              colRow[0] = Math.round(colRow[0]);
-              colRow[1] = Math.round(colRow[1]);
-            }
-            info.block.pcs[item.num] = [Math.round(colRow[0]), Math.round(colRow[1])];
-          }
-        });
-      } else {
-        // fallback: if no pcs stored, create from multiPcs current
-        multiPcs.forEach(num=>{
-          const info=findPCByNum(num);
-          if(!info) return;
-          // find orig abs from drag.origPcs if exists, else use current and add dx
-          // For now, just move by dx/dy using current abs
-          const curAbs = getAbsolutePos(num, info.blockName);
-          const newX = curAbs[0] + dx - (0); // dx already is delta from start, but we don't have start for PCs
-          // This fallback is not ideal, but we will ensure drag stores pcs
-        });
-      }
-    }
-    requestAnimationFrame(render);
-  } else if(drag.type==='zone-resize-multi'){
-    // resize all selected zones by same delta as primary
-    const primaryOrig = drag.origZones.find(o=> o._id===drag.zoneId);
-    const primaryCur = state.zones.find(z=> z._id===drag.zoneId);
-    if(!primaryOrig || !primaryCur) return;
-    // compute delta for primary to infer new sizes, then apply same delta to others
-    const o = primaryOrig;
-    let deltaW=0, deltaH=0, deltaX=0, deltaY=0;
-    if(drag.handle===0){
-      deltaX = dx; deltaY = dy; deltaW = -dx; deltaH = -dy;
-    } else if(drag.handle===1){
-      deltaY = dy; deltaW = dx; deltaH = -dy;
-    } else if(drag.handle===2){
-      deltaX = dx; deltaW = -dx; deltaH = dy;
-    } else if(drag.handle===3){
-      deltaW = dx; deltaH = dy;
-    }
-    drag.origZones.forEach((orig, idx)=>{
-      const z = state.zones.find(x=> x._id===drag.zoneIds ? drag.zoneIds[idx]===x._id : x._id===orig._id);
-      // Actually for resize-multi we stored origZones as array aligned with zoneIds
-      // Use drag.zoneIds and origZones index
-    });
-    // Simpler: apply delta to each zone
-    drag.origZones.forEach((orig, i)=>{
-      const zId = drag.zoneIds ? drag.zoneIds[i] : orig._id;
-      const z = state.zones.find(x=> x._id===zId);
-      if(!z) return;
-      let newX = orig.x, newY = orig.y, newW = orig.width, newH = orig.height;
-      if(drag.handle===0){ newX = orig.x + deltaX; newY = orig.y + deltaY; newW = orig.width + deltaW; newH = orig.height + deltaH; }
-      else if(drag.handle===1){ newY = orig.y + deltaY; newW = orig.width + deltaW; newH = orig.height + deltaH; }
-      else if(drag.handle===2){ newX = orig.x + deltaX; newW = orig.width + deltaW; newH = orig.height + deltaH; }
-      else if(drag.handle===3){ newW = orig.width + deltaW; newH = orig.height + deltaH; }
-      if(newW>20 && newH>20){ z.x=newX; z.y=newY; z.width=newW; z.height=newH; }
-    });
-    requestAnimationFrame(render);
-  }
+/* ---------- режимы ---------- */
+function setMode(m){
+ S.mode=m;
+ var bs=document.querySelectorAll(".modebtn");
+ for(var i=0;i<bs.length;i++)bs[i].classList.toggle("active",bs[i].getAttribute("data-mode")===m);
+ els.editLayer.classList.toggle("view",m==="view");
+ var w=liveWin();if(w){try{w.__ctorNoNav=(m!=="view");}catch(e){}}
+ setDim(m!=="view");renderOverlay();
 }
-
-function onPointerUp(e){
-  if(drag){
-    if(drag.type==='marquee'){
-      getMarqueeSelected();
-      marquee=null; isMarquee=false;
-      render();
-      toast('Выделено ПК:'+multiPcs.size+' Зон:'+multiZones.size);
-    } else if(drag.type==='pc'){
-      updateInspector();
-      render();
-    } else if(drag.type==='pc-multi'){
-      updateInspector();
-      render();
-    } else if(drag.type==='zone-drag' || drag.type==='zone-drag-multi' || drag.type==='zone-resize' || drag.type==='zone-resize-multi'){
-      render();
-    } else {
-      render();
-    }
+/* ---------- загрузка клуба ---------- */
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+async function loadClub(dir){
+ var meta=null,i;
+ for(i=0;i<CLUBS.length;i++)if(CLUBS[i].dir===dir)meta=CLUBS[i];
+ if(!meta)meta={dir:dir,html:null,label:dir};
+ toast("Загрузка "+meta.label+"…");
+ S.club=dir;
+ try{
+  if(location.protocol==="file:"){
+   els.chipApi.className="chip warn";els.chipApi.textContent="API: нужен сервер";
+   toast("Откройте через сервер: node server.js, затем http://localhost:8080/NAVBAR/constructor.html",5000);
   }
-  drag=null;
-  els.stage.style.cursor='crosshair';
-  try{ els.stage.releasePointerCapture(e.pointerId);}catch{}
-  if(marquee && !drag){
-    // if marquee was active but drag already cleared, ensure render
-    marquee=null; isMarquee=false;
-  }
+ }catch(e){}
+ els.chipFit.className="chip";els.chipFit.textContent="1:1: загрузка…";
+ var pos=null,zmeta=null;
+ try{var r=await fetch("./"+dir+"/positions.json?v="+Date.now(),{cache:"no-store"});
+  if(r.ok)pos=await r.json();}catch(e){}
+ if(!pos){try{var r2=await fetch("./"+dir+"/position.json?v="+Date.now(),{cache:"no-store"});
+  if(r2.ok)pos=await r2.json();}catch(e){}}
+ if(!pos)return toast("Нет positions.json в "+dir);
+ try{var r3=await fetch("/api/constructor/zones?club="+encodeURIComponent(dir),{cache:"no-store"});
+  if(r3.ok)zmeta=await r3.json();}catch(e){}
+ importState(pos,dir);
+ S.htmlFile=meta.html||(zmeta&&zmeta.htmlFile)||null;
+ if(!S.htmlFile)return toast("Нет HTML карты в "+dir);
+ Z.s=1;Z.tx=0;Z.ty=0;applyView();
+ els.chipApi.className="chip";els.chipApi.textContent="API: …";
+ await new Promise(function(res){
+  var done=false;
+  function fin(){if(!done){done=true;res();}}
+  els.live.onload=fin;setTimeout(fin,9000);
+  els.live.src="./"+dir+"/"+S.htmlFile+"?ctor="+Date.now();
+ });
+ injectHooks();setDim(true);
+ var tries=0,lastN=-1,stable=0;
+ while(tries<40){
+  await wait(400);tries++;injectHooks();
+  var nodesNow=livePcs(),skel=0,si=0;
+  for(si=0;si<nodesNow.length;si++)
+   if(nodesNow[si].className&&nodesNow[si].className.indexOf("is-skeleton")>=0)skel++;
+  var real=nodesNow.length-skel;
+  if(real>0&&real===lastN)stable++;else stable=0;
+  lastN=real;
+  if(stable>=2)break;
+ }
+ if(!placeEditLayer())toast("Карта не открылась — откройте конструктор через сервер (node server.js)");
+ var ok=false;
+ try{ok=calibrate();}catch(err){ok=false;}
+ if(ok&&S.liveCount>0){
+  els.chipApi.className="chip ok";els.chipApi.textContent="API: live · "+S.liveCount;
+  toast("Готово: ручки совпадают с телефоном 1-в-1");
+ }else{
+  S.demo=true;fallbackView();
+  els.chipApi.className="chip warn";els.chipApi.textContent="API: демо (нет данных)";
+  toast("Нет данных API — черновик по positions.json. Сверьте в 👁 на телефоне.");
+ }
+ renderAll();
 }
-
-function onClick(e){
-  if(drag) return;
-  // if clicked on empty space with Shift, add PC
-  if(e.shiftKey){
-    const p = svgPointFromEvent(e);
-    // find nearest block or create
-    const pcs = getAllPCs();
-    const nextNum = pcs.length ? Math.max(...pcs.map(x=>Number(x.num)||0))+1 : 1;
-    // choose block closest to click or first
-    let bestBlock = null;
-    let bestDist = Infinity;
-    for(const [bName, b] of Object.entries(state.blocks)){
-      const absOrigin = [state.origin[0]+b.origin[0], state.origin[1]+b.origin[1]];
-      const dx = p.x - absOrigin[0]; const dy = p.y - absOrigin[1];
-      const d = Math.sqrt(dx*dx+dy*dy);
-      if(d<bestDist){ bestDist=d; bestBlock=bName; }
-    }
-    if(!bestBlock){
-      if(!confirm('Нет блоков. Создать блок?')) return;
-      state.blocks['block_1']={origin:[Math.round(p.x-100),Math.round(p.y-100)], step:70, stepY:70, pcs:{}};
-      bestBlock='block_1';
-      updateBlockSelectors();
-    }
-    const block = state.blocks[bestBlock];
-    const colRow = absoluteToGrid(p.x, p.y, block);
-    const col = Math.round(colRow[0]);
-    const row = Math.round(colRow[1]);
-    block.pcs[String(nextNum)] = [col,row];
-    selectPC(String(nextNum));
-    toast(`ПК ${nextNum} создан в ${bestBlock}`);
-    return;
-  }
-  // if click on empty, deselect? handled by not hitting pc/zone
-  const p = svgPointFromEvent(e);
-  // check hit
-  const pcs = getAllPCs();
-  const hitPC = pcs.find(pc=> Math.hypot(pc.x-p.x, pc.y-p.y) < 22);
-  if(hitPC) return; // already handled via pointerdown selection
-  const hitZone = state.zones.find(z=> p.x>=z.x && p.x<=z.x+z.width && p.y>=z.y && p.y<=z.y+z.height);
-  if(hitZone) return;
-  // deselect? keep? maybe not
-}
-
-function onWheel(e){
-  e.preventDefault();
-  const p = svgPointFromEvent(e);
-  const delta = e.deltaY > 0 ? 0.92 : 1.08;
-  const oldScale = scale;
-  let newScale = scale * delta;
-  newScale = Math.min(4, Math.max(0.35, newScale));
-  if(Math.abs(newScale - oldScale) < 0.001) return;
-  // keep mouse point stable: newPan = p - (p - pan)*(oldScale/newScale?) actually scaledW = vbW/scale, so ratio = oldScale/newScale
-  const vbW_tmp = Number(els.vbW.value)||720;
-  const vbH_tmp = Number(els.vbH.value)||1280;
-  // old viewBox origin = pan, size = vbW/oldScale
-  // mouse SVG p = pan + t*oldScaled ; t = (p - pan)/oldScaled
-  // newPan = p - t*newScaled = p - (p - pan)*(newScaled/oldScaled) = p - (p - pan)*(oldScale/newScale)
-  const ratio = oldScale / newScale;
-  pan.x = p.x - (p.x - pan.x) * ratio;
-  pan.y = p.y - (p.y - pan.y) * ratio;
-  scale = newScale;
-  clampPan();
-  render();
-}
-
-// export / import
-document.getElementById('btn-download').addEventListener('click', ()=>{
-  const data = exportState();
-  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url;
-  const club = els.clubName.value.trim() || 'positions';
-  a.download = club + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('Скачан '+a.download);
-});
-document.getElementById('btn-copy').addEventListener('click', async ()=>{
-  const txt = JSON.stringify(exportState(), null, 2);
-  try{ await navigator.clipboard.writeText(txt); toast('Скопировано в буфер'); }catch{ 
-    els.jsonIo.value = txt; toast('Текст в поле импорта');
-  }
-});
-document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('file-import').click());
-document.getElementById('file-import').addEventListener('change', async (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
+function fallbackView(){
+ var svg=liveSvg();
+ var vb=svg?parseVB(svg.getAttribute("viewBox")):null;
+ if(vb)S.vb=vb;
+ else{
+  var pts=allPCs().map(function(p){return formulaOf(p.num,p.bn);}).filter(Boolean);
+  if(pts.length){var xs=pts.map(function(p){return p[0];}),ys=pts.map(function(p){return p[1];});
+   var x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs);
+   var y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys);
+   S.vb={minX:x0-80,minY:y0-80,w:(x1-x0)+160,h:(y1-y0)+160};}
+ }
+ placeEditLayer();
+ S.fit={};
+ var names=Object.keys(S.blocks);
+ for(var i=0;i<names.length;i++)S.fit[names[i]]={ax:1,bx:0,ay:1,by:0,n:0,res:0};
+ if(!S.zones.length&&svg){
   try{
-    const txt = await file.text();
-    const j = JSON.parse(txt);
-    importState(j, state.club || els.clubName.value.trim());
-    render();
-    toast('Импортировано из файла');
-  }catch(err){ toast('Ошибка импорта: '+err.message);}
-  e.target.value='';
-});
-document.getElementById('btn-io-import').addEventListener('click', ()=>{
-  const txt = document.getElementById('json-io').value.trim();
-  if(!txt) return toast('Вставь JSON');
-  try{
-    const j = JSON.parse(txt);
-    importState(j, state.club);
-    render();
-    toast('Импортировано');
-  }catch(e){ toast('Ошибка JSON: '+e.message); }
-});
-document.getElementById('btn-io-export').addEventListener('click', ()=>{
-  document.getElementById('json-io').value = JSON.stringify(exportState(), null, 2);
-  toast('Заполнено из карты');
-});
-document.getElementById('btn-validate').addEventListener('click', ()=>{
-  const data = exportState();
-  const msgs=[];
-  const allNums = new Set();
-  let dup=false;
-  for(const [bName, b] of Object.entries(data.layout.blocks)){
-    if(!/^[a-zA-Z0-9_\-]+$/.test(bName)) msgs.push(`Блок "${bName}" имя недопустимо`);
-    if(!Array.isArray(b.origin)||b.origin.length!==2) msgs.push(`Блок "${bName}" origin не [x,y]`);
-    for(const num of Object.keys(b.pcs)){
-      if(allNums.has(num)){ msgs.push(`Дубликат ПК ${num}`); dup=true; }
-      allNums.add(num);
-      if(isNaN(Number(num))) msgs.push(`ПК номер "${num}" не число`);
-    }
-  }
-  const vbOk = state.viewBox[0]>0 && state.viewBox[1]>0;
-  if(!vbOk) msgs.push('ViewBox размеры некорректны');
-  if(msgs.length===0) { document.getElementById('validate-msg').textContent='✓ OK'; document.getElementById('validate-msg').style.color='#4CAF50'; toast('Валидация OK'); }
-  else { document.getElementById('validate-msg').textContent=msgs.join('; '); document.getElementById('validate-msg').style.color='#ff9c9c'; }
-});
-document.getElementById('btn-save').addEventListener('click', async ()=>{
-  const club = els.clubName.value.trim();
-  if(!club) return toast('Укажи имя клуба');
-  if(!/^[a-zA-Z0-9_\-]{1,64}$/.test(club)) return toast('Имя клуба только латиница/цифры/_-');
-  const data = exportState();
-  try{
-    const res = await fetch('/api/constructor/save', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({club, data})});
-    const j = await res.json();
-    if(!res.ok) throw new Error(j.error||'save failed');
-    toast('Сохранено: '+j.path);
-    // also save SVG zones to HTML
-    try{
-        const zonesPayload = state.zones.map(z=> ({zone: z.zone, label: z.label, x: Math.round(z.x), y: Math.round(z.y), width: Math.round(z.width), height: Math.round(z.height), rx: z.rx||12}));
-        const zres = await fetch('/api/constructor/zones', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({club, zones: zonesPayload})});
-        const zj = await zres.json();
-        if(zres.ok){
-            toast('Зоны сохранены: '+zj.zones);
-        } else {
-            console.warn('zones save failed', zj);
-            toast('Зоны не сохранены: '+(zj.error||'error'));
-        }
-    }catch(e){ console.warn('zones save exception', e); }
-    // realtime: notify local maps via storage + BroadcastChannel
-    try{
-        const k = 'positions_updated_' + club;
-        localStorage.setItem(k, String(Date.now()));
-        localStorage.setItem('positions_updated', club + ':' + Date.now());
-        localStorage.setItem('zones_updated_' + club, String(Date.now()));
-        localStorage.setItem('zones_updated', club + ':' + Date.now());
-    }catch(e){}
-    try{
-        const bc = new BroadcastChannel('positions-update');
-        bc.postMessage({club, path: j.path, ts: Date.now(), zones: true});
-        bc.close();
-    }catch(e){}
-    try{
-        const bcz = new BroadcastChannel('zones-update');
-        bcz.postMessage({club, ts: Date.now()});
-        bcz.close();
-    }catch(e){}
-    // If map for this club is open in iframe on same page (e.g., map.html preview), try to reload it directly
-    try{
-        document.querySelectorAll('iframe').forEach(fr=>{
-            try{
-                const src = fr.getAttribute('src') || '';
-                if(src.includes('/' + club + '/') || src.includes('/' + club.toLowerCase() + '/')){
-                    const url = new URL(fr.src, location.href);
-                    url.searchParams.set('v', Date.now());
-                    fr.src = url.toString();
-                }
-            }catch(e){}
-        });
-    }catch(e){}
-    // refresh list
-    loadClubList();
-  }catch(e){
-    toast('Ошибка сохранения: '+e.message);
-    console.error(e);
-  }
-});
-document.getElementById('btn-export-zones').addEventListener('click', async ()=>{
-  if(state.zones.length===0) return toast('Нет зон');
-  let html = state.zones.map(z=> `    <rect class="zone" data-zone="${z.zone}" x="${Math.round(z.x)}" y="${Math.round(z.y)}" width="${Math.round(z.width)}" height="${Math.round(z.height)}" rx="${z.rx||12}"/>\n    <text class="zone-label" x="${Math.round(z.x+z.width/2)}" y="${Math.round(z.y-8)}" text-anchor="middle">${z.label}</text>`).join('\n');
-  html = `<!-- Zones for ${state.club||'CLUB'} — вставь в <svg class="zone-overlay"> -->\n${html}`;
-  try{ await navigator.clipboard.writeText(html); toast('HTML зон скопирован'); }catch{
-    document.getElementById('json-io').value = html;
-    toast('HTML в поле импорта');
-  }
-});
-document.getElementById('btn-auto-layout').addEventListener('click', ()=>{
-  // Simple auto layout: distribute blocks grid
-  const blocks = Object.keys(state.blocks);
-  if(blocks.length===0) return toast('Нет блоков');
-  const cols = Math.ceil(Math.sqrt(blocks.length));
-  const vbW = state.viewBox[0], vbH = state.viewBox[1];
-  const cellW = Math.floor(vbW/cols);
-  const cellH = Math.floor(vbH/Math.ceil(blocks.length/cols));
-  blocks.forEach((bName,i)=>{
-    const b = state.blocks[bName];
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    b.origin = [col*cellW + 60, row*cellH + 60];
-  });
-  toast('Авто-выравнивание применено');
-  render();
-});
-document.getElementById('btn-renumber').addEventListener('click', ()=>{
-  if(!confirm('Перенумеровать все ПК последовательно с 1?')) return;
-  const pcs = getAllPCs().sort((a,b)=> a.y - b.y || a.x - b.x);
-  // collect all cells then reassign
-  const newMap = {};
-  let n=1;
-  // clear all pcs
-  for(const b of Object.values(state.blocks)) b.pcs={};
-  // we need to assign back? But we lost original block association. Instead, keep per block order?
-  // Simpler: renumber per block sequentially
-  for(const [bName, b] of Object.entries(state.blocks)){
-    const entries = Object.entries(b.pcs); // but we cleared
-  }
-  // Actually pcs list still has old num, but we cleared.
-  // Reconstruct: we have pcs array with original blockName and cell
-  const firstBlock = Object.keys(state.blocks)[0];
-  if(!firstBlock) return;
-  // distribute across blocks round-robin? Better just renumber globally in first block for demo.
-  // Let's instead renumber per block
-  // reload from backup
-  toast('Функция требует доработки — перенумеруй вручную в инспекторе');
-});
-document.getElementById('btn-zoom-in').addEventListener('click', ()=>{
-  const vbW_tmp = Number(els.vbW.value)||720; const vbH_tmp = Number(els.vbH.value)||1280;
-  const oldScale = scale;
-  const newScale = Math.min(4, scale*1.2);
-  if(newScale===oldScale) return;
-  const centerX = pan.x + (vbW_tmp/oldScale)/2;
-  const centerY = pan.y + (vbH_tmp/oldScale)/2;
-  scale = newScale;
-  pan.x = centerX - (vbW_tmp/scale)/2;
-  pan.y = centerY - (vbH_tmp/scale)/2;
-  clampPan();
-  render();
-});
-document.getElementById('btn-zoom-out').addEventListener('click', ()=>{
-  const vbW_tmp = Number(els.vbW.value)||720; const vbH_tmp = Number(els.vbH.value)||1280;
-  const oldScale = scale;
-  const newScale = Math.max(0.35, scale/1.2);
-  if(newScale===oldScale) return;
-  const centerX = pan.x + (vbW_tmp/oldScale)/2;
-  const centerY = pan.y + (vbH_tmp/oldScale)/2;
-  scale = newScale;
-  pan.x = centerX - (vbW_tmp/scale)/2;
-  pan.y = centerY - (vbH_tmp/scale)/2;
-  clampPan();
-  render();
-});
-document.getElementById('btn-fit').addEventListener('click', ()=>{
-  scale=1; pan={x:0,y:0};
-  clampPan();
-  render();
-  toast('Вид сброшен');
-});
-
-// help modal
-document.getElementById('btn-help').addEventListener('click', ()=> document.getElementById('modal-help').classList.add('open'));
-document.getElementById('help-close').addEventListener('click', ()=> document.getElementById('modal-help').classList.remove('open'));
-document.getElementById('btn-select-all').addEventListener('click', selectAll);
-document.getElementById('btn-clear-selection').addEventListener('click', deselect);
-document.getElementById('modal-help').addEventListener('click', (e)=>{ if(e.target.id==='modal-help') e.currentTarget.classList.remove('open'); });
-document.getElementById('modal-new-pc').addEventListener('click', (e)=>{ if(e.target.id==='modal-new-pc') e.currentTarget.classList.remove('open'); });
-document.getElementById('modal-new-block').addEventListener('click', (e)=>{ if(e.target.id==='modal-new-block') e.currentTarget.classList.remove('open'); });
-
-// initial render empty
-let spacePressed=false;
-document.addEventListener('keydown', e=>{ if(e.code==='Space'){ spacePressed=true; els.stage.style.cursor='grab'; e.preventDefault(); }});
-document.addEventListener('keyup', e=>{ if(e.code==='Space'){ spacePressed=false; els.stage.style.cursor='crosshair'; }});
-document.addEventListener('keydown', e=>{
-  const step = 40 / scale;
-  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
-    if(e.key==='ArrowUp') pan.y -= step;
-    if(e.key==='ArrowDown') pan.y += step;
-    if(e.key==='ArrowLeft') pan.x -= step;
-    if(e.key==='ArrowRight') pan.x += step;
-    render(); e.preventDefault();
-  }
-  if((e.ctrlKey||e.metaKey) && (e.key==='0' || e.key==='=')){ scale=1; pan={x:0,y:0}; render(); e.preventDefault(); }
-});
-updateBlockSelectors();
-render();
-// load default club if ?club=TRIUMPH
-const params = new URLSearchParams(location.search);
-if(params.get('club')){
-  const c = params.get('club');
-  els.clubSelect.value = c;
-  els.clubName.value = c;
-  updateClubPath();
-  loadClub(c);
-} else {
-  // auto load TRIUMPH as demo if exists
-  // fetch positions.json from TRIUMPH silently
-  fetch('TRIUMPH/positions.json').then(r=> r.ok? r.json(): null).then(j=>{
-    if(j){ importState(j, 'TRIUMPH'); els.clubSelect.value='TRIUMPH'; els.clubName.value='TRIUMPH'; updateClubPath(); render(); }
-  }).catch(()=>{});
+   var ord=Array.prototype.slice.call(svg.querySelectorAll("rect.zone, text.zone-label"));
+   var cur=null,out=[];
+   for(i=0;i<ord.length;i++){var nd=ord[i];
+    var tag=(nd.tagName||"").toLowerCase();
+    if(tag==="rect"){cur={zone:nd.getAttribute("data-zone")||"",x:+nd.getAttribute("x")||0,
+     y:+nd.getAttribute("y")||0,w:+nd.getAttribute("width")||0,h:+nd.getAttribute("height")||0,
+     rx:+(nd.getAttribute("rx")||12)||0,label:"",sx:0,sy:0};out.push(cur);}
+    else if(cur)cur.label=(nd.textContent||"").trim();}
+   S.zones=out;
+  }catch(e){}
+ }
+ S.calibrated=true;
 }
+/* ---------- сохранение ---------- */
+async function saveAll(){
+ if(!S.club)return;
+ if(!S.posDirty&&!S.zoneDirty)return toast("Нет изменений");
+ try{
+  if(S.posDirty){
+   var r=await fetch("/api/constructor/save",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({club:S.club,data:exportState()})});
+   var j=await r.json();
+   if(!r.ok)throw new Error(j.error||"positions save failed");
+  }
+  if(S.zoneDirty&&S.zones.length){
+   var payload=S.zones.map(function(z){return {zone:z.zone,label:z.label,
+    x:Math.round(z.x-(z.sx||0)),y:Math.round(z.y-(z.sy||0)),
+    width:Math.round(z.w),height:Math.round(z.h),rx:z.rx||12};});
+   var r2=await fetch("/api/constructor/zones",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({club:S.club,zones:payload})});
+   var j2=null;try{j2=await r2.json();}catch(e){}
+   if(!r2.ok)throw new Error((j2&&j2.error)||"zones save failed");
+   if(j2&&j2.skipped&&j2.skipped.length)toast("Зоны: пропущены "+j2.skipped.join(", "));
+  }
+  S.posDirty=false;S.zoneDirty=false;markDirty();
+  toast("Сохранено. Перезагружаю живую карту…");
+  await loadClub(S.club);
+ }catch(e){toast("Ошибка сохранения: "+e.message);}
+}
+/* ---------- UI ---------- */
+function initClubs(){
+ els.clubSel.innerHTML=CLUBS.map(function(c){
+  return '<option value="'+c.dir+'">'+escH(c.label)+"</option>";}).join("");
+ var q=null;
+ try{q=new URLSearchParams(location.search).get("club");}catch(e){}
+ if(q){var found=false,i;for(i=0;i<CLUBS.length;i++)if(CLUBS[i].dir===q)found=true;
+  if(found)els.clubSel.value=q;}
+ els.clubSel.onchange=function(){loadClub(els.clubSel.value);};
+ fetch("/api/constructor/list").then(function(r){return r.ok?r.json():null;}).then(function(j){
+  if(!j||!Array.isArray(j.clubs))return;
+  for(var i=0;i<j.clubs.length;i++){var d=j.clubs[i],has=false,k;
+   for(k=0;k<CLUBS.length;k++)if(CLUBS[k].dir===d)has=true;
+   if(!has){CLUBS.push({dir:d,html:null,label:d});
+    var o=document.createElement("option");o.value=d;o.textContent=d;els.clubSel.appendChild(o);}}
+ }).catch(function(){});
+}
+function initUI(){
+ var bs=document.querySelectorAll(".modebtn");
+ for(var i=0;i<bs.length;i++)(function(btn){btn.onclick=function(){setMode(btn.getAttribute("data-mode"));};})(bs[i]);
+ var ts=document.querySelectorAll(".tabbtn");
+ for(i=0;i<ts.length;i++)(function(btn){btn.onclick=function(){
+  var a=document.querySelectorAll(".tabbtn");
+  for(var k=0;k<a.length;k++)a[k].classList.toggle("active",a[k]===btn);
+  var p=document.querySelectorAll(".pane");
+  for(k=0;k<p.length;k++)p[k].classList.toggle("active",p[k].id==="pane-"+btn.getAttribute("data-tab"));};})(ts[i]);
+ $("btnSave").onclick=saveAll;
+ $("btnUndo").onclick=doUndo;
+ $("btnReload").onclick=function(){
+  if((S.posDirty||S.zoneDirty)&&!confirm("Есть несохранённые изменения. Перезагрузить?"))return;
+  loadClub(S.club||els.clubSel.value);};
+ $("btnHelp").onclick=function(){$("helpModal").classList.add("open");};
+ $("helpClose").onclick=function(){$("helpModal").classList.remove("open");};
+ $("helpModal").onclick=function(e){if(e.target.id==="helpModal")e.currentTarget.classList.remove("open");};
+ $("btnAddBlock").onclick=function(){
+  var n=prompt("Имя блока (латиница/цифры/_):","block_"+(Object.keys(S.blocks).length+1));
+  if(!n||!n.trim())return;
+  if(!/^[A-Za-z0-9_\-]{1,64}$/.test(n.trim()))return toast("Недопустимое имя");
+  if(S.blocks[n.trim()])return toast("Блок уже есть");
+  pushUndo();
+  S.blocks[n.trim()]={origin:[100,100],step:70,stepY:70,pcs:{}};
+  S.targetBlock=n.trim();S.posDirty=true;renderAll();};
+ $("btnAddCenter").onclick=function(){
+  addPCAt(S.vb.minX+S.vb.w/2,S.vb.minY+S.vb.h/2);};
+ $("btnAddZone").onclick=function(){
+  pushUndo();
+  var k=S.zones.length+1;
+  var zc=S.vb.minX+S.vb.w/2-150,zy=S.vb.minY+S.vb.h/2-100;
+  S.zones.push({zone:"zone-"+k,label:"Зона "+k,x:Math.round(zc),y:Math.round(zy),w:300,h:200,rx:12,sx:0,sy:0});
+  S.sel={kind:"zone",id:"zone-"+k};S.zoneDirty=true;setMode("zone");renderAll();};
+ $("btnCopyJson").onclick=function(){
+  var txt=JSON.stringify(exportState(),null,2);
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+   navigator.clipboard.writeText(txt).then(function(){toast("JSON скопирован");},function(){toast("Не удалось скопировать");});
+  else toast("Буфер недоступен");};
+ $("btnValidate").onclick=function(){
+  var msgs=[],seen={},be=Object.entries(S.blocks),bi,ni;
+  for(bi=0;bi<be.length;bi++){
+   if(!/^[A-Za-z0-9_\-]+$/.test(be[bi][0]))msgs.push("Блок "+be[bi][0]+": имя");
+   var ns=Object.keys(be[bi][1].pcs);
+   for(ni=0;ni<ns.length;ni++){
+    if(seen[ns[ni]])msgs.push("Дубль ПК "+ns[ni]);seen[ns[ni]]=1;
+    if(!Number.isFinite(+ns[ni]))msgs.push("ПК "+ns[ni]+" не число");}}
+  els.validMsg.textContent=msgs.length?msgs.join("; "):"✓ OK";
+  els.validMsg.style.color=msgs.length?"#ff9c9c":"#9fe8a9";};
+ $("zIn").onclick=function(){var c=stageCenter();zoomAt(c.x,c.y,1.25);};
+ $("zOut").onclick=function(){var c2=stageCenter();zoomAt(c2.x,c2.y,0.8);};
+ $("zFit").onclick=function(){Z.s=1;Z.tx=0;Z.ty=0;applyView();placeEditLayer();queueRender();};
+ els.stage.addEventListener("pointerdown",stageDown);
+ els.stage.addEventListener("pointermove",stageMove);
+ els.stage.addEventListener("pointerup",stageUp);
+ els.stage.addEventListener("pointercancel",stageUp);
+ els.stage.addEventListener("wheel",function(e){e.preventDefault();
+  zoomAt(e.clientX,e.clientY,e.deltaY>0?0.9:1.1);},{passive:false});
+ document.addEventListener("keydown",function(e){
+  var ae=document.activeElement;
+  if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))return;
+  if(e.key==="Escape"){S.sel=null;S.hlBlock="";renderOverlay();}
+  else if(e.key==="Delete"&&S.sel){
+   if(S.sel.kind==="pc"){var f=findPC(S.sel.id);
+    if(f&&confirm("Удалить ПК "+S.sel.id+"?")){pushUndo();delete f.b.pcs[S.sel.id];S.sel=null;S.posDirty=true;renderAll();}}
+   else if(S.sel.kind==="zone"){
+    if(confirm("Удалить зону?")){var id=S.sel.id;pushUndo();
+     S.zones=S.zones.filter(function(z){return z.zone!==id;});
+     S.sel=null;S.zoneDirty=true;renderAll();}}}
+  else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();doUndo();}
+  else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveAll();}
+ });
+ if(window.ResizeObserver){
+  new ResizeObserver(function(){placeEditLayer();queueRender();}).observe(els.stage);
+ }
+ try{
+  if(new URLSearchParams(location.search).get("debug")==="1")
+   els.editLayer.style.outline="2px solid red";
+ }catch(e){}
+}
+function stageCenter(){var r=els.stage.getBoundingClientRect();
+ return {x:r.left+r.width/2,y:r.top+r.height/2};}
+initClubs();initUI();applyView();setMode("pc");
+loadClub(els.clubSel.value||"TRIUMPH");
 </script>
 </body>
 </html>

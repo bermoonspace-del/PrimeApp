@@ -7,7 +7,7 @@
   <style>
     :root{--bg:#0d0304;--muted:rgba(255,255,255,0.58);--accent:#fff}
     html,body{height:100%;margin:0}
-    body{background:#0d0304;background-image:radial-gradient(65% 90% at 0% 52%, rgba(184,13,18,0.95) 0%, rgba(122,10,13,0.65) 25%, rgba(42,5,6,0.35) 55%, rgba(14,4,5,0) 100%),radial-gradient(45% 70% at 88% 55%, rgba(110,14,17,0.7) 0%, rgba(43,6,7,0.35) 50%, rgba(14,4,5,0) 100%),linear-gradient(180deg, #0d0304 0%, #1a0607 30%, #150505 55%, #0a0203 100%);background-attachment:fixed;background-size:cover;color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    body{background:#070505;background-image:radial-gradient(80% 55% at 50% 0%, rgba(184,13,18,0.22) 0%, rgba(184,13,18,0) 60%),linear-gradient(180deg, #0d0607 0%, #070505 60%, #040404 100%);background-attachment:fixed;background-size:cover;color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
     body.tg-app{padding-top:120px}
     .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
     .page-shell{position:relative;transition:opacity .35s ease,transform .35s ease;will-change:opacity,transform}
@@ -120,29 +120,20 @@
 
   </div>
 
-  <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
       <defs>
         <linearGradient id="bgBase" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#0d0304"/>
-          <stop offset="30%" stop-color="#1a0607"/>
-          <stop offset="55%" stop-color="#150505"/>
-          <stop offset="100%" stop-color="#0a0203"/>
+          <stop offset="0%" stop-color="#0d0607"/>
+          <stop offset="60%" stop-color="#070505"/>
+          <stop offset="100%" stop-color="#040404"/>
         </linearGradient>
-        <radialGradient id="leftRed" cx="0%" cy="52%" r="65%">
-          <stop offset="0%" stop-color="#b80d12" stop-opacity="0.95"/>
-          <stop offset="25%" stop-color="#7a0a0d" stop-opacity="0.65"/>
-          <stop offset="55%" stop-color="#2a0506" stop-opacity="0.35"/>
-          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="rightRed" cx="88%" cy="55%" r="45%">
-          <stop offset="0%" stop-color="#6e0e11" stop-opacity="0.7"/>
-          <stop offset="50%" stop-color="#2b0607" stop-opacity="0.35"/>
-          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        <radialGradient id="topGlow" cx="50%" cy="0%" r="75%">
+          <stop offset="0%" stop-color="#b80d12" stop-opacity="0.22"/>
+          <stop offset="60%" stop-color="#b80d12" stop-opacity="0"/>
         </radialGradient>
       </defs>
       <rect width="450" height="800" fill="url(#bgBase)"/>
-      <rect width="450" height="800" fill="url(#leftRed)"/>
-      <rect width="450" height="800" fill="url(#rightRed)"/>
+      <rect width="450" height="800" fill="url(#topGlow)"/>
     </svg>
   <div class="page-shell page-enter">
   <main class="content">
@@ -164,6 +155,8 @@
         <div class="select-option" data-value="muhamedh" role="option"><span>Мухамедханова 25</span><span class="check">✓</span></div>
         <div class="select-option" data-value="molda" role="option"><span>Молдагалиева 7</span><span class="check">✓</span></div>
         <div class="select-option" data-value="bekturova" role="option"><span>Бектурова 11Б</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="aqtau" role="option"><span>Актау</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="krg" role="option"><span>Караганда</span><span class="check">✓</span></div>
       </div>
     </div>
 
@@ -1720,6 +1713,224 @@
         <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Обучающий комплект</span></div>
         <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Обучающий комплект</span></div>
         <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Обучающий комплект</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="club-panel" id="club-aqtau">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Актау">
+      <button class="zone-button active" data-zone="aq-hall1" type="button">1 этаж</button>
+      <button class="zone-button" data-zone="aq-hall2" type="button">2 этаж</button>
+      <button class="zone-button" data-zone="aq-vip1" type="button">VIP 1</button>
+      <button class="zone-button" data-zone="aq-vip2" type="button">VIP 2</button>
+      <button class="zone-button" data-zone="aq-bootcamp" type="button">BOOTCAMP</button>
+    </div>
+
+    <section class="spec-card active" id="aq-hall1">
+      <div class="spec-head"><h2 class="spec-title">Standart</h2><span class="spec-badge">165Hz / 43 места</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i5-11400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">NVIDIA RTX 3060 12Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">T-Force 16Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS 165Hz (27")</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">HyperX Alloy Origins Core</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">ZOWIE S2-C BenQ</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud 2</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Prince</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="aq-hall2">
+      <div class="spec-head"><h2 class="spec-title">Comfort</h2><span class="spec-badge">165Hz / 36 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i5-12400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">NVIDIA RTX 3060 12Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">T-Force 16Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS 165Hz (24") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">HyperX Alloy Origins Core</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">ZOWIE S2-C BenQ</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud 2</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Gladiator</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="aq-vip1">
+      <div class="spec-head"><h2 class="spec-title">VIP 1</h2><span class="spec-badge">280Hz / 10 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i5-12600KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">NVIDIA RTX 3070 8Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 16Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS 280Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO TKL Black</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G Pro X Superlight</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud 2</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Air Series Pro Black</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="aq-vip2">
+      <div class="spec-head"><h2 class="spec-title">VIP 2</h2><span class="spec-badge">360Hz / 10 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-12700F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">NVIDIA RTX 3070 8Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 16Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">AOC AGON AG275FS 360Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo VEM87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G Pro X Superlight 2</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud 2</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Master Black</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="aq-bootcamp">
+      <div class="spec-head"><h2 class="spec-title">BOOTCAMP</h2><span class="spec-badge">360Hz / 5 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-12700F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">NVIDIA RTX 4070 12Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32Gb</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ZOWIE XL2566K 360Hz (24.5") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo VEM87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G Pro X Superlight 2 DEX</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud 2</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Air Series Pro Black</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="club-panel" id="club-krg">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Караганда">
+      <button class="zone-button active" data-zone="kr-hall" type="button">Общий зал</button>
+      <button class="zone-button" data-zone="kr-btc1" type="button">Буткемп 1</button>
+      <button class="zone-button" data-zone="kr-btc2" type="button">Буткемп 2</button>
+      <button class="zone-button" data-zone="kr-trio" type="button">Трио</button>
+      <button class="zone-button" data-zone="kr-vip1" type="button">VIP 1</button>
+      <button class="zone-button" data-zone="kr-vip2" type="button">VIP 2</button>
+      <button class="zone-button" data-zone="kr-vip3" type="button">VIP 3</button>
+      <button class="zone-button" data-zone="kr-vip4" type="button">VIP 4</button>
+    </div>
+
+    <section class="spec-card active" id="kr-hall">
+      <div class="spec-head"><h2 class="spec-title">Общий зал · 1–41</h2><span class="spec-badge">280Hz / 41 место</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i5-13400F</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4060</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS TUF Gaming 280Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">HyperX Alloy Origins</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud II</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Prince</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-btc1">
+      <div class="spec-head"><h2 class="spec-title">Буткемп 1 · 42–47</h2><span class="spec-badge">500Hz / 6 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4070</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Dell Alienware 500Hz (24.5") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">ATK RS7 Rainbow</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech PRO X2 Superstrike</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud III Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">AndaSeat Karin Yellow</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-btc2">
+      <div class="spec-head"><h2 class="spec-title">Буткемп 2 · 48–53</h2><span class="spec-badge">400Hz / 6 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4060 Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ZOWIE by BenQ 400Hz (24.5") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo Koi EC Ivy</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech PRO X2 Superstrike</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud III Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">AndaSeat Karin Brown</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-trio">
+      <div class="spec-head"><h2 class="spec-title">Трио · 54–56</h2><span class="spec-badge">540Hz / 3 места</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4080 SUPER</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS ROG Swift 540Hz (24.5") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo Hygge</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">ZOWIE U2</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud III Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">ZOWIE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">AndaSeat Karin Yellow</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-vip1">
+      <div class="spec-head"><h2 class="spec-title">VIP 1 · 57–62</h2><span class="spec-badge">280Hz / 6 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4060 Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS TUF Gaming 280Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo Panda</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech PRO X Superlight 2 DEX</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud II</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Hammer Zero</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-vip2">
+      <div class="spec-head"><h2 class="spec-title">VIP 2 · 63–68</h2><span class="spec-badge">360Hz / 6 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4060 Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Dell Alienware 360Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo Panda</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech PRO X Superlight 2</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud III Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer Hammer</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-vip3">
+      <div class="spec-head"><h2 class="spec-title">VIP 3 · 69–75</h2><span class="spec-badge">360Hz / 7 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4060 Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">ASUS ROG Strix OLED 360Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Varmilo Moonlight</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech PRO X Superlight 2</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud III Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">DXRacer William</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="kr-vip4">
+      <div class="spec-head"><h2 class="spec-title">VIP 4 · 76–80</h2><span class="spec-badge">360Hz / 5 мест</span></div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Intel Core i7-14700KF</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">GIGABYTE RTX 4060 Ti</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston FURY 32Gb 3600MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">Dell Alienware 360Hz (27") + кронштейн</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">DrunkDeer G75 Rainbow</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech PRO X Superlight 2 DEX</span></div>
+        <div class="spec-item"><span class="spec-label">Гарнитура</span><span class="spec-value">HyperX Cloud III Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Varmilo</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">AndaSeat Karin Blue</span></div>
       </div>
     </section>
   </div>
