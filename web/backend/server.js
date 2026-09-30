@@ -77,7 +77,23 @@ const CLUBS = {
     tableUrl: "https://bekturova.app.enes.tech/api/v2/map/table/",
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
+  },  
+  primeaqtau: {
+    mapUrl: "https://primeaqtau.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://primeaqtau.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://primeaqtau.app.enes.tech/api/v2/map/table/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
   },
+  karagandy: {
+    mapUrl: "https://karagandy.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://karagandy.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://karagandy.app.enes.tech/api/v2/map/table/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+
+
 };
 
 const tokenCaches = {};
@@ -102,6 +118,8 @@ function resolveClub(req) {
   if (req.query._primekenesary === "1") return "primekenesary";
   if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
   if (req.query._bekturova === "1") return "bekturova";
+  if (req.query._primeaqtau === "1") return "primeaqtau";
+  if (req.query._karagandy === "1") return "karagandy";
   return "default";
 }
 
@@ -268,6 +286,8 @@ app.get("/api/map", async (req, res) => {
     delete cleanQuery._primekenesary;
     delete cleanQuery._muhamedkhanova;
     delete cleanQuery._bekturova;
+    delete cleanQuery._primeaqtau;
+    delete cleanQuery._karagandy;
     res.json(await fetchMap(new URLSearchParams(cleanQuery).toString(), false, clubId));
   } catch (err) {
     res.status(502).json({ error: err.message });
@@ -290,6 +310,16 @@ app.get("/api/table", async (req, res) => {
 const FRONTEND_ROOT = path.join(__dirname, "../frontend");
 const NAVBAR_ROOT = path.join(FRONTEND_ROOT, "NAVBAR");
 function isValidClubName(name){ return /^[a-zA-Z0-9_\-]{1,64}$/.test(name); }
+// Prefer the html file whose name matches the club dir (some dirs contain stray copies).
+async function findClubHtml(dir, club){
+  const files=await fs.promises.readdir(dir).catch(()=>[]);
+  const htmls=files.filter(f=>f.toLowerCase().endsWith(".html"));
+  if(htmls.length===0) return null;
+  const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const nc=norm(club);
+  const hit=htmls.find(f=>{ const nb=norm(f.replace(/\.html$/i,"")); return nb&&nc&&(nb.includes(nc)||nc.includes(nb)); });
+  return hit||htmls[0];
+}
 app.get("/api/constructor/list", async (req,res)=>{
   try{
     const entries=await fs.promises.readdir(NAVBAR_ROOT,{withFileTypes:true});
@@ -315,13 +345,87 @@ app.post("/api/constructor/save", async (req,res)=>{
 app.get("/api/constructor/zones", async (req,res)=>{
   try{
     const club=String(req.query.club||"").trim(); if(!isValidClubName(club)) return res.status(400).json({error:"invalid club name"});
-    const dir=path.join(NAVBAR_ROOT,club); const files=await fs.promises.readdir(dir).catch(()=>[]); const htmlFile=files.find(f=>f.toLowerCase().endsWith(".html"));
+    const dir=path.join(NAVBAR_ROOT,club); const htmlFile=await findClubHtml(dir,club);
     if(!htmlFile) return res.json({zones:[], htmlFile:null});
     const html=await fs.promises.readFile(path.join(dir,htmlFile),"utf8");
     const zoneRegex=/<rect[^>]*class="zone"[^>]*>/gi; const zones=[]; let m;
     while((m=zoneRegex.exec(html))!==null){ const tag=m[0]; const get=(attr)=>{ const r=new RegExp(attr+'\\s*=\\s*"([^"]+)"','i'); const mm=r.exec(tag); return mm?mm[1]:null; }; zones.push({zone:get("data-zone"), x:Number(get("x")), y:Number(get("y")), width:Number(get("width")), height:Number(get("height")), rx:Number(get("rx")||12)}); }
     const labelRegex=/<text[^>]*class="zone-label"[^>]*>([^<]+)<\/text>/gi; const labels=[]; while((m=labelRegex.exec(html))!==null){ labels.push(m[1].trim()); }
     res.json({zones, labels, htmlFile});
+  }catch(err){ res.status(500).json({error:err.message}); }
+});
+// Save zones back into the club HTML file (rect.zone attrs + paired zone-label text).
+// Pairing: each <text class="zone-label"> belongs to the closest preceding <rect class="zone">.
+app.post("/api/constructor/zones", async (req,res)=>{
+  try{
+    const club=String(req.body.club||"").trim();
+    const zones=req.body.zones;
+    if(!isValidClubName(club)) return res.status(400).json({error:"invalid club name"});
+    if(!Array.isArray(zones)) return res.status(400).json({error:"zones array required"});
+    const dir=path.join(NAVBAR_ROOT,club);
+    const htmlFile=await findClubHtml(dir,club);
+    if(!htmlFile) return res.status(404).json({error:"html not found"});
+    const fp=path.join(dir,htmlFile);
+    let html=await fs.promises.readFile(fp,"utf8");
+    const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const num=v=>{ const n=Number(v); return Number.isFinite(n)?Math.round(n):null; };
+    // collect rect.zone tokens
+    const rectRe=/<rect\b[^>]*class="zone"[^>]*>/gi;
+    const textRe=/<text\b[^>]*class="zone-label"[^>]*>([\s\S]*?)<\/text>/gi;
+    const rects=[]; let m;
+    while((m=rectRe.exec(html))!==null){
+      const tag=m[0];
+      const dzm=/data-zone\s*=\s*"([^"]*)"/i.exec(tag);
+      rects.push({index:m.index, tag, zone:dzm?dzm[1]:null});
+    }
+    if(rects.length===0) return res.status(400).json({error:"no editable zones in html (zones are JS-generated?)"});
+    const texts=[]; 
+    while((m=textRe.exec(html))!==null){ texts.push({index:m.index, len:m[0].length, inner:m[1]}); }
+    // pair each rect with first text after it but before next rect
+    const paired=rects.map((r,i)=>{
+      const nextIdx=(i+1<rects.length)?rects[i+1].index:Infinity;
+      const t=texts.find(t=>t.index>r.index && t.index<nextIdx) || null;
+      return {rect:r, text:t};
+    });
+    const byZone=new Map();
+    for(const z of zones){
+      const key=String(z.zone??"");
+      if(key && !byZone.has(key)) byZone.set(key,z);
+    }
+    const edits=[]; // {index,len,replacement}
+    const skipped=[];
+    const setAttr=(tag,attr,val)=>{
+      if(val===null||val===undefined) return tag;
+      const v=String(val);
+      const re=new RegExp(attr+'\\s*=\\s*"[^"]*"','i');
+      if(re.test(tag)) return tag.replace(re, `${attr}="${v}"`);
+      return tag.replace(/<rect\b/i, `<rect ${attr}="${v}"`);
+    };
+    for(const p of paired){
+      if(!p.rect.zone || !byZone.has(p.rect.zone)){ continue; }
+      const z=byZone.get(p.rect.zone);
+      let tag=p.rect.tag;
+      const x=num(z.x), y=num(z.y), w=num(z.width), h=num(z.height), rx=(z.rx==null||z.rx==="")?null:num(z.rx);
+      if(x===null||y===null||w===null||h===null){ skipped.push(p.rect.zone); continue; }
+      tag=setAttr(tag,"x",x); tag=setAttr(tag,"y",y);
+      tag=setAttr(tag,"width",Math.max(20,w)); tag=setAttr(tag,"height",Math.max(20,h));
+      if(rx!==null) tag=setAttr(tag,"rx",rx);
+      edits.push({index:p.rect.index, len:p.rect.tag.length, replacement:tag});
+      if(p.text && z.label!=null){
+        const openEnd=p.text.len; // full match length
+        const full=html.substr(p.text.index, openEnd);
+        const gt=full.indexOf(">");
+        const newFull=full.slice(0,gt+1)+esc(z.label)+"</text>";
+        edits.push({index:p.text.index, len:openEnd, replacement:newFull});
+      }
+    }
+    for(const key of byZone.keys()){
+      if(!paired.some(p=>p.rect.zone===key)) skipped.push(key);
+    }
+    edits.sort((a,b)=>b.index-a.index);
+    for(const e of edits){ html=html.slice(0,e.index)+e.replacement+html.slice(e.index+e.len); }
+    await fs.promises.writeFile(fp, html, "utf8");
+    res.json({ok:true, htmlFile, updated:edits.length?paired.filter(p=>p.rect.zone&&byZone.has(p.rect.zone)).length:0, skipped});
   }catch(err){ res.status(500).json({error:err.message}); }
 });
 // Debug — проверить env и токены без раскрытия пароля
