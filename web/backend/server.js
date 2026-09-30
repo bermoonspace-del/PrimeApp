@@ -92,8 +92,6 @@ const CLUBS = {
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
-
-
 };
 
 const tokenCaches = {};
@@ -119,7 +117,7 @@ function resolveClub(req) {
   if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
   if (req.query._bekturova === "1") return "bekturova";
   if (req.query._primeaqtau === "1") return "primeaqtau";
-  if (req.query._karagandy === "1") return "karagandy";
+  if (req.query._karagandy === "1") return "karagandy"
   return "default";
 }
 
