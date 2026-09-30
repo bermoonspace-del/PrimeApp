@@ -739,7 +739,7 @@ function updateCounters(pcs) {
         const status = getStatus(pc);
         if (status === 'free' || status === 'offline' || status === 'reserved') {
             free++;
-        } else if (status === 'busy' || status === 'maintenance' || status === 'service' || status === 'reserved') {
+        } else if (status === 'busy' || status === 'maintenance' || status === 'service') {
             busy++;
         }
     });

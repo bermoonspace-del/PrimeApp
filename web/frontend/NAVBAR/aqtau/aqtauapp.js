@@ -796,7 +796,7 @@ function updateCounters(pcs) {
         }
     });
 
-    freeEl.textContent = Math.max(0, free - 10);
+    freeEl.textContent = free;
     busyEl.textContent = busy;
 }
 
