@@ -164,6 +164,8 @@
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="as">Асфендиярова 1</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="mh">Мухамедханова 25</button>
       <button class="club-dropdown-item" type="button" role="menuitem" data-value="bt">Бектурова 11Б</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="aq">Актау</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="kg">Караганда</button>
 
     </div>
   </div>
@@ -204,6 +206,12 @@
       </section>
       <section class="panel" id="panel-bt">
         <iframe scrolling="no" src="./bekt/bekt.html" title="BEKTUROVA"></iframe>
+      </section>
+      <section class="panel" id="panel-aq">
+        <iframe scrolling="no" src="./aqtau/aqtau.html" title="BEKTUROVA"></iframe>
+      </section>
+      <section class="panel" id="panel-kg">
+        <iframe scrolling="no" src="./krg/krg.html" title="BEKTUROVA"></iframe>
       </section>
     </div>
   </div>
@@ -278,7 +286,9 @@
         ml: document.getElementById('panel-ml'),
         as: document.getElementById('panel-as'),
         mh: document.getElementById('panel-mh'),
-        bt: document.getElementById('panel-bt')
+        bt: document.getElementById('panel-bt'),
+        aq: document.getElementById('panel-aq'),
+        kg: document.getElementById('panel-kg')
       };
       const names = {
         tr: 'Кабанбай Батыра 11',
@@ -291,7 +301,9 @@
         ml: 'Молдагалиева 7',
         as: 'Асфендиярова 1',
         mh: 'Мухамедханова 25',
-        bt: 'Бектурова 11Б'
+        bt: 'Бектурова 11Б',
+        aq: 'Актау',
+        kg: 'Караганда'
       };
 
       function setActive(value) {
