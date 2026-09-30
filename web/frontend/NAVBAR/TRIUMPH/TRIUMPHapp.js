@@ -714,9 +714,9 @@ function updateCounters(pcs) {
 
     pcs.forEach(pc => {
         const status = getStatus(pc);
-        if (status === 'free' || status === 'offline') {
+        if (status === 'free' || status === 'offline' || status === 'reserved') {
             free++;
-        } else if (status === 'busy' || status === 'maintenance' || status === 'service' || status === 'reserved') {
+        } else if (status === 'busy' || status === 'maintenance' || status === 'service') {
             busy++;
         }
     });
