@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0N58YQDZXC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-0N58YQDZXC');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Game Hub</title>
+    <style>
+        :root{--bg:#0d0304;--muted:rgba(255,255,255,0.58);--accent:#fff}
+        html,body{height:100%;margin:0}
+        body{background:#0d0304;background-image:radial-gradient(65% 90% at 0% 52%, rgba(184,13,18,0.95) 0%, rgba(122,10,13,0.65) 25%, rgba(42,5,6,0.35) 55%, rgba(14,4,5,0) 100%),radial-gradient(45% 70% at 88% 55%, rgba(110,14,17,0.7) 0%, rgba(43,6,7,0.35) 50%, rgba(14,4,5,0) 100%),linear-gradient(180deg, #0d0304 0%, #1a0607 30%, #150505 55%, #0a0203 100%);background-attachment:fixed;background-size:cover;color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;display:flex;flex-direction:column;position:relative;overflow-x:hidden}
+        body.tg-app{padding-top:120px}
+        .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+        .content{flex:1;padding-bottom:78px}
+        .brand{position:fixed;left:50%;transform:translateX(-50%);bottom:92px;color:var(--muted);font-size:12px}
+        .logo{display:block;
+            margin:18vh auto 4vh;
+            width: 120px;
+            height: 120px;
+            max-width:56%;
+            height:auto;
+            filter:drop-shadow(0 6px 12px rgba(0,0,0,.6))
+        }
+        .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
+        .help-block{display:grid;gap:10px;max-width:420px;margin:8vh auto 0;padding:0 16px}
+        .help-item{display:grid;gap:0}
+        .help-question{appearance:none;display:grid;grid-template-columns:1fr 24px;align-items:center;gap:12px;width:100%;min-height:58px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;padding:12px 14px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;text-align:left;transition:background .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
+        .help-question:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+        .help-question:active{transform:translateY(0) scale(.98)}
+        .help-question.is-open{background:#fff;color:#000;border-color:#fff}
+        .help-question svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s cubic-bezier(0.22,1,0.36,1)}
+        .help-question.is-open svg{transform:rotate(180deg)}
+        .help-answer{max-height:0;overflow:hidden;color:#f3f3f3;font-size:15px;line-height:1.6;background:transparent;border:0;border-radius:12px;padding:0 14px;transition:max-height .35s cubic-bezier(0.22,1,0.36,1),padding .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),background .35s cubic-bezier(0.22,1,0.36,1)}
+        .help-answer strong{display:block;font-weight:700;margin-bottom:6px;color:#fff}
+        .help-answer.is-open{max-height:400px;padding:12px 14px 12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09)}
+
+        .price-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:20px;margin:16px auto 0;max-width:300px;padding:12px 18px;border:1px solid #fff;border-radius:12px;background:#fff;color:#000;font:inherit;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:background .25s ease,transform .25s ease,color .25s ease}
+        .price-button:hover{background:#fff;color:#cc2222;border-color:#cc2222;transform:translateY(-1px)}
+        .price-button:active{transform:translateY(0) scale(.98)}
+
+        /* Video intro overlay */
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 100000;
+            padding: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity 0.8s ease-out;
+        }
+        #video-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #intro-video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            margin-top: 0;
+            object-fit: cover;
+            object-position: top center;
+            background: #000;
+        }
+
+        /* Main content - initially hidden */
+        #main-content {
+            opacity: 0;
+            transition: opacity 1.2s ease-in;
+        }
+        #main-content.visible {
+            opacity: 1;
+        }
+
+        .bottom-nav{
+            position:fixed;
+            left:0;
+            right:0;
+            bottom:0;
+            z-index:9999;
+            display:grid;
+            grid-template-columns:repeat(5,minmax(0,1fr));
+            align-items:center;
+            height:70px;
+            padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+            box-sizing:border-box;
+            background:#050505;
+            border-top:1px solid rgba(255,255,255,.08);
+            pointer-events:auto;
+            opacity: 0;
+            transition: opacity 1.2s ease-in;
+        }
+        .bottom-nav.visible {
+            opacity: 1;
+        }
+        .bottom-nav *{pointer-events:auto}
+        .nav-item{
+            display:grid;
+            grid-template-rows:28px 14px;
+            gap:5px;
+            justify-items:center;
+            align-content:center;
+            width:100%;
+            height:54px;
+            min-width:0;
+            padding:0 2px;
+            box-sizing:border-box;
+            color:var(--muted);
+            text-decoration:none;
+            font-size:10px;
+            line-height:1;
+            transition:color .2s ease,transform .2s ease;
+        }
+        .nav-item:hover{color:var(--accent);transform:translateY(-1px)}
+        .nav-item:active{transform:translateY(0) scale(.96)}
+        .nav-item.active{color:var(--accent)}
+        .nav-item svg{
+            width:26px;
+            height:26px;
+            stroke:currentColor;
+            fill:none;
+            stroke-width:2;
+            stroke-linecap:round;
+            stroke-linejoin:round;
+        }
+        .nav-item span{
+            display:block;
+            width:100%;
+            line-height:14px;
+            text-align:center;
+            white-space:nowrap;
+            overflow:hidden;
+        }
+
+        @media (max-aspect-ratio: 9/16), (orientation: portrait){
+            .logo{margin-top:18vh;max-width:68%}
+            .brand{bottom:92px;font-size:13px}
+            .help-block{max-width:none;margin-top:8vh}
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        if (window.Telegram?.WebApp) {
+            var tg = window.Telegram.WebApp;
+            tg.ready();
+
+            function doExpand() {
+                tg.expand();
+                try { tg.requestFullscreen?.(); } catch(e) {}
+                if (!tg.isExpanded) {
+                    setTimeout(doExpand, 200);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', doExpand);
+            } else {
+                doExpand();
+            }
+        }
+    </script>
+</head>
+<body>
+    <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="bgBase" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0d0304"/>
+          <stop offset="30%" stop-color="#1a0607"/>
+          <stop offset="55%" stop-color="#150505"/>
+          <stop offset="100%" stop-color="#0a0203"/>
+        </linearGradient>
+        <radialGradient id="leftRed" cx="0%" cy="52%" r="65%">
+          <stop offset="0%" stop-color="#b80d12" stop-opacity="0.95"/>
+          <stop offset="25%" stop-color="#7a0a0d" stop-opacity="0.65"/>
+          <stop offset="55%" stop-color="#2a0506" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="rightRed" cx="88%" cy="55%" r="45%">
+          <stop offset="0%" stop-color="#6e0e11" stop-opacity="0.7"/>
+          <stop offset="50%" stop-color="#2b0607" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <rect width="450" height="800" fill="url(#bgBase)"/>
+      <rect width="450" height="800" fill="url(#leftRed)"/>
+      <rect width="450" height="800" fill="url(#rightRed)"/>
+    </svg>
+
+    <!-- Video Intro Overlay -->
+    <div id="video-overlay">
+        <video id="intro-video" playsinline autoplay muted>
+           <source src="content/start.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+    </div>
+
+      <div class="tabs" role="tablist" aria-label="Клубы">
+
+      </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <div class="content" id="logo">
+            <img src="content/logo-new.png?v=20260601" alt="Prime Game Hub Logo" class="logo">
+            <section class="help-block" aria-label="Помощь">
+                <div class="help-item">
+                    <button class="help-question" type="button" aria-expanded="false" aria-controls="map-help-answer">
+                        <span>Где посмотреть карту клуба?</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="help-answer" id="map-help-answer" aria-live="polite">
+                        <strong>Открой «Клубы» в нижнем меню.</strong> Нажми на нужный клуб, чтобы увидеть его карту.
+                    </div>
+                </div>
+                <div class="help-item">
+                    <button class="help-question" type="button" aria-expanded="false" aria-controls="club-switch-answer">
+                        <span>Как переключиться между клубами?</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="help-answer" id="club-switch-answer" aria-live="polite">
+                        <strong>Во вкладке клубы сверху выбери нужную карту</strong> На странице «Клубы» переключайся между клубами.
+                    </div>
+                </div>
+                <div class="help-item">
+                    <button class="help-question" type="button" aria-expanded="false" aria-controls="map-back-answer">
+                        <span>Как узнать код клуба?</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="help-answer" id="map-back-answer" aria-live="polite">
+                        <strong>Нажми "Коды"</strong> В разделе «Коды» выбери нужный клуб, чтобы увидеть его код.
+                    </div>
+                </div>
+                <div class="help-item">
+                    <button class="help-question" type="button" aria-expanded="false" aria-controls="codes-help-answer">
+                        <span>Как посмотреть характеристики клуба?</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="help-answer" id="codes-help-answer" aria-live="polite">
+                        <strong>Открой "Хар-ки" в нижнем меню.</strong>Там можно посмотреть характеристики всех клубов, а также сравнить их между собой.
+                    </div>
+                </div>
+                <div class="help-item">
+                    <button class="help-question" type="button" aria-expanded="false" aria-controls="booking-help-answer">
+                        <span>Как поставть бронь</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="help-answer" id="booking-help-answer" aria-live="polite">
+                        <strong>📌 Бронирование доступно только для следующих залов:</strong><br>
+                        • VIP<br>
+                        • Bootcamp<br>
+                        • TRIO<br>
+                        • SQUAD<br>
+                        • DUO<br>
+                        • PRIVATE<br>
+                        • Stream Room<br>
+                        • Solo<br>
+                        <br>
+                        📞 Бронь принимается по телефону за 40 минут до визита.
+                    </div>
+                </div>
+                <div class="help-item">
+                    <button class="help-question" type="button" aria-expanded="false" aria-controls="balance-help-answer">
+                        <span>Как посмотреть свой баланс</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="help-answer" id="balance-help-answer" aria-live="polite">
+                        <strong>Нажми на Senet</strong> Откроется сайт Senet ID, там можно посмотреть свой баланс (работает только в клубах с поддержкой Senet ID).
+                    </div>
+                </div>
+            </section>
+            <a class="price-button" href="NAVBAR/price.html">Прайс тут</a>
+        </div>
+    </div>
+
+        <nav class="bottom-nav" aria-label="Главное меню" id="bottom-nav">
+        <a class="nav-item active" href="index.html" aria-label="Главная" id="nav-home" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+            <span>Главная</span>
+        </a>
+        <a class="nav-item" href="NAVBAR/chars.html" aria-label="Характеристики">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+            <span>Хар-ки</span>
+        </a>   
+        <a class="nav-item" href="NAVBAR/map.html?v=20260605-5" aria-label="Клубы">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+            <span>Клубы</span>
+        </a>
+        <a class="nav-item" href="NAVBAR/codes.html" aria-label="Коды клубов">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
+            <span>Коды</span>
+        </a>        
+        <a class="nav-item" href="NAVBAR/sen.html" aria-label="Senet ID">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+            <span>Senet ID</span>
+        </a>
+    </nav>
+
+    <script>
+        (function() {
+            const introPlayedKey = 'primeIntroPlayed';
+            const overlay = document.getElementById('video-overlay');
+            const video = document.getElementById('intro-video');
+            const mainContent = document.getElementById('main-content');
+            const bottomNav = document.getElementById('bottom-nav');
+            const helpQuestions = document.querySelectorAll('.help-question');
+
+            // Check if we're coming from any internal navigation (chars, price, codes, sen, map)
+            const isInternalNavigation = document.referrer &&
+                (document.referrer.includes('NAVBAR/price.html') ||
+                 document.referrer.includes('NAVBAR/chars.html') ||
+                 document.referrer.includes('NAVBAR/codes.html') ||
+                 document.referrer.includes('NAVBAR/sen.html') ||
+                 document.referrer.includes('NAVBAR/map.html'));
+
+            helpQuestions.forEach((question) => {
+                question.addEventListener('click', () => {
+                    const shouldOpen = !question.classList.contains('is-open');
+
+                    helpQuestions.forEach((otherQuestion) => {
+                        const otherAnswer = document.getElementById(otherQuestion.getAttribute('aria-controls'));
+                        otherQuestion.classList.remove('is-open');
+                        otherQuestion.setAttribute('aria-expanded', 'false');
+                        otherAnswer.classList.remove('is-open');
+                    });
+
+                    const answer = document.getElementById(question.getAttribute('aria-controls'));
+                    question.classList.toggle('is-open', shouldOpen);
+                    question.setAttribute('aria-expanded', String(shouldOpen));
+                    answer.classList.toggle('is-open', shouldOpen);
+                });
+            });
+
+            function showMainContent(skipFade) {
+                mainContent.classList.add('visible');
+                bottomNav.classList.add('visible');
+
+                if (window.Telegram?.WebApp) {
+                    window.Telegram.WebApp.expand();
+                    try { window.Telegram.WebApp.requestFullscreen?.(); } catch(e) {}
+                }
+
+                if (skipFade) {
+                    overlay.style.display = 'none';
+                    return;
+                }
+
+                overlay.classList.add('hidden');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 800);
+            }
+
+            // Skip animation if coming from internal navigation or if already played
+            if (sessionStorage.getItem(introPlayedKey) === '1' || isInternalNavigation) {
+                showMainContent(true);
+                return;
+            }
+
+            sessionStorage.setItem(introPlayedKey, '1');
+
+            video.addEventListener('ended', () => showMainContent(false));
+
+            video.addEventListener('error', () => showMainContent(false));
+
+            let lastTap = 0;
+            let tapCount = 0;
+            const TAP_DELAY_MS = 400;
+
+            const handleSkipTap = () => {
+                const now = Date.now();
+                if (now - lastTap <= TAP_DELAY_MS) {
+                    tapCount += 1;
+                } else {
+                    tapCount = 1;
+                }
+                lastTap = now;
+
+                if (tapCount === 2) {
+                    showMainContent(true);
+                }
+            };
+
+            overlay.addEventListener('click', handleSkipTap);
+            overlay.addEventListener('touchend', handleSkipTap);
+
+            video.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+
+            video.muted = true;
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    showMainContent(false);
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
