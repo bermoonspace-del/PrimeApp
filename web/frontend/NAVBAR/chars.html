@@ -99,8 +99,8 @@
     .select-trigger.open{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.08)}
     .select-trigger .arrow{transition:transform .35s cubic-bezier(0.22,1,0.36,1);font-size:11px;color:rgba(255,255,255,.4);line-height:1}
     .select-trigger.open .arrow{transform:rotate(180deg)}
-    .select-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(10,10,10,.97);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:6px;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transition:opacity .3s ease,transform .3s ease,visibility .3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
-    .select-menu.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+    .select-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(10,10,10,.97);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:6px;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transition:opacity .3s ease,transform .3s ease,visibility .3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;max-height:320px;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:101}
+    .select-menu.open{opacity:1;visibility:visible;transform:translateY(0) scale(1);overflow-y:auto}
     .select-option{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;color:rgba(255,255,255,.7);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s ease,color .2s ease}
     .select-option:hover{background:rgba(255,255,255,.08);color:#fff}
     .select-option.selected{color:#fff;background:rgba(255,255,255,.1)}
@@ -1628,91 +1628,6 @@
         <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech Superstrike</span></div>
         <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
         <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">ANDASEAT Kaiser 4XL</span></div>
-      </div>
-    </section>
-  </div>
-
-    <section class="spec-card" id="trio" aria-label="Trio — режим на троих">
-      <div class="spec-head">
-        <h2 class="spec-title">VIP 1</h2>
-        <span class="spec-badge">TRIO</span>
-      </div>
-      <div class="spec-list">
-        <div class="spec-item">
-          <span class="spec-label">Процессор</span>
-          <span class="spec-value">Intel Core i7-13700KF</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Видеокарта</span>
-          <span class="spec-value">NVIDIA RTX 3070 Ti 8 ГБ</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Оперативная память</span>
-          <span class="spec-value">48 ГБ DDR5 5200 МГц</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Монитор</span>
-          <span class="spec-value">27" WQHD 165 Гц</span>
-        </div>
-        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">ATK RS7 PRO RGB</span></div>
-        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech Superlight IIс</span></div>
-        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">HyperX Cloud II</span></div>
-      </div>
-    </section>
-
-    <section class="spec-card" id="squad" aria-label="Squad — режим для отряда">
-      <div class="spec-head">
-        <h2 class="spec-title">VIP 2</h2>
-        <span class="spec-badge">SQUAD</span>
-      </div>
-      <div class="spec-list">
-        <div class="spec-item">
-          <span class="spec-label">Процессор</span>
-          <span class="spec-value">Intel Core i9-13900KF</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Видеокарта</span>
-          <span class="spec-value">NVIDIA RTX 4080 16 ГБ</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Оперативная память</span>
-          <span class="spec-value">64 ГБ DDR5 6000 МГц</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Монитор</span>
-          <span class="spec-value">32" WQHD 165 Гц</span>
-        </div>
-        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Командный сет</span></div>
-        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Командный сет</span></div>
-        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Командный сет</span></div>
-      </div>
-    </section>
-
-    <section class="spec-card" id="bootcamp" aria-label="Bootcamp — учебный режим">
-      <div class="spec-head">
-        <h2 class="spec-title">Private</h2>
-        <span class="spec-badge">BOOTCAMP</span>
-      </div>
-      <div class="spec-list">
-        <div class="spec-item">
-          <span class="spec-label">Процессор</span>
-          <span class="spec-value">Intel Core i7-13700</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Видеокарта</span>
-          <span class="spec-value">NVIDIA RTX 4060 8 ГБ</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Оперативная память</span>
-          <span class="spec-value">32 ГБ DDR5 5200 МГц</span>
-        </div>
-        <div class="spec-item">
-          <span class="spec-label">Монитор</span>
-          <span class="spec-value">27" Full HD 144 Гц</span>
-        </div>
-        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Обучающий комплект</span></div>
-        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Обучающий комплект</span></div>
-        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Обучающий комплект</span></div>
       </div>
     </section>
   </div>
