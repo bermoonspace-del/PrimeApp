@@ -68,19 +68,21 @@
     <rect class="zone" data-zone="71-75" x="255" y="-420" width="110" height="550" rx="12"/>
     <text class="zone-label" x="-50" y="-450" text-anchor="middle">Bootcamp 2</text>
     <rect class="zone" data-zone="79-88" x="-250" y="-800" width="600" height="250" rx="12"/>
-        <text class="zone-label" x="70" y="-830" text-anchor="middle">VIP 1</text>
+    <text class="zone-label" x="70" y="-830" text-anchor="middle">VIP 1</text>
     <rect class="zone" data-zone="89-92" x="325" y="-1380" width="130" height="500" rx="12"/>
     <text class="zone-label" x="390" y="-1410" text-anchor="middle">Squad 1</text>
     <rect class="zone" data-zone="99-101" x="-150" y="350" width="315" height="100" rx="12"/>
     <text class="zone-label" x="0" y="320" text-anchor="middle">TRIO 1</text>
     <rect class="zone" data-zone="105-109" x="-345" y="-1400" width="430" height="430" rx="12"/>
     <text class="zone-label" x="-120" y="-1430" text-anchor="middle">VIP 2</text>
-    <rect class="zone" data-zone="105-109" x="280" y="350" width="210" height="100" rx="12"/>
+    <rect class="zone" data-zone="97-98" x="280" y="350" width="210" height="100" rx="12"/>
     <text class="zone-label" x="380" y="320" text-anchor="middle">DUO</text>
-    <rect class="zone" data-zone="105-109" x="1125" y="455" width="110" height="110" rx="12"/>
+    <rect class="zone" data-zone="78" x="1125" y="455" width="110" height="110" rx="12"/>
     <text class="zone-label" x="1400" y="425" text-anchor="middle">SOLO 2</text>
-    <rect class="zone" data-zone="105-109" x="1340" y="455" width="110" height="110" rx="12"/>
+    <rect class="zone" data-zone="77" x="1340" y="455" width="110" height="110" rx="12"/>
     <text class="zone-label" x="1185" y="425" text-anchor="middle">SOLO 1</text>
+    <rect class="zone" data-zone="76" x="1232" y="645" width="110" height="110" rx="12"/>
+    <text class="zone-label" x="1287" y="615" text-anchor="middle">SOLO 3</text>
     </g>
   </svg>
 
@@ -88,7 +90,7 @@
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:101</div>
+    <div class="legend-title">Всего:102</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -118,35 +120,51 @@
         <div class="soon-card-time">По зонам</div>
         <div class="zone-dropdown-menu" id="zone-dropdown-menu" hidden>
             <div class="zone-section">
-                <div class="zone-section-title">Standart (1-35)</div>
+                <div class="zone-section-title">Standart</div>
                 <div class="zone-pc-list" id="zone-1-35"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Comfort (36-65)</div>
+                <div class="zone-section-title">Comfort</div>
                 <div class="zone-pc-list" id="zone-36-65"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Bootcamp 1 (66-70)</div>
+                <div class="zone-section-title">Bootcamp</div>
                 <div class="zone-pc-list" id="zone-66-70"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Bootcamp 2 (71-75)</div>
+                <div class="zone-section-title">Bootcamp 2</div>
                 <div class="zone-pc-list" id="zone-71-75"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 1 (79-88)</div>
+                <div class="zone-section-title">VIP 1</div>
                 <div class="zone-pc-list" id="zone-79-88"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Squad 1 (89-92)</div>
+                <div class="zone-section-title">Squad 1</div>
                 <div class="zone-pc-list" id="zone-89-92"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Trio 1 (99-101)</div>
+                <div class="zone-section-title">Trio 1</div>
                 <div class="zone-pc-list" id="zone-99-101"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">VIP 2 (105-109)</div>
+                <div class="zone-section-title">DUO</div>
+                <div class="zone-pc-list" id="zone-97-98"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">SOLO 1</div>
+                <div class="zone-pc-list" id="zone-77"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">SOLO 2</div>
+                <div class="zone-pc-list" id="zone-78"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">SOLO 3</div>
+                <div class="zone-pc-list" id="zone-76"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">VIP 2</div>
                 <div class="zone-pc-list" id="zone-105-109"></div>
             </div>
         </div>
@@ -170,8 +188,12 @@ const zoneElements = {
   '36-65': document.getElementById('zone-36-65'),
   '66-70': document.getElementById('zone-66-70'),
   '71-75': document.getElementById('zone-71-75'),
+  '76': document.getElementById('zone-76'),
+  '77': document.getElementById('zone-77'),
+  '78': document.getElementById('zone-78'),
   '79-88': document.getElementById('zone-79-88'),
   '89-92': document.getElementById('zone-89-92'),
+  '97-98': document.getElementById('zone-97-98'),
   '99-101': document.getElementById('zone-99-101'),
   '105-109': document.getElementById('zone-105-109')
 };
@@ -187,8 +209,12 @@ function getZoneForPC(num) {
   if (n >= 36 && n <= 65) return '36-65';
   if (n >= 66 && n <= 70) return '66-70';
   if (n >= 71 && n <= 75) return '71-75';
+  if (n === 76) return '76';
+  if (n === 77) return '77';
+  if (n === 78) return '78';
   if (n >= 79 && n <= 88) return '79-88';
   if (n >= 89 && n <= 92) return '89-92';
+  if (n >= 97 && n <= 98) return '97-98';
   if (n >= 99 && n <= 101) return '99-101';
   if (n >= 105 && n <= 109) return '105-109';
   return null;
