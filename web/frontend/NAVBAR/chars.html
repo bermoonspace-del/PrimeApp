@@ -99,8 +99,14 @@
     .select-trigger.open{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.08)}
     .select-trigger .arrow{transition:transform .35s cubic-bezier(0.22,1,0.36,1);font-size:11px;color:rgba(255,255,255,.4);line-height:1}
     .select-trigger.open .arrow{transform:rotate(180deg)}
-    .select-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(10,10,10,.97);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:6px;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transition:opacity .3s ease,transform .3s ease,visibility .3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;max-height:320px;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:101}
+    .select-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(10,10,10,.97);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:6px;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transition:opacity .3s ease,transform .3s ease,visibility .3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;max-height:320px;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:101;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.45) rgba(255,255,255,.06)}
     .select-menu.open{opacity:1;visibility:visible;transform:translateY(0) scale(1);overflow-y:auto}
+    .select-menu::-webkit-scrollbar{width:8px}
+    .select-menu::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:8px;margin:8px 0}
+    .select-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);border-radius:8px;border:2px solid rgba(10,10,10,.97)}
+    .select-menu::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.55)}
+    .select-menu::after{content:'листайте ↓';position:sticky;bottom:6px;display:block;width:max-content;max-width:calc(100% - 12px);margin:6px auto 2px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.75);background:rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 14px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+    .select-menu.at-end::after{display:none}
     .select-option{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;color:rgba(255,255,255,.7);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s ease,color .2s ease}
     .select-option:hover{background:rgba(255,255,255,.08);color:#fff}
     .select-option.selected{color:#fff;background:rgba(255,255,255,.1)}
@@ -1965,7 +1971,16 @@
         menu.classList.toggle('open', !isOpen);
         trigger.classList.toggle('open', !isOpen);
         trigger.setAttribute('aria-expanded', !isOpen);
+        updateMenuEnd();
       });
+
+      function updateMenuEnd() {
+        const hasOverflow = menu.scrollHeight > menu.clientHeight + 2;
+        const atEnd = !hasOverflow || (menu.scrollHeight - menu.scrollTop - menu.clientHeight < 8);
+        menu.classList.toggle('at-end', atEnd);
+      }
+      menu.addEventListener('scroll', updateMenuEnd, { passive: true });
+      updateMenuEnd();
 
       clubOptions.forEach(function (opt) {
         opt.addEventListener('click', function () {

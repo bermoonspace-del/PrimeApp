@@ -776,6 +776,8 @@ function getZoneForPC(num) {
     if (n >= 89 && n <= 92) return '89-92';
     if (n >= 97 && n <= 98) return '97-98';
     if (n >= 99 && n <= 101) return '99-101';
+    if (n >= 93 && n <= 95) return '93-95';
+    if (n >= 114 && n <= 115) return '114-115';
     if (n >= 105 && n <= 109) return '105-109';
     return null;
 }

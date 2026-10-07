@@ -72,17 +72,21 @@
     <rect class="zone" data-zone="89-92" x="325" y="-1380" width="130" height="500" rx="12"/>
     <text class="zone-label" x="390" y="-1410" text-anchor="middle">Squad 1</text>
     <rect class="zone" data-zone="99-101" x="-150" y="350" width="315" height="100" rx="12"/>
-    <text class="zone-label" x="0" y="320" text-anchor="middle">TRIO 1</text>
+    <text class="zone-label" x="0" y="490" text-anchor="middle">TRIO 1</text>
     <rect class="zone" data-zone="105-109" x="-345" y="-1400" width="430" height="430" rx="12"/>
     <text class="zone-label" x="-120" y="-1430" text-anchor="middle">VIP 2</text>
     <rect class="zone" data-zone="97-98" x="280" y="350" width="210" height="100" rx="12"/>
-    <text class="zone-label" x="380" y="320" text-anchor="middle">DUO</text>
+    <text class="zone-label" x="380" y="490" text-anchor="middle">DUO 1</text>
     <rect class="zone" data-zone="78" x="1125" y="455" width="110" height="110" rx="12"/>
     <text class="zone-label" x="1400" y="425" text-anchor="middle">SOLO 2</text>
     <rect class="zone" data-zone="77" x="1340" y="455" width="110" height="110" rx="12"/>
     <text class="zone-label" x="1185" y="425" text-anchor="middle">SOLO 1</text>
     <rect class="zone" data-zone="76" x="1232" y="645" width="110" height="110" rx="12"/>
     <text class="zone-label" x="1287" y="615" text-anchor="middle">SOLO 3</text>
+    <rect class="zone" data-zone="93-95" x="-150" y="210" width="315" height="100" rx="12"/>
+    <text class="zone-label" x="7" y="180" text-anchor="middle">TRIO 2</text>
+    <rect class="zone" data-zone="114-115" x="280" y="210" width="210" height="100" rx="12"/>
+    <text class="zone-label" x="385" y="180" text-anchor="middle">DUO 2</text>
     </g>
   </svg>
 
@@ -90,7 +94,7 @@
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:102</div>
+    <div class="legend-title">Всего:107</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -148,8 +152,16 @@
                 <div class="zone-pc-list" id="zone-99-101"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">DUO</div>
+                <div class="zone-section-title">Trio 2</div>
+                <div class="zone-pc-list" id="zone-93-95"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">DUO 1</div>
                 <div class="zone-pc-list" id="zone-97-98"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">DUO 2</div>
+                <div class="zone-pc-list" id="zone-114-115"></div>
             </div>
             <div class="zone-section">
                 <div class="zone-section-title">SOLO 1</div>
@@ -195,6 +207,8 @@ const zoneElements = {
   '89-92': document.getElementById('zone-89-92'),
   '97-98': document.getElementById('zone-97-98'),
   '99-101': document.getElementById('zone-99-101'),
+  '93-95': document.getElementById('zone-93-95'),
+  '114-115': document.getElementById('zone-114-115'),
   '105-109': document.getElementById('zone-105-109')
 };
 
@@ -216,6 +230,8 @@ function getZoneForPC(num) {
   if (n >= 89 && n <= 92) return '89-92';
   if (n >= 97 && n <= 98) return '97-98';
   if (n >= 99 && n <= 101) return '99-101';
+  if (n >= 93 && n <= 95) return '93-95';
+  if (n >= 114 && n <= 115) return '114-115';
   if (n >= 105 && n <= 109) return '105-109';
   return null;
 }
