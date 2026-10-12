@@ -92,8 +92,6 @@
     <text class="zone-label" x="140" y="275" text-anchor="middle">SOLO 1</text>
     <rect class="zone" data-zone="vip" x="2190" y="-580" width="120" height="600" rx="12"/>
     <text class="zone-label" x="2250" y="-600" text-anchor="middle">VIP</text>
-    <rect class="zone" data-zone="vip" x="558" y="1460" width="600" height="231" rx="12"/>
-    <text class="zone-label" x="850" y="1430" text-anchor="middle">В РАБОТЕ</text>
   </svg>
 
   <div id="pcs"></div>
@@ -255,6 +253,7 @@ function getReleaseDate(pc){const dateKeys=["end_time","ends_at","finish_time","
 function formatTimeRemaining(releaseDate){if(!releaseDate)return "—";const diffMs=releaseDate.getTime()-Date.now();if(diffMs<=0)return "Сейчас";const totalSec=Math.floor(diffMs/1000);if(totalSec<60)return totalSec+" сек";const totalMin=Math.floor(totalSec/60);if(totalMin<60)return totalMin+" мин";const h=Math.floor(totalMin/60);const m=totalMin%60;return m===0?(h+" ч"):(h+" ч "+m+" мин");}
 function cardClass(remaining){if(!remaining||remaining==="—")return "is-empty";if(remaining==="Сейчас")return "is-now";const m=remaining.match(/^(\d+)\s*мин/);if(m&&Number(m[1])<=5)return "is-urgent";return "";}
 function isBusy(pc){const statusId=Number(pc.dic_workstation_status_id);return [1,2,3,4].includes(statusId);}
+function isExcludedPC(pc){const n=Number(pc?.num);return Number.isFinite(n)&&[66,67,68,69,70,71,72,73,83,84].includes(n);}
 const BACKEND_URL="";
 async function getToken(){const now=Date.now();if(cachedToken&&(now-cachedTokenAt)<TOKEN_REFRESH_MS)return cachedToken;try{const stored=localStorage.getItem(TOKEN_STORAGE_KEY);if(stored){const parsed=JSON.parse(stored);if(parsed?.token&&parsed?.createdAt&&(now-parsed.createdAt)<TOKEN_REFRESH_MS){cachedToken=parsed.token;cachedTokenAt=parsed.createdAt;return cachedToken;}}}catch{}    try{const res=await fetch(BACKEND_URL+'/api/token?_bekturova=1',{method:'GET'});if(!res.ok)throw new Error('token HTTP '+res.status);const json=await res.json();const token=json?.token;if(!token)throw new Error('no token in response');cachedToken=token;cachedTokenAt=now;try{localStorage.setItem(TOKEN_STORAGE_KEY,JSON.stringify({token,createdAt:now}));}catch{}return token;}catch(err){console.warn('getToken failed:',err);return null;}}
 const MAP_API_URL="https://bekturova.app.enes.tech";
@@ -318,7 +317,7 @@ async function refreshSoon(){
   try{
     let pcs=[];
     try{pcs=await fetchMap();}catch(err){console.warn('fetchMap failed:',err);}
-    const busy=pcs.filter(isBusy);
+    const busy=pcs.filter(pc=>isBusy(pc)&&!isExcludedPC(pc));
     let withDates=[];try{const table=await fetchBulkTable();const list=normalizeTableList(table);const byId=new Map();const byNum=new Map();for(const it of list){if(it.workstation_id!=null)byId.set(String(it.workstation_id),it);if(it.id!=null)byId.set(String(it.id),it);if(it.num!=null)byNum.set(String(it.num),it);}withDates=busy.map(pc=>{const ui=byId.get(String(pc.id))||byNum.get(String(pc.num))||null;const releaseDate=getReleaseDate({...pc,...ui,current_session:ui});return {pc,releaseDate};}).filter(x=>x.releaseDate).sort((a,b)=>a.releaseDate-b.releaseDate);}catch(e){console.warn('bulk failed',e);withDates=[];}
     
     currentWithDates = withDates;

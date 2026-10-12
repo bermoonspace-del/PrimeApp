@@ -211,7 +211,7 @@ async function loadPCs() {
         const json = await fetchMapData();
 
         const pcs = addMissingPositionPCs(
-            normalizePCs(json).filter(isComputer)
+            normalizePCs(json).filter(isComputer).filter(pc => !isExcludedPC(pc))
         );
 
         // cache for resize re-render
@@ -448,20 +448,29 @@ function isComputer(item) {
     return Number(item?.object_type_id) === 0;
 }
 
+// Зал "В РАБОТЕ" убран: эти ПК не показываем даже если их вернёт API
+const EXCLUDED_PC_NUMS = new Set([66, 67, 68, 69, 70, 71, 72, 73, 83, 84]);
+
+function isExcludedPC(pc) {
+    const n = Number(pc?.num);
+    return Number.isFinite(n) && EXCLUDED_PC_NUMS.has(n);
+}
+
 function addMissingPositionPCs(pcs) {
+    const filtered = (Array.isArray(pcs) ? pcs : []).filter(pc => !isExcludedPC(pc));
     if (!PC_POSITIONS_LOADED || PC_POSITIONS.size === 0) {
-        return pcs;
+        return filtered;
     }
 
     const existingNums = new Set(
-        pcs
+        filtered
             .map(pc => Number(pc.num))
             .filter(Number.isFinite)
     );
     const placeholders = [];
 
     PC_POSITIONS.forEach((_position, num) => {
-        if (existingNums.has(num)) {
+        if (existingNums.has(num) || EXCLUDED_PC_NUMS.has(num)) {
             return;
         }
 
@@ -475,7 +484,7 @@ function addMissingPositionPCs(pcs) {
         });
     });
 
-    return pcs
+    return filtered
         .concat(placeholders)
         .sort((a, b) => Number(a.num) - Number(b.num));
 }
@@ -576,7 +585,7 @@ function renderPCs(pcs) {
 
     const coordinateMode = detectCoordinateMode(pcs);
 
-    pcs.forEach(pc => {
+    pcs.filter(pc => !isExcludedPC(pc)).forEach(pc => {
         const point = getMapPoint(pc, coordinateMode);
 
         if (!point) {
@@ -796,7 +805,7 @@ function updateCounters(pcs) {
         }
     });
 
-    freeEl.textContent = Math.max(0, free - 10);
+    freeEl.textContent = free;
     busyEl.textContent = busy;
 }
 
@@ -1250,7 +1259,7 @@ async function fetchBulkTable() {
 }
 
 async function getSoonPCs(pcs) {
-    const busyPCs = pcs.filter(pc => getStatus(pc) === "busy");
+    const busyPCs = pcs.filter(pc => !isExcludedPC(pc) && getStatus(pc) === "busy");
     if (busyPCs.length === 0) return [];
     try {
         const table = await fetchBulkTable();
@@ -1449,7 +1458,17 @@ window.addEventListener('resize', debounce(() => {
             const data = await res.json();
             const zones = data.zones || [];
             const labels = data.labels || [];
-            const txt = JSON.stringify({zones, labels});
+            // Зал "В РАБОТЕ" убран — не отрисовываем его даже если конструктор его вернул
+            const filtered = zones.map((z, i) => ({ z, label: labels[i] || z.zone || '' }))
+                .filter(({ z, label }) => {
+                    const s = String(label || '').toLowerCase();
+                    if (s.includes('в работе') || s.includes('в работае')) return false;
+                    const zn = String(z.zone || '').toLowerCase();
+                    // дубликат vip-зоны "в работе" (y=1460) тоже скрываем
+                    if (zn === 'vip' && Number(z.y) > 1000) return false;
+                    return true;
+                });
+            const txt = JSON.stringify(filtered.map(({ z, label }) => ({ z, label })));
             if(txt === lastZonesText) return;
             lastZonesText = txt;
             const svg = document.querySelector('.zone-overlay');
@@ -1465,8 +1484,7 @@ window.addEventListener('resize', debounce(() => {
                 svg.insertAdjacentHTML('afterbegin', defsHTML);
             }
             // append new zones
-            zones.forEach((z,i)=>{
-                const label = labels[i] || z.zone || '';
+            filtered.forEach(({ z, label })=>{
                 const x = Math.round(Number(z.x)||0);
                 const y = Math.round(Number(z.y)||0);
                 const w = Math.round(Number(z.width)||100);
