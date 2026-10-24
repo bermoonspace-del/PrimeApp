@@ -71,18 +71,20 @@
     <text class="zone-label" x="70" y="-830" text-anchor="middle">VIP 1</text>
     <rect class="zone" data-zone="89-92" x="325" y="-1380" width="130" height="500" rx="12"/>
     <text class="zone-label" x="390" y="-1410" text-anchor="middle">Squad 1</text>
-    <rect class="zone" data-zone="99-101" x="-150" y="350" width="315" height="100" rx="12"/>
-    <text class="zone-label" x="0" y="490" text-anchor="middle">TRIO 1</text>
+    <rect class="zone" data-zone="99-100" x="-150" y="350" width="215" height="100" rx="12"/>
+    <text class="zone-label" x="-43" y="490" text-anchor="middle">DUO 3</text>
     <rect class="zone" data-zone="105-109" x="-345" y="-1400" width="430" height="430" rx="12"/>
     <text class="zone-label" x="-120" y="-1430" text-anchor="middle">VIP 2</text>
     <rect class="zone" data-zone="97-98" x="280" y="350" width="210" height="100" rx="12"/>
     <text class="zone-label" x="380" y="490" text-anchor="middle">DUO 1</text>
     <rect class="zone" data-zone="78" x="1125" y="455" width="110" height="110" rx="12"/>
-    <text class="zone-label" x="1400" y="425" text-anchor="middle">SOLO 2</text>
+    <text class="zone-label" x="1180" y="425" text-anchor="middle">SOLO 2</text>
     <rect class="zone" data-zone="77" x="1340" y="455" width="110" height="110" rx="12"/>
-    <text class="zone-label" x="1185" y="425" text-anchor="middle">SOLO 1</text>
-    <rect class="zone" data-zone="76" x="1232" y="645" width="110" height="110" rx="12"/>
-    <text class="zone-label" x="1287" y="615" text-anchor="middle">SOLO 3</text>
+    <text class="zone-label" x="1395" y="425" text-anchor="middle">SOLO 1</text>
+    <rect class="zone" data-zone="96" x="1125" y="645" width="110" height="110" rx="12"/>
+    <text class="zone-label" x="1180" y="615" text-anchor="middle">SOLO 4</text>
+    <rect class="zone" data-zone="76" x="1340" y="645" width="110" height="110" rx="12"/>
+    <text class="zone-label" x="1395" y="615" text-anchor="middle">SOLO 3</text>
     <rect class="zone" data-zone="93-95" x="-150" y="210" width="315" height="100" rx="12"/>
     <text class="zone-label" x="7" y="180" text-anchor="middle">TRIO 2</text>
     <rect class="zone" data-zone="114-115" x="280" y="210" width="210" height="100" rx="12"/>
@@ -148,8 +150,8 @@
                 <div class="zone-pc-list" id="zone-89-92"></div>
             </div>
             <div class="zone-section">
-                <div class="zone-section-title">Trio 1</div>
-                <div class="zone-pc-list" id="zone-99-101"></div>
+                <div class="zone-section-title">DUO 3</div>
+                <div class="zone-pc-list" id="zone-99-100"></div>
             </div>
             <div class="zone-section">
                 <div class="zone-section-title">Trio 2</div>
@@ -174,6 +176,10 @@
             <div class="zone-section">
                 <div class="zone-section-title">SOLO 3</div>
                 <div class="zone-pc-list" id="zone-76"></div>
+            </div>
+            <div class="zone-section">
+                <div class="zone-section-title">SOLO 4</div>
+                <div class="zone-pc-list" id="zone-96"></div>
             </div>
             <div class="zone-section">
                 <div class="zone-section-title">VIP 2</div>
@@ -203,10 +209,11 @@ const zoneElements = {
   '76': document.getElementById('zone-76'),
   '77': document.getElementById('zone-77'),
   '78': document.getElementById('zone-78'),
+  '96': document.getElementById('zone-96'),
   '79-88': document.getElementById('zone-79-88'),
   '89-92': document.getElementById('zone-89-92'),
   '97-98': document.getElementById('zone-97-98'),
-  '99-101': document.getElementById('zone-99-101'),
+  '99-100': document.getElementById('zone-99-100'),
   '93-95': document.getElementById('zone-93-95'),
   '114-115': document.getElementById('zone-114-115'),
   '105-109': document.getElementById('zone-105-109')
@@ -229,8 +236,9 @@ function getZoneForPC(num) {
   if (n >= 79 && n <= 88) return '79-88';
   if (n >= 89 && n <= 92) return '89-92';
   if (n >= 97 && n <= 98) return '97-98';
-  if (n >= 99 && n <= 101) return '99-101';
+  if (n >= 99 && n <= 100) return '99-100';
   if (n >= 93 && n <= 95) return '93-95';
+  if (n === 96) return '96';
   if (n >= 114 && n <= 115) return '114-115';
   if (n >= 105 && n <= 109) return '105-109';
   return null;

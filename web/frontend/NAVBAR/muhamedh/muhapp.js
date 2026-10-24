@@ -775,8 +775,9 @@ function getZoneForPC(num) {
     if (n >= 79 && n <= 88) return '79-88';
     if (n >= 89 && n <= 92) return '89-92';
     if (n >= 97 && n <= 98) return '97-98';
-    if (n >= 99 && n <= 101) return '99-101';
+    if (n >= 99 && n <= 100) return '99-100';
     if (n >= 93 && n <= 95) return '93-95';
+    if (n === 96) return '96';
     if (n >= 114 && n <= 115) return '114-115';
     if (n >= 105 && n <= 109) return '105-109';
     return null;
@@ -923,9 +924,13 @@ function openPC(pc) {
         };
     }
 
-    document.body.onclick = () => {
-        popup.remove();
-    };
+    // Закрытие вешаем на следующий тик: иначе тот же клик по ПК всплывает
+    // до body и сразу убирает только что открытую карточку.
+    setTimeout(() => {
+        document.body.onclick = () => {
+            popup.remove();
+        };
+    }, 0);
 }
 
 function openBookingForm(pc) {
