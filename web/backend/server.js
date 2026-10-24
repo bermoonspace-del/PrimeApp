@@ -92,6 +92,13 @@ const CLUBS = {
     username: () => process.env.LOG || "",
     password: () => process.env.PAS || "",
   },
+  kokshetau: {
+    mapUrl: "https://mm1.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://mm1.app.enes.tech/api/v2/user/idm_admin_auth/",
+    tableUrl: "https://mm1.app.enes.tech/api/v2/map/table/",
+    username: () => process.env.KOKSHETAU_USERNAME || process.env.LOG || "",
+    password: () => process.env.KOKSHETAU_PASSWORD || process.env.PAS || "",
+  },
 };
 
 const tokenCaches = {};
@@ -118,6 +125,7 @@ function resolveClub(req) {
   if (req.query._bekturova === "1") return "bekturova";
   if (req.query._primeaqtau === "1") return "primeaqtau";
   if (req.query._karagandy === "1") return "karagandy"
+  if (req.query._kokshetau === "1") return "kokshetau"
   return "default";
 }
 
@@ -286,6 +294,7 @@ app.get("/api/map", async (req, res) => {
     delete cleanQuery._bekturova;
     delete cleanQuery._primeaqtau;
     delete cleanQuery._karagandy;
+    delete cleanQuery._kokshetau;
     res.json(await fetchMap(new URLSearchParams(cleanQuery).toString(), false, clubId));
   } catch (err) {
     res.status(502).json({ error: err.message });

@@ -1,0 +1,346 @@
+const path = require("path");
+const fs = require("fs");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+const express = require("express");
+
+const app = express();
+const PORT = Number(process.env.PORT || 8080);
+
+const CLUBS = {
+  default: {
+    mapUrl: "https://strongastana.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://strongastana.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://strongastana.app.enes.tech/api/v2/map/",
+    username: () => process.env.STRONG_USERNAME || process.env.ADMIN_USERNAME || process.env.LOG || "",
+    password: () => process.env.STRONG_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PAS || "",
+  },
+  satpayeva: {
+    mapUrl: "https://satpayeva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://satpayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://satpayeva.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  baitursynova: {
+    mapUrl: "https://baitursynova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://baitursynova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://baitursynova.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  primegamehub: {
+    mapUrl: "https://primegamehub.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://primegamehub.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://primegamehub.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  koshkarbayeva: {
+    mapUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://koshkarbayeva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://koshkarbayeva.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  kumysbekova: {
+    mapUrl: "https://kumysbekova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://kumysbekova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://kumysbekova.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  moldagalieva: {
+    mapUrl: "https://moldagalieva.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://moldagalieva.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://moldagalieva.app.enes.tech/api/v2/map/",
+    username: () => process.env.MOLDAGALIEVA_USERNAME || process.env.LOG || "",
+    password: () => process.env.MOLDAGALIEVA_PASSWORD || process.env.PAS || "",
+  },
+  primekenesary: {
+    mapUrl: "https://primekenesary.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://primekenesary.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://primekenesary.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+  muhamedkhanova: {
+    mapUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map_v2/get_map/",
+    tokenUrl: "https://muhamedkhanova.app.enes.tech/api/v2/user/idm_admin_auth/",
+    userInfoUrl: "https://muhamedkhanova.app.enes.tech/api/v2/map/",
+    username: () => process.env.LOG || "",
+    password: () => process.env.PAS || "",
+  },
+};
+
+const tokenCaches = {};
+for (const key of Object.keys(CLUBS)) {
+  tokenCaches[key] = { token: "", createdAt: 0 };
+}
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+function resolveClub(req) {
+  if (req.query._satpayeva === "1") return "satpayeva";
+  if (req.query._baitursynova === "1") return "baitursynova";
+  if (req.query._primegamehub === "1") return "primegamehub";
+  if (req.query._koshkarbayeva === "1") return "koshkarbayeva";
+  if (req.query._kumysbekova === "1") return "kumysbekova";
+  if (req.query._moldagalieva === "1") return "moldagalieva";
+  if (req.query._primekenesary === "1") return "primekenesary";
+  if (req.query._muhamedkhanova === "1") return "muhamedkhanova";
+  return "default";
+}
+
+async function requestToken(forceRefresh = false, clubId = "default") {
+  const tenDays = 10 * 24 * 60 * 60 * 1000;
+  const club = CLUBS[clubId];
+  if (!club) throw new Error(`Unknown club: ${clubId}`);
+
+  const cache = tokenCaches[clubId];
+  const username = club.username();
+  const password = club.password();
+
+  if (!forceRefresh && cache.token && Date.now() - cache.createdAt < tenDays) {
+    return cache.token;
+  }
+
+  if (!username || !password) {
+    throw new Error("Set credentials in .env");
+  }
+
+  const response = await fetch(club.tokenUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+  const data = await response.json();
+  const token = extractAuthToken(data);
+
+  if (!response.ok || !token) {
+    throw new Error(data?.message?.[0] || data?.detail || "Auth API did not return token");
+  }
+
+  tokenCaches[clubId] = { token, createdAt: Date.now() };
+  return token;
+}
+
+function extractAuthToken(data) {
+  if (!data || typeof data !== "object") return "";
+  for (const key of ["token", "access", "access_token", "auth_token", "key"]) {
+    if (typeof data[key] === "string" && data[key]) return data[key];
+  }
+  for (const key of ["data", "user", "result"]) {
+    const t = extractAuthToken(data[key]);
+    if (t) return t;
+  }
+  return "";
+}
+
+async function fetchMap(query, forceRefresh = false, clubId = "default") {
+  const club = CLUBS[clubId];
+  const token = await requestToken(forceRefresh, clubId);
+  const response = await fetch(`${club.mapUrl}?${query || "office_id=1114&limit=9999"}`, {
+    headers: { "Authorization": `Token ${token}` },
+  });
+  const data = await response.json();
+
+  if (response.status === 401 && !forceRefresh) {
+    return fetchMap(query, true, clubId);
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.detail || data?.message || `Map API error ${response.status}`);
+  }
+
+  return data;
+}
+
+async function fetchUserInfoById(pcId, clubId = "default") {
+  const club = CLUBS[clubId];
+  const token = await requestToken(false, clubId);
+  const url = `${club.userInfoUrl}${pcId}/user_info/`;
+
+  const response = await fetch(url, {
+    headers: { "Authorization": `Token ${token}` },
+  });
+
+  if (response.status === 401) {
+    const token2 = await requestToken(true, clubId);
+    const retry = await fetch(url, { headers: { "Authorization": `Token ${token2}` } });
+    if (!retry.ok) return null;
+    return retry.json();
+  }
+
+  if (!response.ok) return null;
+  return response.json();
+}
+
+// --- Endpoints ---
+
+app.get("/api/token", async (req, res) => {
+  try {
+    const clubId = resolveClub(req);
+    res.json({ token: await requestToken(false, clubId) });
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+app.get("/api/map", async (req, res) => {
+  try {
+    const clubId = resolveClub(req);
+    const cleanQuery = { ...req.query };
+    delete cleanQuery._satpayeva;
+    delete cleanQuery._baitursynova;
+    delete cleanQuery._primegamehub;
+    delete cleanQuery._koshkarbayeva;
+    delete cleanQuery._kumysbekova;
+    delete cleanQuery._moldagalieva;
+    delete cleanQuery._primekenesary;
+    delete cleanQuery._muhamedkhanova;
+    res.json(await fetchMap(new URLSearchParams(cleanQuery).toString(), false, clubId));
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+app.get("/api/user-info", async (req, res) => {
+  try {
+    const pcId = req.query.pc_id;
+    if (!pcId) return res.status(400).json({ error: "pc_id required" });
+    const clubId = resolveClub(req);
+    const data = await fetchUserInfoById(pcId, clubId);
+    res.json(data || {});
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+app.post("/api/bookings", async (req, res) => {
+  try {
+    const response = await fetch("http://127.0.0.1:8085/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body),
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// --- Constructor API ---
+const FRONTEND_ROOT = path.join(__dirname, "../frontend");
+const NAVBAR_ROOT = path.join(FRONTEND_ROOT, "NAVBAR");
+
+function isValidClubName(name) {
+  return /^[a-zA-Z0-9_\-]{1,64}$/.test(name);
+}
+
+app.get("/api/constructor/list", async (req, res) => {
+  try {
+    const entries = await fs.promises.readdir(NAVBAR_ROOT, { withFileTypes: true });
+    const clubs = [];
+    for (const e of entries) {
+      if (!e.isDirectory()) continue;
+      const p = path.join(NAVBAR_ROOT, e.name, "positions.json");
+      try {
+        await fs.promises.access(p);
+        clubs.push(e.name);
+      } catch {}
+    }
+    // also include root-level html files that hint at clubs
+    res.json({ clubs });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/constructor/load", async (req, res) => {
+  try {
+    const club = String(req.query.club || "").trim();
+    if (!isValidClubName(club)) return res.status(400).json({ error: "invalid club name" });
+    const filePath = path.join(NAVBAR_ROOT, club, "positions.json");
+    const data = await fs.promises.readFile(filePath, "utf8");
+    res.type("application/json").send(data);
+  } catch (err) {
+    if (err.code === "ENOENT") return res.status(404).json({ error: "not found" });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/constructor/save", async (req, res) => {
+  try {
+    const club = String(req.body.club || "").trim();
+    const data = req.body.data;
+    if (!isValidClubName(club)) return res.status(400).json({ error: "invalid club name" });
+    if (!data || typeof data !== "object") return res.status(400).json({ error: "data required" });
+    const dir = path.join(NAVBAR_ROOT, club);
+    await fs.promises.mkdir(dir, { recursive: true });
+    const filePath = path.join(dir, "positions.json");
+    const json = JSON.stringify(data, null, 2);
+    await fs.promises.writeFile(filePath, json, "utf8");
+    res.json({ ok: true, path: `NAVBAR/${club}/positions.json` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/constructor/zones", async (req, res) => {
+  try {
+    const club = String(req.query.club || "").trim();
+    if (!isValidClubName(club)) return res.status(400).json({ error: "invalid club name" });
+    // try to find html file: <CLUB>.html or lowercase variants
+    const dir = path.join(NAVBAR_ROOT, club);
+    const files = await fs.promises.readdir(dir).catch(() => []);
+    const htmlFile = files.find(f => f.toLowerCase().endsWith(".html"));
+    if (!htmlFile) return res.json({ zones: [], htmlFile: null });
+    const html = await fs.promises.readFile(path.join(dir, htmlFile), "utf8");
+    // extract zones: <rect class="zone" data-zone="..." x="..." y="..." width="..." height="..." />
+    const zoneRegex = /<rect[^>]*class="zone"[^>]*>/gi;
+    const zones = [];
+    let m;
+    while ((m = zoneRegex.exec(html)) !== null) {
+      const tag = m[0];
+      const get = (attr) => {
+        const r = new RegExp(attr + '\\s*=\\s*"([^"]+)"', 'i');
+        const mm = r.exec(tag);
+        return mm ? mm[1] : null;
+      };
+      zones.push({
+        zone: get("data-zone"),
+        x: Number(get("x")),
+        y: Number(get("y")),
+        width: Number(get("width")),
+        height: Number(get("height")),
+        rx: Number(get("rx") || 12)
+      });
+    }
+    // also extract zone labels <text class="zone-label" ...>Name</text>
+    const labelRegex = /<text[^>]*class="zone-label"[^>]*>([^<]+)<\/text>/gi;
+    const labels = [];
+    while ((m = labelRegex.exec(html)) !== null) {
+      labels.push(m[1].trim());
+    }
+    res.json({ zones, labels, htmlFile });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
+
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`WEB STARTED http://0.0.0.0:${PORT}`);
+});
+server.on("error", (err) => {
+  console.error("WEB SERVER ERROR", err);
+  process.exit(1);
+});
+
+setInterval(() => {}, 1 << 30);
