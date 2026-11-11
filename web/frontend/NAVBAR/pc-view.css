@@ -1,0 +1,438 @@
+/* Shared Prime desktop map surface. Mobile layout stays owned by each club page. */
+:root {
+  --prime-canvas: #050505;
+  --prime-surface: #0b0b0d;
+  --prime-surface-raised: #141416;
+  --prime-brand: #e01b22;
+  --prime-text: #f8fafc;
+  --prime-text-muted: #a5a7ad;
+  --prime-border: #343438;
+  --prime-z-sticky: 120;
+  --prime-z-focused-marker: 120;
+  --prime-z-popover: 300;
+  --prime-z-footer: 400;
+  scrollbar-color: #55555c #09090a;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #09090a;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #55555c;
+  border: 2px solid #09090a;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #72727a;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #8b8b94;
+}
+
+@media (forced-colors: active) {
+  :root { scrollbar-color: auto; }
+}
+
+.prime-pc-tip {
+  position: fixed;
+  z-index: var(--prime-z-popover);
+  width: min(352px, calc(100vw - 32px));
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 16px;
+  color: var(--prime-text);
+  background:
+    linear-gradient(90deg, var(--prime-brand) 0 3px, transparent 3px),
+    linear-gradient(155deg, rgba(224, 27, 34, 0.11), transparent 42%),
+    rgba(11, 11, 13, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.68), 0 0 0 1px rgba(224, 27, 34, 0.08);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(7px);
+  transition: opacity 180ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.prime-pc-tip[hidden] {
+  display: none;
+}
+
+.prime-pc-tip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prime-pc-tip__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.prime-pc-tip__identity {
+  display: grid;
+  gap: 2px;
+}
+
+.prime-pc-tip__eyebrow {
+  color: var(--prime-text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.19em;
+}
+
+.prime-pc-tip__number {
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.prime-pc-tip__badge {
+  max-width: 48%;
+  padding: 5px 8px;
+  overflow: hidden;
+  color: #fff;
+  background: rgba(224, 27, 34, 0.18);
+  border: 1px solid rgba(224, 27, 34, 0.45);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prime-pc-tip__zone {
+  margin-top: 7px;
+  color: rgba(248, 250, 252, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prime-pc-tip__availability {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  margin-top: 12px;
+  padding: 9px 10px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+}
+
+.prime-pc-tip__dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  box-shadow: 0 0 14px currentColor;
+}
+
+.prime-pc-tip__availability-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.prime-pc-tip__availability-copy strong {
+  color: #fff;
+  font-size: 12px;
+}
+
+.prime-pc-tip__availability-copy span {
+  color: var(--prime-text-muted);
+}
+
+.prime-pc-tip__specs {
+  display: grid;
+  gap: 0;
+  margin: 12px 0 0;
+}
+
+.prime-pc-tip__spec {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 7px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.prime-pc-tip__spec dt {
+  color: var(--prime-text-muted);
+}
+
+.prime-pc-tip__spec dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #fff;
+  font-weight: 700;
+  text-align: right;
+}
+
+.prime-map-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.prime-map-stage > #pcs {
+  position: absolute;
+  pointer-events: none;
+}
+
+.prime-map-statusbar {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  /* Legacy club pages define these layout properties inline; scoped overrides keep
+     the shared desktop presentation consistent without changing their mobile CSS. */
+  html[data-prime-map-mode="fullscreen"],
+  html[data-prime-map-mode="fullscreen"] body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  html[data-prime-map-mode="fullscreen"] body {
+    background-color: var(--prime-canvas) !important;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      radial-gradient(70% 80% at 50% 42%, rgba(224, 27, 34, 0.09), transparent 72%),
+      linear-gradient(180deg, #0b0708 0%, #050505 54%, #030303 100%) !important;
+    background-position: center;
+    background-size: 44px 44px, 44px 44px, auto, auto !important;
+  }
+
+  html[data-prime-map-mode="fullscreen"] .background-svg {
+    opacity: 0.24;
+  }
+
+  html[data-prime-map-mode="fullscreen"] .bg-dim {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.42)) !important;
+  }
+
+  .map-container {
+    display: grid !important;
+    place-items: center !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: none !important;
+    padding: 12px 18px 96px !important;
+    overflow: hidden !important;
+  }
+
+  .map-wrapper[data-prime-desktop-ready="true"],
+  .prime-map-stage[data-prime-desktop-ready="true"] {
+    width: var(--prime-map-width) !important;
+    height: var(--prime-map-height) !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: auto !important;
+    aspect-ratio: var(--prime-map-ratio, 0.5625);
+    isolation: isolate;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .prime-map-stage[data-prime-desktop-ready="true"] {
+    position: fixed !important;
+    inset: auto !important;
+    top: calc((100dvh - 96px) / 2) !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+  }
+
+  .prime-map-stage[data-prime-desktop-ready="true"] > .zone-overlay,
+  .map-wrapper[data-prime-desktop-ready="true"] > .zone-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .prime-map-stage[data-prime-desktop-ready="true"] > #pcs,
+  .map-wrapper[data-prime-desktop-ready="true"] > #pcs {
+    position: absolute !important;
+    inset: auto !important;
+    left: var(--prime-pcs-left, 0%) !important;
+    top: var(--prime-pcs-top, 0%) !important;
+    width: var(--prime-pcs-width, 100%) !important;
+    height: var(--prime-pcs-height, 100%) !important;
+  }
+
+  .zone-overlay .zone {
+    stroke: rgba(255, 255, 255, 0.2) !important;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .zone-overlay .zone:hover {
+    stroke: rgba(255, 255, 255, 0.78) !important;
+    fill: rgba(224, 27, 34, 0.06) !important;
+  }
+
+  .zone-overlay .zone-label {
+    fill: rgba(248, 250, 252, 0.58) !important;
+    letter-spacing: 0.035em;
+  }
+
+  #pcs .pc {
+    width: 22px !important;
+    height: 22px !important;
+    border: 2px solid rgba(255, 255, 255, 0.54) !important;
+    border-radius: 50% !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    cursor: pointer;
+    box-shadow:
+      0 5px 14px rgba(0, 0, 0, 0.72),
+      0 0 0 3px rgba(0, 0, 0, 0.35),
+      0 0 18px color-mix(in srgb, currentColor 28%, transparent) !important;
+    transform: translate(-50%, -50%) !important;
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease, opacity 180ms ease !important;
+  }
+
+  [data-prime-map-orientation="landscape"] #pcs .pc {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 10px !important;
+  }
+
+  #pcs .pc:hover,
+  #pcs .pc:focus-visible {
+    z-index: var(--prime-z-focused-marker) !important;
+    outline: none;
+    transform: translate(-50%, -50%) scale(1.32) !important;
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.92),
+      0 8px 20px rgba(0, 0, 0, 0.7),
+      0 0 24px rgba(224, 27, 34, 0.38) !important;
+  }
+
+  #pcs .pc:active {
+    transform: translate(-50%, -50%) scale(1.16) !important;
+  }
+
+  .prime-map-statusbar {
+    position: fixed;
+    top: 18px;
+    left: 20px;
+    z-index: var(--prime-z-sticky);
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    gap: 3px 12px;
+    max-width: min(42vw, 520px);
+    padding-left: 12px;
+    color: var(--prime-text);
+    border-left: 3px solid var(--prime-brand);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    pointer-events: none;
+  }
+
+  .prime-map-statusbar__label {
+    color: var(--prime-brand);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.19em;
+  }
+
+  .prime-map-statusbar__club {
+    overflow: hidden;
+    font-size: 15px;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .prime-map-statusbar__hint {
+    grid-column: 1 / -1;
+    color: var(--prime-text-muted);
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  body > .map-legend {
+    top: 18px !important;
+    right: 18px !important;
+    z-index: var(--prime-z-sticky) !important;
+    width: 214px !important;
+    max-width: calc(100vw - 36px) !important;
+    box-sizing: border-box !important;
+    padding: 12px 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 12px !important;
+    background: rgba(8, 8, 10, 0.82) !important;
+    backdrop-filter: blur(18px) saturate(125%);
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  body > .soon-bar {
+    bottom: 76px !important;
+    z-index: var(--prime-z-footer) !important;
+    width: min(720px, calc(100vw - 40px)) !important;
+    padding: 8px 10px !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 12px !important;
+    background: rgba(8, 8, 10, 0.88) !important;
+    backdrop-filter: blur(18px) saturate(125%);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  body > .booking-contacts {
+    bottom: 14px !important;
+    z-index: var(--prime-z-footer) !important;
+    width: auto !important;
+    max-width: calc(100vw - 40px) !important;
+    border-radius: 10px !important;
+    background: rgba(8, 8, 10, 0.86) !important;
+    backdrop-filter: blur(18px) saturate(125%);
+  }
+
+  body > .map-message {
+    position: fixed !important;
+    left: 50% !important;
+    bottom: 148px !important;
+    z-index: var(--prime-z-popover) !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prime-pc-tip,
+  #pcs .pc {
+    transition-duration: 80ms !important;
+    transition-property: opacity, box-shadow !important;
+  }
+
+  .prime-pc-tip,
+  .prime-pc-tip.is-visible {
+    transform: none;
+  }
+}

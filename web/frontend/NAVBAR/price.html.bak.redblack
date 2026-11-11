@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Прайс</title>
+  <style>
+    :root{--bg:#0d0304;--muted:rgba(255,255,255,0.58);--accent:#fff}
+    html,body{min-height:100%;min-height:100dvh;margin:0}
+    body{background:#0d0304;background-image:radial-gradient(65% 90% at 0% 52%, rgba(184,13,18,0.95) 0%, rgba(122,10,13,0.65) 25%, rgba(42,5,6,0.35) 55%, rgba(14,4,5,0) 100%),radial-gradient(45% 70% at 88% 55%, rgba(110,14,17,0.7) 0%, rgba(43,6,7,0.35) 50%, rgba(14,4,5,0) 100%),linear-gradient(180deg, #0d0304 0%, #1a0607 30%, #150505 55%, #0a0203 100%);background-attachment:fixed;background-size:cover;color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    body.tg-app{padding-top:120px}
+    .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
+    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .content{position:absolute;inset:0 0 70px;box-sizing:border-box;padding:0;z-index:1}
+    .sen-open-link{display:inline-block;padding:12px 20px;border-radius:999px;background:#fff;color:#000;font-weight:700;text-decoration:none;transition:transform .25s ease,background .25s ease}
+    .sen-open-link:hover{transform:translateY(-1px);background:#f4f4f4}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:10001;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
+    .bottom-nav *{pointer-events:auto}
+    .nav-item{display:grid;grid-template-rows:28px 14px;gap:5px;justify-items:center;align-content:center;width:100%;height:54px;min-width:0;padding:0 2px;box-sizing:border-box;color:var(--muted);text-decoration:none;font-size:10px;line-height:1;transition:color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .nav-item:hover{color:var(--accent);transform:translateY(-1px)}
+    .nav-item:active{transform:translateY(0) scale(.96)}
+    .nav-item.active{color:var(--accent)}
+    .nav-item svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .nav-item span{display:block;width:100%;line-height:14px;text-align:center;white-space:nowrap;overflow:hidden}
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.expand();
+      document.body.classList.add('tg-app');
+    }
+  </script>
+</head>
+<body>
+  <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="bgBase" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0d0304"/>
+          <stop offset="30%" stop-color="#1a0607"/>
+          <stop offset="55%" stop-color="#150505"/>
+          <stop offset="100%" stop-color="#0a0203"/>
+        </linearGradient>
+        <radialGradient id="leftRed" cx="0%" cy="52%" r="65%">
+          <stop offset="0%" stop-color="#b80d12" stop-opacity="0.95"/>
+          <stop offset="25%" stop-color="#7a0a0d" stop-opacity="0.65"/>
+          <stop offset="55%" stop-color="#2a0506" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="rightRed" cx="88%" cy="55%" r="45%">
+          <stop offset="0%" stop-color="#6e0e11" stop-opacity="0.7"/>
+          <stop offset="50%" stop-color="#2b0607" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="450" height="800" fill="url(#bgBase)"/>
+      <rect width="450" height="800" fill="url(#leftRed)"/>
+      <rect width="450" height="800" fill="url(#rightRed)"/>
+    </svg>
+  <main class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;box-sizing:border-box">
+    <div style="max-width:420px;width:100%;padding:32px 24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;text-align:center">
+      <p style="margin:0 0 6px;color:#fff;font-size:18px;font-weight:700">Прайс-лист</p>
+      <p style="margin:0 0 24px;color:rgba(255,255,255,.5);font-size:14px">Актуальные цены на все услуги</p>
+      <a class="sen-open-link" id="open-price-link" href="https://primekz.taplink.ws/" target="_blank" rel="noopener noreferrer">Открыть прайс</a>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      var link = document.getElementById('open-price-link');
+      link.addEventListener('click', function(e) {
+        if (window.Telegram && window.Telegram.WebApp) {
+          e.preventDefault();
+          window.Telegram.WebApp.openLink('https://pr1mekz.taplink.kz');
+        }
+      });
+    })();
+  </script>
+  
+  <nav class="bottom-nav" aria-label="Главное меню">
+    <a class="nav-item" href="../index.html" aria-label="Главная">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Главная</span>
+    </a>    
+    <a class="nav-item" href="chars.html" aria-label="Характеристики">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+      <span>Хар-ки</span>
+    </a>
+    <a class="nav-item" href="map.html?v=20260601-5" aria-label="Клубы">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <span>Клубы</span>
+    </a>
+    <a class="nav-item" href="codes.html" aria-label="Коды клубов">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
+      <span>Коды</span>
+    </a>    
+    <a class="nav-item" href="sen.html" aria-label="Senet ID" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+      <span>Senet ID</span>
+    </a>
+  </nav>
+</body>
+</html>

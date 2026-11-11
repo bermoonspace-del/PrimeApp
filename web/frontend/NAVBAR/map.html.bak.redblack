@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Клубы</title>
+  <style>
+    :root{--bg:#0d0304;--muted:rgba(255,255,255,0.58);--accent:#fff}
+    html,body{height:100%;margin:0}
+    body{background:#0d0304;background-image:radial-gradient(65% 90% at 0% 52%, rgba(184,13,18,0.95) 0%, rgba(122,10,13,0.65) 25%, rgba(42,5,6,0.35) 55%, rgba(14,4,5,0) 100%),radial-gradient(45% 70% at 88% 55%, rgba(110,14,17,0.7) 0%, rgba(43,6,7,0.35) 50%, rgba(14,4,5,0) 100%),linear-gradient(180deg, #0d0304 0%, #1a0607 30%, #150505 55%, #0a0203 100%);background-attachment:fixed;background-size:cover;color:var(--accent);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;position:relative;overflow-x:hidden}
+    body.tg-app{padding-top:120px}
+    .tabs{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;gap:8px;padding:53px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.12)}
+    .background-svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .club-dropdown-wrap{position:fixed;top:115px;left:14px;z-index:9999}
+    .club-dropdown-trigger{appearance:none;border:1px solid rgba(255,255,255,.18);background:#000;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:14px;transition:all .35s cubic-bezier(0.22,1,0.36,1);font-family:inherit;display:flex;align-items:center;gap:8px}
+    .club-dropdown-trigger:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+    .club-dropdown-trigger:active{transform:translateY(0) scale(.98)}
+    .club-dropdown-trigger::after{content:"▾";font-size:11px;color:rgba(255,255,255,.6);transition:transform .25s ease}
+    .club-dropdown-trigger.open::after{transform:rotate(180deg)}
+    .club-dropdown-menu{position:absolute;top:100%;left:0;margin-top:6px;background:#0d0d0d;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:6px;min-width:180px;z-index:10001;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:slideDown .2s ease;overflow:hidden}
+    .club-dropdown-menu[hidden]{display:none}
+    .club-dropdown-item{display:block;width:100%;padding:10px 14px;border:none;border-radius:8px;background:transparent;color:#fff;font-size:14px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit;transition:background .2s ease}
+    .club-dropdown-item:hover{background:rgba(255,255,255,.08)}
+    .club-dropdown-item.active{background:rgba(255,255,255,.12);color:#fff}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.content{padding-bottom:0}
+.tab-panels{padding:0}
+    .panel{display:none}
+    .panel.is-active{display:block}
+    iframe{display:block;width:100%;height:calc(100dvh - 60px);margin-top:60px;border:0;border-radius:0;background:rgba(0,0,0,.35);overflow:hidden}
+    .booking-contacts{display:none}
+
+    .map-legend{display:none}
+
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;height:70px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-sizing:border-box;background:#050505;border-top:1px solid rgba(255,255,255,.08);pointer-events:auto}
+    .bottom-nav *{pointer-events:auto}
+    .nav-item{display:grid;grid-template-rows:28px 14px;gap:5px;justify-items:center;align-content:center;width:100%;height:54px;min-width:0;padding:0 2px;box-sizing:border-box;color:var(--muted);text-decoration:none;font-size:10px;line-height:1;transition:color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
+    .nav-item:hover{color:var(--accent);transform:translateY(-1px)}
+    .nav-item:active{transform:translateY(0) scale(.96)}
+    .nav-item.active{color:var(--accent)}
+    .nav-item svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .nav-item span{display:block;width:100%;line-height:14px;text-align:center;white-space:nowrap;overflow:hidden}
+    @supports not (height: 100dvh) {
+      iframe{height:calc(100vh - 60px);margin-top:60px}
+    }
+    @media (max-width:520px){
+      .booking-contacts{bottom:84px;width:min(94vw,360px);gap:7px;padding:8px}
+      .booking-contacts-title,.booking-contacts a{font-size:12px}
+      .soon-bar{bottom:300px;width:min(94vw,360px);padding:6px 8px;gap:4px}
+      .soon-bar-title{font-size:9px;padding-right:6px}
+      .soon-card-num{font-size:12px}
+      .soon-card-time{font-size:9px}
+      iframe{height:calc(100dvh - 120px) !important}
+    }
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.disableVerticalSwipes();
+      document.body.classList.add('tg-app');
+
+      window.addEventListener('load', function() {
+        window.Telegram.WebApp.expand();
+        try {
+          window.Telegram.WebApp.requestFullscreen();
+        } catch(e) {}
+        if (!window.Telegram.WebApp.isExpanded) {
+          var timer = setInterval(function() {
+            window.Telegram.WebApp.expand();
+            try {
+              window.Telegram.WebApp.requestFullscreen();
+            } catch(e) {}
+            if (window.Telegram.WebApp.isExpanded) {
+              clearInterval(timer);
+            }
+          }, 100);
+          setTimeout(function() { clearInterval(timer); }, 3000);
+        }
+      });
+    }
+
+    // Force cache busting for Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      const currentVersion = '20260628-1';
+      const storedVersion = localStorage.getItem('mapAppVersion');
+
+      if (storedVersion !== currentVersion) {
+        localStorage.setItem('mapAppVersion', currentVersion);
+        // Force reload to ensure latest version
+        if (window.location.href.includes('map.html')) {
+          window.location.reload(true);
+        }
+      }
+    }
+
+    // Mobile viewport fix
+    function fixMobileViewport() {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Set viewport height correctly for mobile devices
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+        // Adjust iframe height for mobile
+        const iframe = document.querySelector('iframe');
+        if (iframe) {
+          iframe.style.height = `calc(100vh - 120px)`;
+        }
+      }
+    }
+
+    // Run on load and resize
+    window.addEventListener('load', fixMobileViewport);
+    window.addEventListener('resize', fixMobileViewport);
+    window.addEventListener('orientationchange', fixMobileViewport);
+
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'call' && e.data.number) {
+        window.location.href = 'tel:' + e.data.number;
+      }
+    });
+  </script>
+</head>
+<body>
+  <svg class="background-svg" viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="bgBase" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0d0304"/>
+          <stop offset="30%" stop-color="#1a0607"/>
+          <stop offset="55%" stop-color="#150505"/>
+          <stop offset="100%" stop-color="#0a0203"/>
+        </linearGradient>
+        <radialGradient id="leftRed" cx="0%" cy="52%" r="65%">
+          <stop offset="0%" stop-color="#b80d12" stop-opacity="0.95"/>
+          <stop offset="25%" stop-color="#7a0a0d" stop-opacity="0.65"/>
+          <stop offset="55%" stop-color="#2a0506" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="rightRed" cx="88%" cy="55%" r="45%">
+          <stop offset="0%" stop-color="#6e0e11" stop-opacity="0.7"/>
+          <stop offset="50%" stop-color="#2b0607" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#0e0405" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="450" height="800" fill="url(#bgBase)"/>
+      <rect width="450" height="800" fill="url(#leftRed)"/>
+      <rect width="450" height="800" fill="url(#rightRed)"/>
+    </svg>
+
+  <div class="club-dropdown-wrap">
+    <button class="club-dropdown-trigger" id="club-trigger" type="button">Кабанбай Батыра 11</button>
+    <div class="club-dropdown-menu" id="club-menu" hidden role="menu">
+      <button class="club-dropdown-item active" type="button" role="menuitem" data-value="tr">Кабанбай Батыра 11</button> 
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ar">Керей Жанибек 14/2</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="sp">Сатпаева 15</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ko">Кошкарбаева 36</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="kn">Байтурсынова 30</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ke">Кенесары 42</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="km">Кумисбекова 9а</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="ml">Молдагалиева 7</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="as">Асфендиярова 1</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="mh">Мухамедханова 25</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="bt">Бектурова 11Б</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="aq">Актау</button>
+      <button class="club-dropdown-item" type="button" role="menuitem" data-value="kg">Караганда</button>
+
+    </div>
+  </div>
+<div class="tabs" role="tablist" aria-label="Клубы"></div>
+
+  
+  <div class="content">
+    <div class="tab-panels">
+        <section class="panel is-active" id="panel-tr">
+        <iframe scrolling="no" src="./TRIUMPH/TRIUMPH.html?v=20260531-2" title="TRIUMPH"></iframe>
+      </section>
+      <section class="panel" id="panel-ar">
+        <iframe scrolling="no" src="./ARNAU/ARNAU.html?v=20260605-1" title="ARNAU"></iframe>
+      </section>
+     <section class="panel" id="panel-sp">
+        <iframe scrolling="no" src="./SATPAEVA/SATPAVEA.html" title="SATPAEVA"></iframe>
+      </section>
+        <section class="panel" id="panel-ko">
+        <iframe scrolling="no" src="./koshk/koshk.html" title="KOSHKARBAYEVA"></iframe>
+      </section>
+      <section class="panel" id="panel-kn">
+        <iframe scrolling="no" src="./bait/bait.html" title="BAITURSYNOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-ke">
+        <iframe scrolling="no" src="./KENESARY/kenesary.html" title="KENESARY"></iframe>
+      </section>
+      <section class="panel" id="panel-km">
+        <iframe scrolling="no" src="./kumis/kumys.html" title="KUMYSBEKOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-ml">
+        <iframe scrolling="no" src="./molda/molda.html?v=20260628-10" title="MOLDAGALIYEVA"></iframe>
+      </section>
+      <section class="panel" id="panel-as">
+        <iframe scrolling="no" src="./asfen/asfen.html" title="SAT CITY"></iframe>
+      </section>
+      <section class="panel" id="panel-mh">
+        <iframe scrolling="no" src="./muhamedh/muh.html" title="MUKHAMEDKHANOVA"></iframe>
+      </section>
+      <section class="panel" id="panel-bt">
+        <iframe scrolling="no" src="./bekt/bekt.html" title="BEKTUROVA"></iframe>
+      </section>
+      <section class="panel" id="panel-aq">
+        <iframe scrolling="no" src="./aqtau/aqtau.html" title="BEKTUROVA"></iframe>
+      </section>
+      <section class="panel" id="panel-kg">
+        <iframe scrolling="no" src="./krg/krg.html" title="BEKTUROVA"></iframe>
+      </section>
+    </div>
+  </div>
+
+  <div class="map-legend" aria-label="Легенда карты">
+    <div class="legend-title"></div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="legend-swatch legend-login"></span><span>Занят по логину</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-check"></span><span>Занят по чеку</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-booked"></span><span>Забронирован</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-free"></span><span>Свободен</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-offline"></span><span>Выключен(Свободен)</span></div>
+    </div>
+  </div>
+
+  <section class="booking-contacts" aria-label="Контакты для брони" hidden>
+    <span class="booking-contacts-title">Контакты для брони</span>
+    <a href="tel:+77011000608" aria-label="Позвонить +7 701 100 06 08" onclick="window.location.href='tel:+77011000608'" rel="nofollow noopener">+7 701 100 06 08 Арнау</a>
+    <a href="tel:+77028880066" aria-label="Позвонить +7 702 888 00 66" onclick="window.location.href='tel:+77028880066'" rel="nofollow noopener">+7 702 888 00 66 Триумф</a>
+  </section>
+
+  <div class="map-legend" aria-label="Легенда карты" hidden>
+    <div class="legend-title"></div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="legend-swatch legend-login"></span><span>Занят по логину</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-check"></span><span>Занят по чеку</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-booked"></span><span>Забронирован</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-free"></span><span>Свободен</span></div>
+      <div class="legend-item"><span class="legend-swatch legend-offline"></span><span>Выключен(Свободен)</span></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Главное меню">
+    <a class="nav-item" href="../index.html" aria-label="Главная">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <span>Главная</span>
+    </a>    
+    <a class="nav-item" href="chars.html" aria-label="Характеристики">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+      <span>Хар-ки</span>
+    </a>
+    <a class="nav-item active" href="map.html?v=20260601-5" aria-label="Клубы" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <span>Клубы</span>
+    </a>
+    <a class="nav-item" href="codes.html" aria-label="Коды клубов">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
+      <span>Коды</span>
+    </a>    
+    <a class="nav-item" href="sen.html" aria-label="Senet ID">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
+      <span>Senet ID</span>
+    </a>
+  </nav>
+        <div class="tabs" role="tablist" aria-label="Клубы">
+
+  </div>
+
+  <script>
+    (function() {
+      const trigger = document.getElementById('club-trigger');
+      const menu = document.getElementById('club-menu');
+      const items = menu.querySelectorAll('.club-dropdown-item');
+      const panels = {
+        tr: document.getElementById('panel-tr'),
+        ar: document.getElementById('panel-ar'),
+        sp: document.getElementById('panel-sp'),
+        ko: document.getElementById('panel-ko'),
+        kn: document.getElementById('panel-kn'),
+        ke: document.getElementById('panel-ke'),
+        km: document.getElementById('panel-km'),
+        ml: document.getElementById('panel-ml'),
+        as: document.getElementById('panel-as'),
+        mh: document.getElementById('panel-mh'),
+        bt: document.getElementById('panel-bt'),
+        aq: document.getElementById('panel-aq'),
+        kg: document.getElementById('panel-kg')
+      };
+      const names = {
+        tr: 'Кабанбай Батыра 11',
+        ar: 'Керей Жанибек 14/2',
+        sp: 'Сатпаева 15',
+        ko: 'Кошкарбаева 36',
+        kn: 'Байтурсынова 30',
+        ke: 'Кенесары 42',
+        km: 'Кумисбекова 9а',
+        ml: 'Молдагалиева 7',
+        as: 'Асфендиярова 1',
+        mh: 'Мухамедханова 25',
+        bt: 'Бектурова 11Б',
+        aq: 'Актау',
+        kg: 'Караганда'
+      };
+
+      function setActive(value) {
+        items.forEach(item => {
+          item.classList.toggle('active', item.dataset.value === value);
+        });
+        Object.entries(panels).forEach(([key, panel]) => {
+          panel.classList.toggle('is-active', key === value);
+        });
+        trigger.textContent = names[value] || value;
+        menu.hidden = true;
+        trigger.classList.remove('open');
+      }
+
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isHidden = menu.hidden;
+        menu.hidden = !isHidden;
+        trigger.classList.toggle('open', isHidden);
+      });
+
+      items.forEach(item => {
+        item.addEventListener('click', function() {
+          setActive(this.dataset.value);
+        });
+      });
+
+      document.addEventListener('click', function() {
+        menu.hidden = true;
+        trigger.classList.remove('open');
+      });
+    })();
+  </script>
+</body>
+</html>
