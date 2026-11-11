@@ -271,6 +271,10 @@
             #liquid-transition.is-active .lg-glass::before{animation:none !important}
             .lg-edge{filter:none}
         }
+        @media (max-width:768px), (pointer:coarse){
+            #liquid-transition,
+            .lg-filters{display:none}
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -459,6 +463,7 @@
         </defs>
     </svg>
 
+    <script src="tab-transition-profile.js"></script>
     <script>
     (function () {
         'use strict';
@@ -486,6 +491,7 @@
         var glow = overlay.querySelector('.lg-glow');
         var backgroundSvg = doc.querySelector('.background-svg');
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        var coarsePointer = window.matchMedia('(pointer: coarse)');
 
         var frameViews = {};
         doc.querySelectorAll('.app-view--frame').forEach(function (section) {
@@ -577,6 +583,21 @@
 
         function directionFor(from, to) {
             return routeOrder(to) < routeOrder(from) ? 'rtl' : 'ltr';
+        }
+
+        function transitionProfile() {
+            var environment = {
+                width: window.innerWidth,
+                coarsePointer: coarsePointer.matches,
+                reducedMotion: reduceMotion.matches
+            };
+
+            if (window.PrimeTransitionProfile && window.PrimeTransitionProfile.getTransitionProfile) {
+                return window.PrimeTransitionProfile.getTransitionProfile(environment);
+            }
+
+            if (environment.reducedMotion) return 'reduced';
+            return environment.coarsePointer || environment.width <= 768 ? 'lite' : 'full';
         }
 
         function showMainContent(skipFade) {
@@ -724,11 +745,19 @@
         /* ---------- view switching ---------- */
 
         function animateHomeIn(direction) {
-            if (reduceMotion.matches) {
+            var profile = transitionProfile();
+            if (profile === 'reduced') {
                 mainContent.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 100, easing: 'ease-out' });
                 return;
             }
             var dir = direction === 'rtl' ? -1 : 1;
+            if (profile === 'lite') {
+                mainContent.animate([
+                    { opacity: 0.72, transform: 'translate3d(' + (dir * 12) + 'px,0,0)' },
+                    { opacity: 1, transform: 'translate3d(0,0,0)' }
+                ], { duration: 150, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+                return;
+            }
             var shift = Math.min(72, Math.max(40, window.innerWidth * 0.11));
             mainContent.animate([
                 { opacity: 0, transform: 'translate3d(' + (dir * shift) + 'px,0,0)' },
@@ -745,11 +774,19 @@
         }
 
         function animateFrameIn(section, direction) {
-            if (reduceMotion.matches) {
+            var profile = transitionProfile();
+            if (profile === 'reduced') {
                 section.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 100, easing: 'ease-out' });
                 return;
             }
             var dir = direction === 'rtl' ? -1 : 1;
+            if (profile === 'lite') {
+                section.animate([
+                    { opacity: 0.72, transform: 'translate3d(' + (dir * 12) + 'px,0,0)' },
+                    { opacity: 1, transform: 'translate3d(0,0,0)' }
+                ], { duration: 150, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+                return;
+            }
             var shift = Math.min(72, Math.max(40, window.innerWidth * 0.11));
             section.animate([
                 { opacity: 0, transform: 'translate3d(' + (dir * shift) + 'px,0,0)' },
@@ -758,7 +795,7 @@
         }
 
         function animateViewOut(direction) {
-            if (reduceMotion.matches) return;
+            if (transitionProfile() !== 'full') return;
             var dir = direction === 'rtl' ? -1 : 1;
             var shift = Math.min(72, Math.max(40, window.innerWidth * 0.11));
             var target = currentRoute === 'home'
@@ -810,7 +847,7 @@
         /* ---------- liquid glass transition ---------- */
 
         function flashOrigin(origin) {
-            if (transitioning || reduceMotion.matches) return;
+            if (transitioning || transitionProfile() !== 'full') return;
             var x = Number.isFinite(origin.x) ? origin.x : window.innerWidth / 2;
             var y = Number.isFinite(origin.y) ? origin.y : window.innerHeight - 35;
 
@@ -826,13 +863,46 @@
             anim.finished.then(finish, finish);
         }
 
+        function continuePendingNavigation() {
+            transitioning = false;
+
+            var next = pendingRoute;
+            var pushNext = pendingPush;
+            pendingRoute = null;
+            pendingPush = false;
+            if (next && next !== currentRoute) {
+                navigate(next, { origin: navPoint(next), push: pushNext });
+            }
+        }
+
+        function cancelPendingNavigation() {
+            transitioning = false;
+            pendingRoute = null;
+            pendingPush = false;
+        }
+
+        function playLiteTransition(swap, waitFor, profile) {
+            transitioning = true;
+
+            var wait = waitFor ? waitFor() : Promise.resolve();
+            return wait.then(function () {
+                swap();
+                return new Promise(function (resolve) {
+                    window.setTimeout(resolve, profile === 'reduced' ? 100 : 160);
+                });
+            }).then(continuePendingNavigation).catch(cancelPendingNavigation);
+        }
+
         function playGlass(direction, swap, waitFor) {
             if (transitioning) return Promise.resolve();
+            var profile = transitionProfile();
+            if (profile !== 'full') {
+                return playLiteTransition(swap, waitFor, profile);
+            }
             transitioning = true;
 
             var w = window.innerWidth;
             var h = window.innerHeight;
-            var reduce = reduceMotion.matches;
             var rtl = direction === 'rtl';
             var slantPct = Math.min(12, (h * 0.09) / Math.max(1, w) * 100);
             var edgeAngle = Math.atan(((slantPct / 100) * w) / Math.max(1, h)) * 180 / Math.PI;
@@ -857,7 +927,7 @@
             glass.style.clipPath = startClip;
             glass.style.opacity = '1';
 
-            var durationIn = reduce ? 70 : 230;
+            var durationIn = 230;
             var expand = glass.animate([
                 { clipPath: startClip },
                 { clipPath: endClip }
@@ -866,20 +936,18 @@
             var edgeAnim = null;
             var glowAnim = null;
 
-            if (!reduce) {
-                edgeAnim = edge.animate([
-                    { transform: 'translate3d(' + startX + 'px,0,0)' + skewCss, opacity: 0 },
-                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.05) + 'px,0,0)' + skewCss, opacity: 0.95, offset: 0.07 },
-                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.8) + 'px,0,0)' + skewCss, opacity: 0.9, offset: 0.78 },
-                    { transform: 'translate3d(' + endX + 'px,0,0)' + skewCss, opacity: 0 }
-                ], { duration: durationIn + 50, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
-                glowAnim = glow.animate([
-                    { transform: 'translate3d(' + startX + 'px,-50%,0)', opacity: 0 },
-                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.12) + 'px,-50%,0)', opacity: 0.5, offset: 0.12 },
-                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.86) + 'px,-50%,0)', opacity: 0.35, offset: 0.82 },
-                    { transform: 'translate3d(' + endX + 'px,-50%,0)', opacity: 0 }
-                ], { duration: durationIn + 70, easing: 'ease-out' });
-            }
+            edgeAnim = edge.animate([
+                { transform: 'translate3d(' + startX + 'px,0,0)' + skewCss, opacity: 0 },
+                { transform: 'translate3d(' + (startX + (endX - startX) * 0.05) + 'px,0,0)' + skewCss, opacity: 0.95, offset: 0.07 },
+                { transform: 'translate3d(' + (startX + (endX - startX) * 0.8) + 'px,0,0)' + skewCss, opacity: 0.9, offset: 0.78 },
+                { transform: 'translate3d(' + endX + 'px,0,0)' + skewCss, opacity: 0 }
+            ], { duration: durationIn + 50, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+            glowAnim = glow.animate([
+                { transform: 'translate3d(' + startX + 'px,-50%,0)', opacity: 0 },
+                { transform: 'translate3d(' + (startX + (endX - startX) * 0.12) + 'px,-50%,0)', opacity: 0.5, offset: 0.12 },
+                { transform: 'translate3d(' + (startX + (endX - startX) * 0.86) + 'px,-50%,0)', opacity: 0.35, offset: 0.82 },
+                { transform: 'translate3d(' + endX + 'px,-50%,0)', opacity: 0 }
+            ], { duration: durationIn + 70, easing: 'ease-out' });
 
             return expand.finished.then(function () {
                 glass.style.clipPath = endClip;
@@ -890,11 +958,11 @@
                 var wait = waitFor ? waitFor() : Promise.resolve();
                 return wait;
             }).then(function () {
-                if (!reduce) return new Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     window.setTimeout(resolve, 15);
                 });
             }).then(function () {
-                var durationOut = reduce ? 70 : 140;
+                var durationOut = 140;
                 var fade = glass.animate([
                     { opacity: 1 },
                     { opacity: 0.92, offset: 0.25 },
@@ -910,15 +978,7 @@
                     glow.style.opacity = '0';
                     overlay.classList.remove('is-active');
                     glass.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
-                    transitioning = false;
-
-                    var next = pendingRoute;
-                    var pushNext = pendingPush;
-                    pendingRoute = null;
-                    pendingPush = false;
-                    if (next && next !== currentRoute) {
-                        navigate(next, { origin: navPoint(next), push: pushNext });
-                    }
+                    continuePendingNavigation();
                 });
             }).catch(function () {
                 try { expand.cancel(); } catch (e) {}
@@ -929,9 +989,7 @@
                 glow.style.opacity = '0';
                 overlay.classList.remove('is-active');
                 glass.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
-                transitioning = false;
-                pendingRoute = null;
-                pendingPush = false;
+                cancelPendingNavigation();
             });
         }
 
@@ -973,7 +1031,9 @@
                 });
             }
             var waitFor = target === 'home' ? null : function () {
-                return waitForFrame(target, reduceMotion.matches ? 0 : 220);
+                var profile = transitionProfile();
+                var timeout = profile === 'full' ? 220 : (profile === 'lite' ? 120 : 0);
+                return waitForFrame(target, timeout);
             };
 
             playGlass(direction, function () {
