@@ -165,6 +165,112 @@
             .brand{bottom:92px;font-size:13px}
             .help-block{max-width:none;margin-top:8vh}
         }
+
+        /* ===== Monolithic SPA shell ===== */
+        [hidden]{display:none !important}
+        .app-view--frame{position:fixed;inset:0;z-index:1;background:#070505;overflow:hidden}
+        .app-view--frame iframe{display:block;width:100%;height:100%;border:0;background:#070505;color-scheme:dark}
+
+        /* ===== Liquid glass page transition ===== */
+        #liquid-transition{
+            position:fixed;
+            inset:0;
+            z-index:90000;
+            overflow:hidden;
+            visibility:hidden;
+            pointer-events:none;
+            --lg-sweep-from:-55%;
+            --lg-sweep-to:55%;
+            -webkit-tap-highlight-color:transparent;
+        }
+        #liquid-transition.is-active,
+        #liquid-transition.is-flash{visibility:visible}
+        .lg-glow{
+            position:absolute;
+            left:0;
+            top:50%;
+            width:300px;
+            height:150vh;
+            margin-left:-150px;
+            transform:translate3d(0,-50%,0);
+            background:radial-gradient(ellipse 50% 44% at 50% 50%, rgba(224,27,34,.42) 0%, rgba(224,27,34,.16) 46%, rgba(224,27,34,0) 74%);
+            filter:blur(14px);
+            opacity:0;
+            z-index:0;
+            will-change:transform,opacity;
+        }
+        .lg-glass{
+            position:absolute;
+            inset:0;
+            z-index:1;
+            opacity:0;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,.015) 0%, rgba(255,255,255,.07) 50%, rgba(255,255,255,.015) 100%),
+                linear-gradient(145deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.012) 48%, rgba(224,27,34,.06) 100%);
+            -webkit-backdrop-filter:blur(16px) saturate(165%) brightness(1.06);
+            backdrop-filter:blur(16px) saturate(165%) brightness(1.06);
+            clip-path:polygon(0 0, 0 0, 0 100%, 0 100%);
+            will-change:clip-path,opacity;
+        }
+        .lg-glass::before{
+            content:"";
+            position:absolute;
+            inset:-25% -20%;
+            background:linear-gradient(100deg, transparent 38%, rgba(255,255,255,.08) 46%, rgba(255,255,255,.3) 50%, rgba(255,255,255,.08) 54%, transparent 62%);
+            transform:translateX(var(--lg-sweep-from)) skewX(-8deg);
+            opacity:0;
+            mix-blend-mode:screen;
+            pointer-events:none;
+        }
+        #liquid-transition.is-active .lg-glass::before{
+            animation:lgSweep .45s cubic-bezier(.25,.8,.3,1) both;
+        }
+        @keyframes lgSweep{
+            0%{opacity:0;transform:translateX(var(--lg-sweep-from)) skewX(-8deg)}
+            18%{opacity:.5}
+            100%{opacity:0;transform:translateX(var(--lg-sweep-to)) skewX(-8deg)}
+        }
+        .lg-edge{
+            position:absolute;
+            left:0;
+            top:-12%;
+            bottom:-12%;
+            width:150px;
+            margin-left:-75px;
+            transform:translate3d(0,0,0);
+            background:
+                linear-gradient(90deg,
+                    rgba(255,255,255,0) 0%,
+                    rgba(255,255,255,.04) 40%,
+                    rgba(255,255,255,.34) 47%,
+                    rgba(255,255,255,.92) 49.4%,
+                    rgba(255,255,255,1) 50%,
+                    rgba(224,27,34,.8) 50.9%,
+                    rgba(224,27,34,.16) 62%,
+                    rgba(224,27,34,0) 78%);
+            filter:url(#lg-warp) blur(.4px);
+            opacity:0;
+            z-index:2;
+            will-change:transform,opacity;
+        }
+        .lg-filters{
+            position:absolute;
+            width:0;
+            height:0;
+            overflow:hidden;
+            pointer-events:none;
+        }
+        @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+            .lg-glass{
+                background:
+                    linear-gradient(90deg, rgba(20,18,20,.96) 0%, rgba(10,10,12,.92) 50%, rgba(20,16,18,.96) 100%),
+                    linear-gradient(145deg, rgba(255,255,255,.04), rgba(224,27,34,.05));
+            }
+        }
+        @media (prefers-reduced-motion:reduce){
+            #liquid-transition.is-active .lg-glass::before{animation:none !important}
+            .lg-edge{filter:none}
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -213,12 +319,10 @@
         </video>
     </div>
 
-      <div class="tabs" role="tablist" aria-label="Клубы">
+    <div class="tabs" role="tablist" aria-label="Клубы"></div>
 
-      </div>
-
-    <!-- Main Content -->
-    <div id="main-content">
+    <!-- ================= HOME ================= -->
+    <div id="main-content" class="app-view app-view--home" data-view="home">
         <div class="content" id="logo">
             <div class="logo-wrap anim" style="--d:.05s">
                 <img src="content/logo-new.png?v=20260601" alt="Prime Game Hub Logo" class="logo">
@@ -290,135 +394,641 @@
                 </div>
             </section>
             <div class="anim" style="--d:.2s;width:100%;max-width:420px;box-sizing:border-box;padding:16px 16px 0">
-                <a class="price-button" href="NAVBAR/price.html" style="margin:0 auto">Открыть прайс →</a>
+                <a class="price-button" href="#price" data-route="price" style="margin:0 auto">Открыть прайс →</a>
             </div>
         </div>
     </div>
 
-        <nav class="bottom-nav" aria-label="Главное меню" id="bottom-nav">
-        <a class="nav-item active" href="index.html" aria-label="Главная" id="nav-home" aria-current="page">
+    <!-- ================= INTERNAL VIEWS (original pages, untouched) ================= -->
+    <section class="app-view app-view--frame" id="view-chars" data-view="chars" aria-label="Характеристики" hidden>
+        <iframe title="Характеристики" data-src="NAVBAR/chars.html"></iframe>
+    </section>
+
+    <section class="app-view app-view--frame" id="view-clubs" data-view="clubs" aria-label="Клубы" hidden>
+        <iframe title="Клубы" data-src="NAVBAR/map.html?v=20260605-5"></iframe>
+    </section>
+
+    <section class="app-view app-view--frame" id="view-codes" data-view="codes" aria-label="Коды клубов" hidden>
+        <iframe title="Коды клубов" data-src="NAVBAR/codes.html"></iframe>
+    </section>
+
+    <section class="app-view app-view--frame" id="view-senet" data-view="senet" aria-label="Senet ID" hidden>
+        <iframe title="Senet ID" data-src="NAVBAR/sen.html" allow="clipboard-read; clipboard-write"></iframe>
+    </section>
+
+    <section class="app-view app-view--frame" id="view-price" data-view="price" aria-label="Прайс" hidden>
+        <iframe title="Прайс" data-src="NAVBAR/price.html"></iframe>
+    </section>
+
+    <nav class="bottom-nav" aria-label="Главное меню" id="bottom-nav">
+        <a class="nav-item active" href="#home" data-route="home" aria-label="Главная" id="nav-home" aria-current="page">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
             <span>Главная</span>
         </a>
-        <a class="nav-item" href="NAVBAR/chars.html" aria-label="Характеристики">
+        <a class="nav-item" href="#chars" data-route="chars" aria-label="Характеристики">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
             <span>Хар-ки</span>
-        </a>   
-        <a class="nav-item" href="NAVBAR/map.html?v=20260605-5" aria-label="Клубы">
+        </a>
+        <a class="nav-item" href="#clubs" data-route="clubs" aria-label="Клубы">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
             <span>Клубы</span>
         </a>
-        <a class="nav-item" href="NAVBAR/codes.html" aria-label="Коды клубов">
+        <a class="nav-item" href="#codes" data-route="codes" aria-label="Коды клубов">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.8v5.2M12 7.8h.01"/></svg>
             <span>Коды</span>
-        </a>        
-        <a class="nav-item" href="NAVBAR/sen.html" aria-label="Senet ID">
+        </a>
+        <a class="nav-item" href="#senet" data-route="senet" aria-label="Senet ID">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7.5c-1-1.1-2.7-1.8-4.7-1.8-2.5 0-4.3 1.1-4.3 2.8 0 1.9 2.2 2.4 4.4 2.8 2.1.4 4.1.8 4.1 2.8 0 1.8-1.8 3-4.5 3-2.2 0-4-.8-5-2.1"/></svg>
             <span>Senet ID</span>
         </a>
     </nav>
 
+    <!-- Liquid glass transition surface -->
+    <div id="liquid-transition" aria-hidden="true">
+        <div class="lg-glow"></div>
+        <div class="lg-glass"></div>
+        <div class="lg-edge"></div>
+    </div>
+
+    <svg class="lg-filters" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="lg-warp" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="2" seed="7" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+        </defs>
+    </svg>
+
     <script>
-        (function() {
-            const introPlayedKey = 'primeIntroPlayed';
-            const overlay = document.getElementById('video-overlay');
-            const video = document.getElementById('intro-video');
-            const mainContent = document.getElementById('main-content');
-            const bottomNav = document.getElementById('bottom-nav');
-            const helpQuestions = document.querySelectorAll('.help-question');
+    (function () {
+        'use strict';
 
-            // Check if we're coming from any internal navigation (chars, price, codes, sen, map)
-            const isInternalNavigation = document.referrer &&
-                (document.referrer.includes('NAVBAR/price.html') ||
-                 document.referrer.includes('NAVBAR/chars.html') ||
-                 document.referrer.includes('NAVBAR/codes.html') ||
-                 document.referrer.includes('NAVBAR/sen.html') ||
-                 document.referrer.includes('NAVBAR/map.html'));
+        var ROUTES = {
+            home: { title: 'Prime Game Hub' },
+            chars: { title: 'Характеристики' },
+            clubs: { title: 'Клубы' },
+            codes: { title: 'Коды клубов' },
+            senet: { title: 'Senet ID' },
+            price: { title: 'Прайс' }
+        };
 
-            helpQuestions.forEach((question) => {
-                question.addEventListener('click', () => {
-                    const shouldOpen = !question.classList.contains('is-open');
+        var doc = document;
+        var body = doc.body;
+        var mainContent = doc.getElementById('main-content');
+        var bottomNav = doc.getElementById('bottom-nav');
+        var videoOverlay = doc.getElementById('video-overlay');
+        var introVideo = doc.getElementById('intro-video');
+        var navItems = Array.prototype.slice.call(doc.querySelectorAll('.bottom-nav .nav-item[data-route]'));
+        var helpQuestions = doc.querySelectorAll('.help-question');
+        var overlay = doc.getElementById('liquid-transition');
+        var glass = overlay.querySelector('.lg-glass');
+        var edge = overlay.querySelector('.lg-edge');
+        var glow = overlay.querySelector('.lg-glow');
+        var backgroundSvg = doc.querySelector('.background-svg');
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-                    helpQuestions.forEach((otherQuestion) => {
-                        const otherAnswer = document.getElementById(otherQuestion.getAttribute('aria-controls'));
-                        otherQuestion.classList.remove('is-open');
-                        otherQuestion.setAttribute('aria-expanded', 'false');
-                        otherAnswer.classList.remove('is-open');
-                    });
+        var frameViews = {};
+        doc.querySelectorAll('.app-view--frame').forEach(function (section) {
+            var iframe = section.querySelector('iframe');
+            if (!iframe) return;
+            frameViews[section.dataset.view] = {
+                section: section,
+                iframe: iframe,
+                src: iframe.getAttribute('data-src') || iframe.getAttribute('src') || '',
+                primed: false,
+                loaded: false,
+                waiters: []
+            };
+        });
 
-                    const answer = document.getElementById(question.getAttribute('aria-controls'));
-                    question.classList.toggle('is-open', shouldOpen);
-                    question.setAttribute('aria-expanded', String(shouldOpen));
-                    answer.classList.toggle('is-open', shouldOpen);
-                });
+        var currentRoute = 'home';
+        var transitioning = false;
+        var pendingRoute = null;
+        var pendingPush = false;
+
+        /* Inner pages talk to their immediate parent window; forward the few
+           Telegram calls they make to the real Mini App bridge. */
+        window.addEventListener('message', function (event) {
+            if (!event || !event.data || event.origin !== window.location.origin) return;
+            if (event.source === window) return;
+            var tg = window.Telegram && window.Telegram.WebApp;
+            if (!tg) return;
+
+            var payload;
+            try { payload = typeof event.data === 'string' ? JSON.parse(event.data) : event.data; } catch (e) { return; }
+            if (!payload || !payload.eventType) return;
+
+            var data = payload.eventData || {};
+            try {
+                switch (payload.eventType) {
+                    case 'web_app_ready': tg.ready(); break;
+                    case 'web_app_expand': tg.expand(); break;
+                    case 'web_app_request_fullscreen':
+                        if (tg.requestFullscreen) tg.requestFullscreen();
+                        break;
+                    case 'web_app_disable_vertical_swipes':
+                        if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+                        break;
+                    case 'web_app_enable_vertical_swipes':
+                        if (tg.enableVerticalSwipes) tg.enableVerticalSwipes();
+                        break;
+                    case 'web_app_open_link':
+                        if (data.url) tg.openLink(data.url, {
+                            try_instant_view: data.try_instant_view,
+                            try_browser: data.try_browser
+                        });
+                        break;
+                }
+            } catch (e) {}
+        });
+
+        /* ---------- helpers ---------- */
+
+        function routeFromHash() {
+            var raw = String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
+            return Object.prototype.hasOwnProperty.call(ROUTES, raw) ? raw : 'home';
+        }
+
+        function setActiveNav(route) {
+            var key = route === 'price' ? 'home' : route;
+            navItems.forEach(function (item) {
+                var active = item.dataset.route === key;
+                item.classList.toggle('active', active);
+                if (active) item.setAttribute('aria-current', 'page');
+                else item.removeAttribute('aria-current');
             });
+        }
 
-            function showMainContent(skipFade) {
-                mainContent.classList.add('visible');
-                bottomNav.classList.add('visible');
+        function navPoint(route) {
+            var key = route === 'price' ? 'home' : route;
+            var item = navItems.find(function (node) { return node.dataset.route === key; });
+            if (!item) return { x: window.innerWidth / 2, y: window.innerHeight - 35 };
+            var rect = item.getBoundingClientRect();
+            return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        }
 
-                if (window.Telegram?.WebApp) {
-                    window.Telegram.WebApp.expand();
-                    try { window.Telegram.WebApp.requestFullscreen?.(); } catch(e) {}
-                }
+        /* Horizontal order of the bottom tabs; price sits between home and chars
+           so entering it wipes right and leaving it wipes back left. */
+        var ROUTE_ORDER = { home: 0, price: 0.5, chars: 1, clubs: 2, codes: 3, senet: 4 };
 
-                if (skipFade) {
-                    overlay.style.display = 'none';
-                    return;
-                }
+        function routeOrder(route) {
+            return Object.prototype.hasOwnProperty.call(ROUTE_ORDER, route) ? ROUTE_ORDER[route] : 0;
+        }
 
-                overlay.classList.add('hidden');
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 800);
+        function directionFor(from, to) {
+            return routeOrder(to) < routeOrder(from) ? 'rtl' : 'ltr';
+        }
+
+        function showMainContent(skipFade) {
+            mainContent.classList.add('visible');
+            bottomNav.classList.add('visible');
+
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.expand();
+                try { window.Telegram.WebApp.requestFullscreen?.(); } catch (e) {}
             }
 
-            // Skip animation if coming from internal navigation or if already played
-            if (sessionStorage.getItem(introPlayedKey) === '1' || isInternalNavigation) {
+            if (!videoOverlay) return;
+            if (skipFade) {
+                videoOverlay.style.display = 'none';
+                return;
+            }
+            videoOverlay.classList.add('hidden');
+            window.setTimeout(function () {
+                videoOverlay.style.display = 'none';
+            }, 800);
+        }
+
+        /* ---------- home FAQ (unchanged behaviour) ---------- */
+
+        helpQuestions.forEach(function (question) {
+            question.addEventListener('click', function () {
+                var shouldOpen = !question.classList.contains('is-open');
+
+                helpQuestions.forEach(function (otherQuestion) {
+                    var otherAnswer = doc.getElementById(otherQuestion.getAttribute('aria-controls'));
+                    otherQuestion.classList.remove('is-open');
+                    otherQuestion.setAttribute('aria-expanded', 'false');
+                    if (otherAnswer) otherAnswer.classList.remove('is-open');
+                });
+
+                var answer = doc.getElementById(question.getAttribute('aria-controls'));
+                question.classList.toggle('is-open', shouldOpen);
+                question.setAttribute('aria-expanded', String(shouldOpen));
+                if (answer) answer.classList.toggle('is-open', shouldOpen);
+            });
+        });
+
+        /* ---------- video intro (unchanged behaviour) ---------- */
+
+        function initIntro() {
+            var introPlayedKey = 'primeIntroPlayed';
+            var isInternalNavigation = document.referrer && (
+                document.referrer.indexOf('NAVBAR/price.html') !== -1 ||
+                document.referrer.indexOf('NAVBAR/chars.html') !== -1 ||
+                document.referrer.indexOf('NAVBAR/codes.html') !== -1 ||
+                document.referrer.indexOf('NAVBAR/sen.html') !== -1 ||
+                document.referrer.indexOf('NAVBAR/map.html') !== -1
+            );
+
+            var introPlayed = false;
+            try { introPlayed = sessionStorage.getItem(introPlayedKey) === '1'; } catch (e) {}
+
+            if (!videoOverlay || !introVideo || introPlayed || isInternalNavigation) {
                 showMainContent(true);
                 return;
             }
 
-            sessionStorage.setItem(introPlayedKey, '1');
+            try { sessionStorage.setItem(introPlayedKey, '1'); } catch (e) {}
 
-            video.addEventListener('ended', () => showMainContent(false));
+            introVideo.addEventListener('ended', function () { showMainContent(false); });
+            introVideo.addEventListener('error', function () { showMainContent(false); });
 
-            video.addEventListener('error', () => showMainContent(false));
+            var lastTap = 0;
+            var tapCount = 0;
+            var TAP_DELAY_MS = 400;
 
-            let lastTap = 0;
-            let tapCount = 0;
-            const TAP_DELAY_MS = 400;
-
-            const handleSkipTap = () => {
-                const now = Date.now();
-                if (now - lastTap <= TAP_DELAY_MS) {
-                    tapCount += 1;
-                } else {
-                    tapCount = 1;
-                }
+            var handleSkipTap = function () {
+                var now = Date.now();
+                if (now - lastTap <= TAP_DELAY_MS) tapCount += 1;
+                else tapCount = 1;
                 lastTap = now;
-
-                if (tapCount === 2) {
-                    showMainContent(true);
-                }
+                if (tapCount === 2) showMainContent(true);
             };
 
-            overlay.addEventListener('click', handleSkipTap);
-            overlay.addEventListener('touchend', handleSkipTap);
+            videoOverlay.addEventListener('click', handleSkipTap);
+            videoOverlay.addEventListener('touchend', handleSkipTap);
+            introVideo.addEventListener('click', function (event) { event.stopPropagation(); });
 
-            video.addEventListener('click', (event) => {
-                event.stopPropagation();
+            introVideo.muted = true;
+            var playPromise = introVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(function () { showMainContent(false); });
+            }
+        }
+
+        /* ---------- internal pages: keep their logic, hide duplicated chrome ---------- */
+
+        function decorateFrame(entry) {
+            var frameDoc;
+            try { frameDoc = entry.iframe.contentDocument; } catch (e) { return; }
+            if (!frameDoc || !frameDoc.documentElement) return;
+
+            if (!frameDoc.getElementById('prime-spa-frame-style')) {
+                var style = frameDoc.createElement('style');
+                style.id = 'prime-spa-frame-style';
+                style.textContent = '.tabs{visibility:hidden !important}.bottom-nav{visibility:hidden !important;pointer-events:none !important}';
+                (frameDoc.head || frameDoc.documentElement).appendChild(style);
+            }
+        }
+
+        function primeFrame(route) {
+            var entry = frameViews[route];
+            if (!entry || entry.primed) return;
+            entry.primed = true;
+
+            entry.iframe.addEventListener('load', function () {
+                entry.loaded = true;
+                decorateFrame(entry);
+                var waiters = entry.waiters.splice(0);
+                waiters.forEach(function (fn) { fn(); });
             });
 
-            video.muted = true;
-            const playPromise = video.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    showMainContent(false);
+            var attempts = 0;
+            var timer = window.setInterval(function () {
+                decorateFrame(entry);
+                attempts += 1;
+                if (entry.loaded || attempts > 80) window.clearInterval(timer);
+            }, 40);
+
+            if (entry.src) entry.iframe.src = entry.src;
+        }
+
+        function waitForFrame(route, timeout) {
+            var entry = frameViews[route];
+            if (!entry) return Promise.resolve();
+            if (entry.loaded) return Promise.resolve();
+
+            return new Promise(function (resolve) {
+                var settled = false;
+                var done = function () {
+                    if (settled) return;
+                    settled = true;
+                    resolve();
+                };
+                entry.waiters.push(done);
+                window.setTimeout(done, timeout);
+            });
+        }
+
+        /* ---------- view switching ---------- */
+
+        function animateHomeIn(direction) {
+            if (reduceMotion.matches) {
+                mainContent.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 100, easing: 'ease-out' });
+                return;
+            }
+            var dir = direction === 'rtl' ? -1 : 1;
+            var shift = Math.min(72, Math.max(40, window.innerWidth * 0.11));
+            mainContent.animate([
+                { opacity: 0, transform: 'translate3d(' + (dir * shift) + 'px,0,0)' },
+                { opacity: 1, transform: 'translate3d(0,0,0)' }
+            ], { duration: 240, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+
+            if (backgroundSvg) {
+                var bgShift = Math.min(30, window.innerWidth * 0.045);
+                backgroundSvg.animate([
+                    { transform: 'translate3d(' + (dir * bgShift) + 'px,0,0) scale(1.1)' },
+                    { transform: 'translate3d(0,0,0) scale(1)' }
+                ], { duration: 260, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+            }
+        }
+
+        function animateFrameIn(section, direction) {
+            if (reduceMotion.matches) {
+                section.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 100, easing: 'ease-out' });
+                return;
+            }
+            var dir = direction === 'rtl' ? -1 : 1;
+            var shift = Math.min(72, Math.max(40, window.innerWidth * 0.11));
+            section.animate([
+                { opacity: 0, transform: 'translate3d(' + (dir * shift) + 'px,0,0)' },
+                { opacity: 1, transform: 'translate3d(0,0,0)' }
+            ], { duration: 250, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+        }
+
+        function animateViewOut(direction) {
+            if (reduceMotion.matches) return;
+            var dir = direction === 'rtl' ? -1 : 1;
+            var shift = Math.min(72, Math.max(40, window.innerWidth * 0.11));
+            var target = currentRoute === 'home'
+                ? mainContent
+                : (frameViews[currentRoute] && frameViews[currentRoute].section);
+            if (!target) return;
+
+            target.animate([
+                { transform: 'translate3d(0,0,0)' },
+                { transform: 'translate3d(' + (-dir * shift) + 'px,0,0)' }
+            ], { duration: 230, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+        }
+
+        function showView(route, animate, direction) {
+            Object.keys(frameViews).forEach(function (key) {
+                frameViews[key].section.hidden = key !== route;
+            });
+
+            if (route === 'home') {
+                mainContent.hidden = false;
+                window.scrollTo(0, 0);
+                if (animate) animateHomeIn(direction);
+            } else {
+                mainContent.hidden = true;
+                var entry = frameViews[route];
+                if (entry) {
+                    entry.section.hidden = false;
+                    void entry.section.offsetWidth;
+                    primeFrame(route);
+                    if (animate) animateFrameIn(entry.section, direction);
+                }
+            }
+
+            currentRoute = route;
+            setActiveNav(route);
+            doc.title = ROUTES[route] ? ROUTES[route].title : 'Prime Game Hub';
+
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    if (route === 'clubs' && window.Telegram.WebApp.disableVerticalSwipes) {
+                        window.Telegram.WebApp.disableVerticalSwipes();
+                    } else if (route !== 'clubs' && window.Telegram.WebApp.enableVerticalSwipes) {
+                        window.Telegram.WebApp.enableVerticalSwipes();
+                    }
+                } catch (e) {}
+            }
+        }
+
+        /* ---------- liquid glass transition ---------- */
+
+        function flashOrigin(origin) {
+            if (transitioning || reduceMotion.matches) return;
+            var x = Number.isFinite(origin.x) ? origin.x : window.innerWidth / 2;
+            var y = Number.isFinite(origin.y) ? origin.y : window.innerHeight - 35;
+
+            overlay.classList.add('is-flash');
+
+            var anim = glow.animate([
+                { opacity: 0, transform: 'translate3d(' + x + 'px,' + y + 'px,0) translate(-50%,-50%) scale(0.15, 0.01)' },
+                { opacity: 0.5, offset: 0.35, transform: 'translate3d(' + x + 'px,' + y + 'px,0) translate(-50%,-50%) scale(1, 0.018)' },
+                { opacity: 0, transform: 'translate3d(' + x + 'px,' + y + 'px,0) translate(-50%,-50%) scale(1.6, 0.012)' }
+            ], { duration: 340, easing: 'ease-out' });
+
+            var finish = function () { overlay.classList.remove('is-flash'); };
+            anim.finished.then(finish, finish);
+        }
+
+        function playGlass(direction, swap, waitFor) {
+            if (transitioning) return Promise.resolve();
+            transitioning = true;
+
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+            var reduce = reduceMotion.matches;
+            var rtl = direction === 'rtl';
+            var slantPct = Math.min(12, (h * 0.09) / Math.max(1, w) * 100);
+            var edgeAngle = Math.atan(((slantPct / 100) * w) / Math.max(1, h)) * 180 / Math.PI;
+            var skew = rtl ? edgeAngle : -edgeAngle;
+
+            var startClip = rtl
+                ? 'polygon(100% 0%, 100% 0%, ' + (100 + slantPct) + '% 100%, 100% 100%)'
+                : 'polygon(0% 0%, 0% 0%, ' + (-slantPct) + '% 100%, 0% 100%)';
+            var endClip = rtl
+                ? 'polygon(100% 0%, ' + (-slantPct) + '% 0%, 0% 100%, 100% 100%)'
+                : 'polygon(0% 0%, ' + (100 + slantPct) + '% 0%, 100% 100%, 0% 100%)';
+
+            var startX = rtl ? w : 0;
+            var endX = rtl ? 0 : w;
+            var skewCss = ' skewX(' + skew.toFixed(2) + 'deg)';
+
+            overlay.style.setProperty('--lg-sweep-from', rtl ? '55%' : '-55%');
+            overlay.style.setProperty('--lg-sweep-to', rtl ? '-55%' : '55%');
+            overlay.classList.add('is-active');
+            animateViewOut(direction);
+
+            glass.style.clipPath = startClip;
+            glass.style.opacity = '1';
+
+            var durationIn = reduce ? 70 : 230;
+            var expand = glass.animate([
+                { clipPath: startClip },
+                { clipPath: endClip }
+            ], { duration: durationIn, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)', fill: 'forwards' });
+
+            var edgeAnim = null;
+            var glowAnim = null;
+
+            if (!reduce) {
+                edgeAnim = edge.animate([
+                    { transform: 'translate3d(' + startX + 'px,0,0)' + skewCss, opacity: 0 },
+                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.05) + 'px,0,0)' + skewCss, opacity: 0.95, offset: 0.07 },
+                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.8) + 'px,0,0)' + skewCss, opacity: 0.9, offset: 0.78 },
+                    { transform: 'translate3d(' + endX + 'px,0,0)' + skewCss, opacity: 0 }
+                ], { duration: durationIn + 50, easing: 'cubic-bezier(0.2, 0.9, 0.25, 1)' });
+                glowAnim = glow.animate([
+                    { transform: 'translate3d(' + startX + 'px,-50%,0)', opacity: 0 },
+                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.12) + 'px,-50%,0)', opacity: 0.5, offset: 0.12 },
+                    { transform: 'translate3d(' + (startX + (endX - startX) * 0.86) + 'px,-50%,0)', opacity: 0.35, offset: 0.82 },
+                    { transform: 'translate3d(' + endX + 'px,-50%,0)', opacity: 0 }
+                ], { duration: durationIn + 70, easing: 'ease-out' });
+            }
+
+            return expand.finished.then(function () {
+                glass.style.clipPath = endClip;
+                try { expand.cancel(); } catch (e) {}
+
+                swap();
+
+                var wait = waitFor ? waitFor() : Promise.resolve();
+                return wait;
+            }).then(function () {
+                if (!reduce) return new Promise(function (resolve) {
+                    window.setTimeout(resolve, 15);
+                });
+            }).then(function () {
+                var durationOut = reduce ? 70 : 140;
+                var fade = glass.animate([
+                    { opacity: 1 },
+                    { opacity: 0.92, offset: 0.25 },
+                    { opacity: 0 }
+                ], { duration: durationOut, easing: 'cubic-bezier(0.4, 0, 0.7, 1)', fill: 'forwards' });
+
+                return fade.finished.then(function () {
+                    glass.style.opacity = '0';
+                    try { fade.cancel(); } catch (e) {}
+                    if (edgeAnim) { try { edgeAnim.cancel(); } catch (e) {} }
+                    if (glowAnim) { try { glowAnim.cancel(); } catch (e) {} }
+                    edge.style.opacity = '0';
+                    glow.style.opacity = '0';
+                    overlay.classList.remove('is-active');
+                    glass.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
+                    transitioning = false;
+
+                    var next = pendingRoute;
+                    var pushNext = pendingPush;
+                    pendingRoute = null;
+                    pendingPush = false;
+                    if (next && next !== currentRoute) {
+                        navigate(next, { origin: navPoint(next), push: pushNext });
+                    }
+                });
+            }).catch(function () {
+                try { expand.cancel(); } catch (e) {}
+                if (edgeAnim) { try { edgeAnim.cancel(); } catch (e) {} }
+                if (glowAnim) { try { glowAnim.cancel(); } catch (e) {} }
+                glass.style.opacity = '0';
+                edge.style.opacity = '0';
+                glow.style.opacity = '0';
+                overlay.classList.remove('is-active');
+                glass.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
+                transitioning = false;
+                pendingRoute = null;
+                pendingPush = false;
+            });
+        }
+
+        /* ---------- navigation ---------- */
+
+        function navigate(route, options) {
+            options = options || {};
+            var target = ROUTES[route] ? route : 'home';
+
+            if (transitioning) {
+                if (target !== currentRoute) {
+                    pendingRoute = target;
+                    pendingPush = options.push !== false;
+                }
+                return;
+            }
+            if (target === currentRoute) {
+                if (options.origin) flashOrigin(options.origin);
+                if (options.push && window.location.hash !== '#' + target) {
+                    window.history.replaceState({ route: target }, '', '#' + target);
+                }
+                return;
+            }
+
+            if (options.push !== false && window.location.hash !== '#' + target) {
+                window.history.pushState({ route: target }, '', '#' + target);
+            }
+
+            if (options.instant) {
+                showView(target, false);
+                return;
+            }
+
+            var direction = directionFor(currentRoute, target);
+            if (target !== 'home') {
+                var primeTarget = target;
+                window.requestAnimationFrame(function () {
+                    window.requestAnimationFrame(function () { primeFrame(primeTarget); });
                 });
             }
-        })();
+            var waitFor = target === 'home' ? null : function () {
+                return waitForFrame(target, reduceMotion.matches ? 0 : 220);
+            };
+
+            playGlass(direction, function () {
+                showView(target, true, direction);
+            }, waitFor);
+        }
+
+        /* ---------- wiring ---------- */
+
+        doc.addEventListener('click', function (event) {
+            if (event.defaultPrevented) return;
+            if (event.button !== undefined && event.button !== 0) return;
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+            var link = event.target.closest ? event.target.closest('a[data-route]') : null;
+            if (!link) return;
+
+            event.preventDefault();
+            var rect = link.getBoundingClientRect();
+            navigate(link.dataset.route, {
+                origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+                push: true
+            });
+        });
+
+        function handleHistoryChange() {
+            var route = routeFromHash();
+            if (route === currentRoute) return;
+            if (transitioning) {
+                pendingRoute = route;
+                return;
+            }
+            navigate(route, { origin: navPoint(route), push: false });
+        }
+
+        window.addEventListener('popstate', handleHistoryChange);
+        window.addEventListener('hashchange', handleHistoryChange);
+
+        function initApp() {
+            var initial = routeFromHash();
+
+            if (window.location.hash !== '#' + initial) {
+                window.history.replaceState({ route: initial }, '', '#' + initial);
+            }
+
+            if (initial === 'home') {
+                initIntro();
+            } else {
+                showMainContent(true);
+                showView(initial, false);
+            }
+        }
+
+        initApp();
+    })();
     </script>
 </body>
 </html>
