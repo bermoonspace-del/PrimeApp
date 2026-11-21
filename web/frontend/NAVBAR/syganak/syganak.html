@@ -21,7 +21,7 @@
       document.body.classList.add('tg-app');
     }
     document.addEventListener('touchmove', function(e) {
-      var scrollable = e.target.closest('.zone-dropdown-menu, .popup, .soon-cards-scroll, .soon-bar');
+      var scrollable = e.target.closest('.zone-dropdown-menu, .popup');
       if (!scrollable) {
         e.preventDefault();
       }
@@ -139,12 +139,10 @@
 
   <section class="soon-bar" aria-label="Скоро освободятся">
     <div class="soon-bar-title">Скоро<br>освободятся</div>
-    <div class="soon-cards-scroll" id="soon-cards-scroll">
-      <div class="soon-card is-empty" data-soon="0"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-      <div class="soon-card is-empty" data-soon="1"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-      <div class="soon-card is-empty" data-soon="2"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-      <div class="soon-card is-empty" data-soon="3"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-    </div>
+    <div class="soon-card is-empty" data-soon="0"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="1"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="2"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-card is-empty" data-soon="3"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
     <div class="soon-card soon-zone-dropdown" id="zone-dropdown">
         <div class="soon-card-num">📋</div>
         <div class="soon-card-time">По зонам</div>
@@ -181,34 +179,11 @@ const SYGANAK_ZONES=[
 const TOKEN_STORAGE_KEY="syganak.map.capToken.v2";
 const TOKEN_REFRESH_MS=10*24*60*60*1000;
 const REFRESH_INTERVAL_MS=30000;
-const cardsScroll = document.getElementById('soon-cards-scroll');
-if (cardsScroll) {
-  cardsScroll.addEventListener('wheel', function(e) {
-    if (e.deltaY !== 0) {
-      e.preventDefault();
-      cardsScroll.scrollLeft += e.deltaY;
-    }
-  }, { passive: false });
-}
-
-function renderSoonCards(withDates) {
-  if (!cardsScroll) return;
-  if (!withDates || withDates.length === 0) {
-    cardsScroll.innerHTML = `
-      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-    `;
-    return;
-  }
-  cardsScroll.innerHTML = withDates.map(item => {
-    const num = String(item.pc.num ?? item.pc.device_name ?? '?');
-    const remaining = formatTimeRemaining(item.releaseDate);
-    const cls = cardClass(remaining);
-    return `<div class="soon-card ${cls}" data-pc-num="${num}"><div class="soon-card-num">${num}</div><div class="soon-card-time">${remaining}</div></div>`;
-  }).join('');
-}
+const cards=Array.from(document.querySelectorAll('.soon-card[data-soon]'));
+const releaseDates=new Array(cards.length).fill(null);
+let cachedToken=null;
+let cachedTokenAt=0;
+let inFlight=false;
 
 const zoneElements = {};
 const zoneSections = document.getElementById('zone-sections');
@@ -245,6 +220,8 @@ const MAP_API_URL="https://syganak.app.enes.tech"; // не использует�
 async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999&_syganak=1');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
 function normalizeTableList(data){if(Array.isArray(data))return data;if(Array.isArray(data?.results))return data.results;if(Array.isArray(data?.data))return data.data;if(Array.isArray(data?.items))return data.items;if(data&&typeof data==="object"){const arr=Object.values(data).find(Array.isArray);if(arr)return arr;}return [];}
 async function fetchBulkTable(){const url=BACKEND_URL+'/api/table?_syganak=1&office_id=1&limit=9999';const res=await fetch(url);if(!res.ok)throw new Error('table HTTP '+res.status);return await res.json();}
+
+function renderCard(index,item){const card=cards[index];if(!card)return;if(item){const num=String(item.pc.num??item.pc.device_name??'?');card.className='soon-card '+cardClass(formatTimeRemaining(item.releaseDate));card.querySelector('.soon-card-num').textContent=num;card.querySelector('.soon-card-time').textContent=formatTimeRemaining(item.releaseDate);}else{card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent='—';card.querySelector('.soon-card-time').textContent='—';}}
 
 function renderZoneDropdown(withDates) {
   Object.values(zoneElements).forEach(el => { if (el) el.innerHTML = ''; });
@@ -305,7 +282,11 @@ async function refreshSoon(){
     let withDates=[];try{const table=await fetchBulkTable();const list=normalizeTableList(table);const byId=new Map();const byNum=new Map();for(const it of list){if(it.workstation_id!=null)byId.set(String(it.workstation_id),it);if(it.id!=null)byId.set(String(it.id),it);if(it.num!=null)byNum.set(String(it.num),it);}withDates=busy.map(pc=>{const ui=byId.get(String(pc.id))||byNum.get(String(pc.num))||null;const releaseDate=getReleaseDate({...pc,...ui,current_session:ui});return {pc,releaseDate};}).filter(x=>x.releaseDate).sort((a,b)=>a.releaseDate-b.releaseDate);}catch(e){console.warn('bulk failed',e);withDates=[];}
     
     currentWithDates = withDates;
-    renderSoonCards(withDates);
+    const top5 = withDates.slice(0,5);
+    for(let i=0;i<cards.length;i++){
+      releaseDates[i]=top5[i]?top5[i].releaseDate:null;
+      renderCard(i,top5[i]);
+    }
     renderZoneDropdown(withDates);
   }finally{inFlight=false;}
 }
@@ -313,17 +294,13 @@ async function refreshSoon(){
 let currentWithDates = [];
 
 function tickTimers(){
-  if (cardsScroll && currentWithDates.length > 0) {
-    cardsScroll.querySelectorAll('.soon-card[data-pc-num]').forEach(card => {
-      const num = card.dataset.pcNum;
-      const data = currentWithDates.find(d => String(d.pc.num ?? d.pc.device_name) === num);
-      if (data) {
-        const remaining = formatTimeRemaining(data.releaseDate);
-        const timeEl = card.querySelector('.soon-card-time');
-        if (timeEl) timeEl.textContent = remaining;
-        card.className = 'soon-card ' + cardClass(remaining);
-      }
-    });
+  for(let i=0;i<cards.length;i++){
+    if(!releaseDates[i]) continue;
+    const card=cards[i];
+    if(card.classList.contains('is-empty')) continue;
+    const remaining=formatTimeRemaining(releaseDates[i]);
+    card.querySelector('.soon-card-time').textContent=remaining;
+    card.className='soon-card '+cardClass(remaining);
   }
   
   Object.entries(zoneElements).forEach(([zone, el]) => {
