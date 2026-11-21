@@ -21,7 +21,7 @@
       document.body.classList.add('tg-app');
     }
     document.addEventListener('touchmove', function(e) {
-      var scrollable = e.target.closest('.zone-dropdown-menu, .popup');
+      var scrollable = e.target.closest('.zone-dropdown-menu, .popup, .soon-cards-scroll, .soon-bar');
       if (!scrollable) {
         e.preventDefault();
       }
@@ -62,68 +62,56 @@
         <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255,255,255,0.42)"/>
       </marker>
     </defs>
-    <rect class="zone" data-zone="syg-1floor" x="135" y="-1010" width="1150" height="1180" rx="14"/> 
-    <text class="zone-label" x="-20" y="450" text-anchor="middle"> 1 ЭТАЖ</text>
-    <rect class="zone" data-zone="syg-squad1" x="180" y="-910" width="450" height="120" rx="14"/>
-    <text class="zone-label" x="230" y="68" text-anchor="middle">Squad 1</text>
-    <rect class="zone" data-zone="syg-vip1" x="680" y="-910" width="550" height="120" rx="14"/>
-    <text class="zone-label" x="675" y="68" text-anchor="middle">VIP 1</text>
-
-    <rect class="zone" data-zone="syg-stream" x="390" y="-730" width="120" height="120" rx="14"/>
-    <text class="zone-label" x="450" y="223" text-anchor="middle">Stream</text>
-    <rect class="zone" data-zone="syg-solo" x="830" y="-730" width="120" height="120" rx="14"/>
-    <text class="zone-label" x="690" y="223" text-anchor="middle">Solo</text>
-
-
-    <rect class="zone" data-zone="syg-standard" x="150" y="-430" width="1120" height="580" rx="14"/>
-    <text class="zone-label" x="485" y="398" text-anchor="middle">Standart</text>
-
-    <rect class="zone" data-label="2floor" x="135" y="300" width="1780" height="1030" rx="14"/>
-    <text class="zone-label" x="-20" y="550" text-anchor="middle">2 ЭТАЖ</text>
-    <rect class="zone" data-zone="syg-duo1" x="160" y="360" width="240" height="120" rx="14"/>
-    <text class="zone-label" x="1225" y="223" text-anchor="middle">Duo 1</text>
-    <rect class="zone" data-zone="syg-duo2" x="445" y="360" width="240" height="120" rx="14"/>
-    <text class="zone-label" x="1465" y="223" text-anchor="middle">Duo 2</text>
-    <rect class="zone" data-zone="syg-duo3" x="725" y="360" width="240" height="120" rx="14"/>
-    <text class="zone-label" x="1705" y="223" text-anchor="middle">Duo 3</text>
-
+    <rect class="zone" data-zone="syg-1floor" x="435" y="-910" width="1350" height="1320" rx="14"/>
+    <text class="zone-label" x="1110" y="-918" text-anchor="middle">1 ЭТАЖ</text>
+    <rect class="zone" data-zone="syg-squad1" x="495" y="-810" width="525" height="140" rx="14"/>
+    <text class="zone-label" x="758" y="-818" text-anchor="middle">Squad 1</text>
+    <rect class="zone" data-zone="syg-vip1" x="1070" y="-810" width="650" height="140" rx="14"/>
+    <text class="zone-label" x="1395" y="-818" text-anchor="middle">VIP 1</text>
+    <rect class="zone" data-zone="syg-stream" x="710" y="-610" width="140" height="140" rx="14"/>
+    <text class="zone-label" x="780" y="-618" text-anchor="middle">Stream</text>
+    <rect class="zone" data-zone="syg-solo" x="1260" y="-610" width="140" height="140" rx="14"/>
+    <text class="zone-label" x="1330" y="-618" text-anchor="middle">Solo</text>
+    <rect class="zone" data-zone="syg-standard" x="450" y="-290" width="1320" height="680" rx="14"/>
+    <text class="zone-label" x="1110" y="-298" text-anchor="middle">Standart</text>
+    <rect class="zone" data-label="2floor" x="135" y="540" width="2045" height="1175" rx="14"/>
+    <text class="zone-label" x="1158" y="532" text-anchor="middle">2 ЭТАЖ</text>
+    <rect class="zone" data-zone="syg-duo1" x="160" y="600" width="280" height="140" rx="14"/>
+    <text class="zone-label" x="300" y="592" text-anchor="middle">Duo 1</text>
+    <rect class="zone" data-zone="syg-duo2" x="480" y="600" width="280" height="140" rx="14"/>
+    <text class="zone-label" x="620" y="592" text-anchor="middle">Duo 2</text>
+    <rect class="zone" data-zone="syg-duo3" x="800" y="600" width="280" height="140" rx="14"/>
+    <text class="zone-label" x="940" y="592" text-anchor="middle">Duo 3</text>
     <!-- Bootcamp 4 (92-96) -->
-    <rect class="zone" data-zone="syg-bootcamp4" x="1305" y="560" width="580" height="120" rx="14"/>
-    <text class="zone-label" x="2070" y="48" text-anchor="middle">Bootcamp 4</text>
+    <rect class="zone" data-zone="syg-bootcamp4" x="1470" y="820" width="680" height="140" rx="14"/>
+    <text class="zone-label" x="1810" y="812" text-anchor="middle">Bootcamp 4</text>
     <!-- Bootcamp 3 (87-91) -->
-    <rect class="zone" data-zone="syg-bootcamp3" x="1305" y="745" width="580" height="120" rx="14"/>
-    <text class="zone-label" x="2070" y="158" text-anchor="middle">Bootcamp 3</text>
-
+    <rect class="zone" data-zone="syg-bootcamp3" x="1470" y="1030" width="680" height="140" rx="14"/>
+    <text class="zone-label" x="1810" y="1022" text-anchor="middle">Bootcamp 3</text>
     <!-- Comfort (48-59) -->
-    <rect class="zone" data-zone="syg-comfort" x="160" y="530" width="725" height="240" rx="14"/>
-    <text class="zone-label" x="1358" y="458" text-anchor="middle">Comfort</text>
-
+    <rect class="zone" data-zone="syg-comfort" x="160" y="800" width="840" height="280" rx="14"/>
+    <text class="zone-label" x="580" y="792" text-anchor="middle">Comfort</text>
     <!-- Bootcamp 2 (82-86) -->
-    <rect class="zone" data-zone="syg-bootcamp2" x="1305" y="930" width="580" height="120" rx="14"/>
-    <text class="zone-label" x="2070" y="448" text-anchor="middle">Bootcamp 2</text>
+    <rect class="zone" data-zone="syg-bootcamp2" x="1470" y="1240" width="680" height="140" rx="14"/>
+    <text class="zone-label" x="1810" y="1232" text-anchor="middle">Bootcamp 2</text>
     <!-- Bootcamp 1 (77-81) -->
-    <rect class="zone" data-zone="syg-bootcamp1" x="1305" y="1100" width="580" height="120" rx="14"/>
-    <text class="zone-label" x="2070" y="548" text-anchor="middle">Bootcamp 1</text>
-
+    <rect class="zone" data-zone="syg-bootcamp1" x="1470" y="1450" width="680" height="140" rx="14"/>
+    <text class="zone-label" x="1810" y="1442" text-anchor="middle">Bootcamp 1</text>
     <!-- Squad 2 (60-63) -->
-    <rect class="zone" data-zone="syg-squad2" x="165" y="840" width="120" height="450" rx="14"/>
-    <text class="zone-label" x="1030" y="713" text-anchor="middle">Squad 2</text>
-
+    <rect class="zone" data-zone="syg-squad2" x="165" y="1150" width="140" height="530" rx="14"/>
+    <text class="zone-label" x="235" y="1142" text-anchor="middle">Squad 2</text>
     <!-- Trio (64-66) -->
-    <rect class="zone" data-zone="syg-trio" x="325" y="840" width="360" height="120" rx="14"/>
-    <text class="zone-label" x="1275" y="713" text-anchor="middle">Trio</text>
-
+    <rect class="zone" data-zone="syg-trio" x="345" y="1150" width="420" height="140" rx="14"/>
+    <text class="zone-label" x="555" y="1142" text-anchor="middle">Trio</text>
     <!-- Duo 5 (67-68) -->
-    <rect class="zone" data-zone="syg-duo5" x="730" y="840" width="240" height="120" rx="14"/>
-    <text class="zone-label" x="1540" y="713" text-anchor="middle">Duo 5</text>
-
+    <rect class="zone" data-zone="syg-duo5" x="805" y="1150" width="280" height="140" rx="14"/>
+    <text class="zone-label" x="945" y="1142" text-anchor="middle">Duo 5</text>
     <!-- Duo 4 (69-70) -->
-    <rect class="zone" data-zone="syg-duo4" x="985" y="840" width="240" height="120" rx="14"/>
-    <text class="zone-label" x="1770" y="713" text-anchor="middle">Duo 4</text>
-
+    <rect class="zone" data-zone="syg-duo4" x="1110" y="1150" width="280" height="140" rx="14"/>
+    <text class="zone-label" x="1250" y="1142" text-anchor="middle">Duo 4</text>
     <!-- Private (71-76) -->
-    <rect class="zone" data-zone="syg-private" x="325" y="1175" width="700" height="120" rx="14"/>
-    <text class="zone-label" x="1500" y="888" text-anchor="middle">Private</text>
+    <rect class="zone" data-zone="syg-private" x="345" y="1540" width="810" height="140" rx="14"/>
+    <text class="zone-label" x="750" y="1532" text-anchor="middle">Private</text>
   </svg>
 
   <div id="pcs"></div>
@@ -151,10 +139,12 @@
 
   <section class="soon-bar" aria-label="Скоро освободятся">
     <div class="soon-bar-title">Скоро<br>освободятся</div>
-    <div class="soon-card is-empty" data-soon="0"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-    <div class="soon-card is-empty" data-soon="1"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-    <div class="soon-card is-empty" data-soon="2"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
-    <div class="soon-card is-empty" data-soon="3"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    <div class="soon-cards-scroll" id="soon-cards-scroll">
+      <div class="soon-card is-empty" data-soon="0"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+      <div class="soon-card is-empty" data-soon="1"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+      <div class="soon-card is-empty" data-soon="2"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+      <div class="soon-card is-empty" data-soon="3"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    </div>
     <div class="soon-card soon-zone-dropdown" id="zone-dropdown">
         <div class="soon-card-num">📋</div>
         <div class="soon-card-time">По зонам</div>
@@ -191,11 +181,34 @@ const SYGANAK_ZONES=[
 const TOKEN_STORAGE_KEY="syganak.map.capToken.v2";
 const TOKEN_REFRESH_MS=10*24*60*60*1000;
 const REFRESH_INTERVAL_MS=30000;
-const cards=Array.from(document.querySelectorAll('.soon-card[data-soon]'));
-const releaseDates=new Array(cards.length).fill(null);
-let cachedToken=null;
-let cachedTokenAt=0;
-let inFlight=false;
+const cardsScroll = document.getElementById('soon-cards-scroll');
+if (cardsScroll) {
+  cardsScroll.addEventListener('wheel', function(e) {
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      cardsScroll.scrollLeft += e.deltaY;
+    }
+  }, { passive: false });
+}
+
+function renderSoonCards(withDates) {
+  if (!cardsScroll) return;
+  if (!withDates || withDates.length === 0) {
+    cardsScroll.innerHTML = `
+      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+      <div class="soon-card is-empty"><div class="soon-card-num">—</div><div class="soon-card-time">—</div></div>
+    `;
+    return;
+  }
+  cardsScroll.innerHTML = withDates.map(item => {
+    const num = String(item.pc.num ?? item.pc.device_name ?? '?');
+    const remaining = formatTimeRemaining(item.releaseDate);
+    const cls = cardClass(remaining);
+    return `<div class="soon-card ${cls}" data-pc-num="${num}"><div class="soon-card-num">${num}</div><div class="soon-card-time">${remaining}</div></div>`;
+  }).join('');
+}
 
 const zoneElements = {};
 const zoneSections = document.getElementById('zone-sections');
@@ -232,7 +245,6 @@ const MAP_API_URL="https://syganak.app.enes.tech"; // не использует�
 async function fetchMap(){const res=await fetch(BACKEND_URL+'/api/map?office_id='+OFFICE_ID+'&limit=9999&_syganak=1');if(!res.ok)throw new Error('map HTTP '+res.status);const json=await res.json();return Array.isArray(json?.results)?json.results:[];}
 function normalizeTableList(data){if(Array.isArray(data))return data;if(Array.isArray(data?.results))return data.results;if(Array.isArray(data?.data))return data.data;if(Array.isArray(data?.items))return data.items;if(data&&typeof data==="object"){const arr=Object.values(data).find(Array.isArray);if(arr)return arr;}return [];}
 async function fetchBulkTable(){const url=BACKEND_URL+'/api/table?_syganak=1&office_id=1&limit=9999';const res=await fetch(url);if(!res.ok)throw new Error('table HTTP '+res.status);return await res.json();}
-function renderCard(index,item){const card=cards[index];if(!card)return;if(item){const num=String(item.pc.num??item.pc.device_name??'?');card.className='soon-card '+cardClass(formatTimeRemaining(item.releaseDate));card.querySelector('.soon-card-num').textContent=num;card.querySelector('.soon-card-time').textContent=formatTimeRemaining(item.releaseDate);}else{card.className='soon-card is-empty';card.querySelector('.soon-card-num').textContent='—';card.querySelector('.soon-card-time').textContent='—';}}
 
 function renderZoneDropdown(withDates) {
   Object.values(zoneElements).forEach(el => { if (el) el.innerHTML = ''; });
@@ -293,13 +305,7 @@ async function refreshSoon(){
     let withDates=[];try{const table=await fetchBulkTable();const list=normalizeTableList(table);const byId=new Map();const byNum=new Map();for(const it of list){if(it.workstation_id!=null)byId.set(String(it.workstation_id),it);if(it.id!=null)byId.set(String(it.id),it);if(it.num!=null)byNum.set(String(it.num),it);}withDates=busy.map(pc=>{const ui=byId.get(String(pc.id))||byNum.get(String(pc.num))||null;const releaseDate=getReleaseDate({...pc,...ui,current_session:ui});return {pc,releaseDate};}).filter(x=>x.releaseDate).sort((a,b)=>a.releaseDate-b.releaseDate);}catch(e){console.warn('bulk failed',e);withDates=[];}
     
     currentWithDates = withDates;
-    
-    const top5 = withDates.slice(0,5);
-    for(let i=0;i<cards.length;i++){
-      releaseDates[i]=top5[i]?top5[i].releaseDate:null;
-      renderCard(i,top5[i]);
-    }
-    
+    renderSoonCards(withDates);
     renderZoneDropdown(withDates);
   }finally{inFlight=false;}
 }
@@ -307,13 +313,17 @@ async function refreshSoon(){
 let currentWithDates = [];
 
 function tickTimers(){
-  for(let i=0;i<cards.length;i++){
-    if(!releaseDates[i]) continue;
-    const card=cards[i];
-    if(card.classList.contains('is-empty')) continue;
-    const remaining=formatTimeRemaining(releaseDates[i]);
-    card.querySelector('.soon-card-time').textContent=remaining;
-    card.className='soon-card '+cardClass(remaining);
+  if (cardsScroll && currentWithDates.length > 0) {
+    cardsScroll.querySelectorAll('.soon-card[data-pc-num]').forEach(card => {
+      const num = card.dataset.pcNum;
+      const data = currentWithDates.find(d => String(d.pc.num ?? d.pc.device_name) === num);
+      if (data) {
+        const remaining = formatTimeRemaining(data.releaseDate);
+        const timeEl = card.querySelector('.soon-card-time');
+        if (timeEl) timeEl.textContent = remaining;
+        card.className = 'soon-card ' + cardClass(remaining);
+      }
+    });
   }
   
   Object.entries(zoneElements).forEach(([zone, el]) => {
