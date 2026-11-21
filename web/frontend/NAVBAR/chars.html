@@ -17,6 +17,7 @@
     .content{min-height:100%;box-sizing:border-box;padding:110px 16px 88px}
     h1{text-align:center;margin:0;padding:20px 0;font-size:24px}
     .zone-switcher{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 auto 6px;max-width:520px}
+    #club-syganak .zone-switcher{max-width:900px}
     .club-switcher{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 16px;max-width:520px;padding:8px;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.04)}
     .zone-button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:var(--accent);padding:8px 12px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:600;transition:background .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1)}
     .club-button{border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:var(--accent);padding:8px 14px;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;min-width:90px;transition:background .35s cubic-bezier(0.22,1,0.36,1),border-color .35s cubic-bezier(0.22,1,0.36,1),color .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1)}
@@ -161,6 +162,7 @@
         <div class="select-option" data-value="muhamedh" role="option"><span>Мухамедханова 25</span><span class="check">✓</span></div>
         <div class="select-option" data-value="molda" role="option"><span>Молдагалиева 7</span><span class="check">✓</span></div>
         <div class="select-option" data-value="bekturova" role="option"><span>Бектурова 11Б</span><span class="check">✓</span></div>
+        <div class="select-option" data-value="syganak" role="option"><span>Сыганак 22/1</span><span class="check">✓</span></div>
         <div class="select-option" data-value="aqtau" role="option"><span>28 микрорайон 47. Актау</span><span class="check">✓</span></div>
         <div class="select-option" data-value="krg" role="option"><span>Республика 23. Караганда</span><span class="check">✓</span></div>
         <div class="select-option" data-value="kokshetau" role="option"><span>Ауельбекова 49. Кокшетау</span><span class="check">✓</span></div>
@@ -1979,6 +1981,353 @@
     </section>
   </div>
 
+  <div class="club-panel" id="club-syganak">
+    <div class="zone-switcher" role="tablist" aria-label="Выбор зала клуба Сыганак">
+      <button class="zone-button active" data-zone="syg-standard" type="button">Standart</button>
+      <button class="zone-button" data-zone="syg-comfort" type="button">Comfort</button>
+      <button class="zone-button" data-zone="syg-vip1" type="button">VIP 1</button>
+      <button class="zone-button" data-zone="syg-private" type="button">Private</button>
+      <button class="zone-button" data-zone="syg-squad1" type="button">Squad 1</button>
+      <button class="zone-button" data-zone="syg-squad2" type="button">Squad 2</button>
+      <button class="zone-button" data-zone="syg-bootcamp1" type="button">Bootcamp 1</button>
+      <button class="zone-button" data-zone="syg-bootcamp2" type="button">Bootcamp 2</button>
+      <button class="zone-button" data-zone="syg-bootcamp3" type="button">Bootcamp 3</button>
+      <button class="zone-button" data-zone="syg-bootcamp4" type="button">Bootcamp 4</button>
+      <button class="zone-button" data-zone="syg-trio" type="button">Trio</button>
+      <button class="zone-button" data-zone="syg-duo1" type="button">Duo 1</button>
+      <button class="zone-button" data-zone="syg-duo2" type="button">Duo 2</button>
+      <button class="zone-button" data-zone="syg-duo3" type="button">Duo 3</button>
+      <button class="zone-button" data-zone="syg-duo4" type="button">Duo 4</button>
+      <button class="zone-button" data-zone="syg-duo5" type="button">Duo 5</button>
+      <button class="zone-button" data-zone="syg-solo" type="button">Solo</button>
+      <button class="zone-button" data-zone="syg-stream" type="button">Stream</button>
+    </div>
+
+    <section class="spec-card active" id="syg-standard">
+      <div class="spec-head">
+        <h2 class="spec-title">Standart</h2>
+        <span class="spec-badge">610 Гц · 30 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 7800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-comfort">
+      <div class="spec-head">
+        <h2 class="spec-title">Comfort</h2>
+        <span class="spec-badge">610 Гц · 12 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 7800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Aero</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-vip1">
+      <div class="spec-head">
+        <h2 class="spec-title">VIP 1</h2>
+        <span class="spec-badge">610 Гц · 5 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-private">
+      <div class="spec-head">
+        <h2 class="spec-title">Private</h2>
+        <span class="spec-badge">610 Гц · 6 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Aero</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-squad1">
+      <div class="spec-head">
+        <h2 class="spec-title">Squad 1</h2>
+        <span class="spec-badge">610 Гц · 4 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Ti Aero</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-squad2">
+      <div class="spec-head">
+        <h2 class="spec-title">Squad 2</h2>
+        <span class="spec-badge">610 Гц · 4 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Ti Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-bootcamp1">
+      <div class="spec-head">
+        <h2 class="spec-title">Bootcamp 1</h2>
+        <span class="spec-badge">610 Гц · 5 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Ti Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-bootcamp2">
+      <div class="spec-head">
+        <h2 class="spec-title">Bootcamp 2</h2>
+        <span class="spec-badge">610 Гц · 5 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5070 Ti Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">MCHOSE MIX 87</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Hyperx Cloud 3s Wireless</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-bootcamp3">
+      <div class="spec-head">
+        <h2 class="spec-title">Bootcamp 3</h2>
+        <span class="spec-badge">610 Гц · 5 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X2 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-bootcamp4">
+      <div class="spec-head">
+        <h2 class="spec-title">Bootcamp 4</h2>
+        <span class="spec-badge">600 Гц · 5 мест</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">600 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-trio">
+      <div class="spec-head">
+        <h2 class="spec-title">Trio</h2>
+        <span class="spec-badge">610 Гц · 3 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-duo1">
+      <div class="spec-head">
+        <h2 class="spec-title">Duo 1</h2>
+        <span class="spec-badge">610 Гц · 2 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-duo2">
+      <div class="spec-head">
+        <h2 class="spec-title">Duo 2</h2>
+        <span class="spec-badge">610 Гц · 2 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">610 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-duo3">
+      <div class="spec-head">
+        <h2 class="spec-title">Duo 3</h2>
+        <span class="spec-badge">600 Гц · 2 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">600 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-duo4">
+      <div class="spec-head">
+        <h2 class="spec-title">Duo 4</h2>
+        <span class="spec-badge">720 Гц · 2 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">720 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-duo5">
+      <div class="spec-head">
+        <h2 class="spec-title">Duo 5</h2>
+        <span class="spec-badge">720 Гц · 2 места</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">720 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-solo">
+      <div class="spec-head">
+        <h2 class="spec-title">Solo</h2>
+        <span class="spec-badge">600 Гц · 1 место</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">600 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">Logitech G PRO X TKL RAPID</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X2 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+
+    <section class="spec-card" id="syg-stream">
+      <div class="spec-head">
+        <h2 class="spec-title">Stream</h2>
+        <span class="spec-badge">600 Гц · 1 место</span>
+      </div>
+      <div class="spec-list">
+        <div class="spec-item"><span class="spec-label">Процессор</span><span class="spec-value">Ryzen 7 9800X3D</span></div>
+        <div class="spec-item"><span class="spec-label">Видеокарта</span><span class="spec-value">RTX 5080 Gigabyte</span></div>
+        <div class="spec-item"><span class="spec-label">Оперативная память</span><span class="spec-value">Kingston Fury 32gb DDR5 6000MHz</span></div>
+        <div class="spec-item"><span class="spec-label">Монитор</span><span class="spec-value">600 Гц</span></div>
+        <div class="spec-item"><span class="spec-label">Клавиатура</span><span class="spec-value">WOOTING 80he</span></div>
+        <div class="spec-item"><span class="spec-label">Мышь</span><span class="spec-value">Logitech G PRO X3 SUPERSTRIKE</span></div>
+        <div class="spec-item"><span class="spec-label">Наушники</span><span class="spec-value">Logitech G PRO X3 LIGHTSPEED</span></div>
+        <div class="spec-item"><span class="spec-label">Коврик</span><span class="spec-value">Zowie G-SR-SE</span></div>
+        <div class="spec-item"><span class="spec-label">Кресло</span><span class="spec-value">Kaiser 4XL</span></div>
+      </div>
+    </section>
+  </div>
+
   </main>
 
   <script>
@@ -2186,7 +2535,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
       <span>Хар-ки</span>
     </a>
-    <a class="nav-item" href="map.html?v=20260601-5" aria-label="Клубы">
+    <a class="nav-item" href="map.html?v=20261121-2" aria-label="Клубы">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
       <span>Клубы</span>
     </a>
