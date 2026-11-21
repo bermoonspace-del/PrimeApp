@@ -634,7 +634,6 @@ function renderPCs(pcs) {
         }
         const zone = getZoneForPC(pc.num);
         if (zone) el.dataset.zone = zone;
-        el.onclick = () => openPC(pc);
 
         container.appendChild(el);
     });
