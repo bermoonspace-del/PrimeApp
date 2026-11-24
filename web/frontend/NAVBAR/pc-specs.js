@@ -1287,6 +1287,21 @@ window.PRIME_SPECS = {
     "Коврик": "Zowie G-SR-SE",
     "Кресло": "Andaseat Kaiser 4 XL"
    }
+  },
+  "solo3": {
+   "title": "Solo 3",
+   "badge": "600Hz / 1 место",
+   "specs": {
+    "Процессор": "AMD Ryzen 9 9900X3D",
+    "Видеокарта": "Gigabyte RTX 5090",
+    "Оперативная память": "Kingston Fury 32Gb",
+    "Монитор": "BenQ Zowie 600Hz (24.1\")",
+    "Клавиатура": "Logitech G PRO X2 TKL Rapid",
+    "Мышь": "Logitech G PRO X3 Superstrike",
+    "Наушники": "Logitech G PRO X3 Lightspeed",
+    "Кресло": "DxRacer Martian Pro",
+    "Стол": "DxRacer Tidal"
+   }
   }
  },
  "bekturova": {
@@ -1822,7 +1837,8 @@ window.PRIME_ZONE_MAP = {
   "duo-1": "duo1",
   "duo-2": "duo2",
   "solo-1": "solo1",
-  "solo-2": "solo2"
+  "solo-2": "solo2",
+  "solo-3": "solo3"
  },
  "bekturova": {
   "standard": "standard",
