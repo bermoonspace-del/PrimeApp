@@ -802,6 +802,7 @@ function getZoneForPC(num) {
     if (n >= 99 && n <= 102) return 'squad';
     if (n === 103) return 'solo-2';
     if (n === 104) return 'solo-1';
+    if (n === 105) return 'solo-3';
     return null;
 }
 

@@ -62,6 +62,8 @@
         <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255,255,255,0.42)"/>
       </marker>
     </defs>
+    <rect class="zone" data-zone="solo-3" x="1163" y="52" width="70" height="70" rx="12"/>
+    <text class="zone-label" x="1198" y="44" text-anchor="middle">Solo 3</text>
     <rect class="zone" data-zone="solo-2" x="1083" y="208" width="70" height="70" rx="12"/>
     <text class="zone-label" x="1118" y="200" text-anchor="middle">Solo 2</text>
     <rect class="zone" data-zone="solo-1" x="1243" y="208" width="70" height="70" rx="12"/>
@@ -95,7 +97,7 @@
   <div id="map-message" class="map-message" hidden></div>
 
   <div class="map-legend" aria-label="Легенда карты">
-    <div class="legend-title">Всего:104</div>
+    <div class="legend-title">Всего:105</div>
     <div class="legend-counters">
         <span class="counter counter-free">Свободно: <span id="free-count">0</span></span>
         <span class="counter counter-busy">Занято: <span id="busy-count">0</span></span>
@@ -169,6 +171,10 @@
                 <div class="zone-pc-list" id="zone-squad"></div>
             </div>
             <div class="zone-section">
+                <div class="zone-section-title">SOLO 3</div>
+                <div class="zone-pc-list" id="zone-solo-3"></div>
+            </div>
+            <div class="zone-section">
                 <div class="zone-section-title">SOLO 2</div>
                 <div class="zone-pc-list" id="zone-solo-2"></div>
             </div>
@@ -204,6 +210,7 @@ const zoneElements = {
   'bootcamp-2': document.getElementById('zone-bootcamp-2'),
   'bootcamp-1': document.getElementById('zone-bootcamp-1'),
   'squad': document.getElementById('zone-squad'),
+  'solo-3': document.getElementById('zone-solo-3'),
   'solo-2': document.getElementById('zone-solo-2'),
   'solo-1': document.getElementById('zone-solo-1')
 };
@@ -228,6 +235,7 @@ function getZoneForPC(num) {
   if (n >= 99 && n <= 102) return 'squad';
   if (n === 103) return 'solo-2';
   if (n === 104) return 'solo-1';
+  if (n === 105) return 'solo-3';
   return null;
 }
 

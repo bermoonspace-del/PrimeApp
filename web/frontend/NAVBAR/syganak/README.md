@@ -26,19 +26,19 @@ Prime Premium, Астана, ул. Сыганак, 22/1. В клубе 18 зал
 | Stream | 32 | 1 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 600 Гц | Logitech G PRO X3 SUPERSTRIKE |
 | Squad 1 | 33–36 | 4 | Ryzen 7 9800X3D | RTX 5070 Ti Aero | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
 | VIP 1 | 37–41 | 5 | Ryzen 7 9800X3D | RTX 5070 Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
-| Duo 3 | 42–43 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 600 Гц | Logitech G PRO X3 SUPERSTRIKE |
+| Duo 1 | 42–43 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 610 Гц | Logitech G PRO X3 SUPERSTRIKE |
 | Duo 2 | 44–45 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 610 Гц | Logitech G PRO X3 SUPERSTRIKE |
-| Duo 1 | 46–47 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 610 Гц | Logitech G PRO X3 SUPERSTRIKE |
+| Duo 3 | 46–47 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 600 Гц | Logitech G PRO X3 SUPERSTRIKE |
 | Comfort | 48–59 | 12 | Ryzen 7 7800X3D | RTX 5070 Aero | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
 | Squad 2 | 60–63 | 4 | Ryzen 7 9800X3D | RTX 5070 Ti Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
 | Trio | 64–66 | 3 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 610 Гц | Logitech G PRO X3 SUPERSTRIKE |
 | Duo 5 | 67–68 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 720 Гц | Logitech G PRO X3 SUPERSTRIKE |
 | Duo 4 | 69–70 | 2 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 720 Гц | Logitech G PRO X3 SUPERSTRIKE |
 | Private | 71–76 | 6 | Ryzen 7 9800X3D | RTX 5070 Aero | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
-| Bootcamp 1 | 77–81 | 5 | Ryzen 7 9800X3D | RTX 5070 Ti Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
-| Bootcamp 2 | 82–86 | 5 | Ryzen 7 9800X3D | RTX 5070 Ti Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
-| Bootcamp 3 | 87–91 | 5 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
-| Bootcamp 4 | 92–96 | 5 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 600 Гц | Logitech G PRO X3 SUPERSTRIKE |
+| Bootcamp 1 | 92–96 | 5 | Ryzen 7 9800X3D | RTX 5070 Ti Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
+| Bootcamp 2 | 87–91 | 5 | Ryzen 7 9800X3D | RTX 5070 Ti Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
+| Bootcamp 3 | 82–86 | 5 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 610 Гц | Logitech G PRO X2 SUPERSTRIKE |
+| Bootcamp 4 | 77–81 | 5 | Ryzen 7 9800X3D | RTX 5080 Gigabyte | 600 Гц | Logitech G PRO X3 SUPERSTRIKE |
 
 Объём ОЗУ, клавиатура, наушники, коврик и кресло пока указаны как «Уточняется» —
 этих данных в исходном списке не было.
@@ -49,10 +49,10 @@ Prime Premium, Астана, ул. Сыганак, 22/1. В клубе 18 зал
   Logitech G PRO X2 SUPERSTRIKE и Logitech G PRO X3 SUPERSTRIKE.
 - Нумерация ПК и схема расположения залов точно соответствуют схеме клуба:
   Standart (1–30), Solo (31), Stream (32), Squad 1 (33–36), VIP 1 (37–41),
-  Duo 3 (42–43), Duo 2 (44–45), Duo 1 (46–47), Comfort (48–59),
+  Duo 1 (42–43), Duo 2 (44–45), Duo 3 (46–47), Comfort (48–59),
   Squad 2 (60–63), Trio (64–66), Duo 5 (67–68), Duo 4 (69–70),
-  Private (71–76), Bootcamp 1 (77–81), Bootcamp 2 (82–86),
-  Bootcamp 3 (87–91), Bootcamp 4 (92–96).
+  Private (71–76), Bootcamp 1 (92–96), Bootcamp 2 (87–91),
+  Bootcamp 3 (82–86), Bootcamp 4 (77–81).
 
 ## Файлы клуба
 

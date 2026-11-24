@@ -296,7 +296,7 @@
           }
         }
       },
-      "syg-bootcamp4": {
+      "syg-bootcamp1": {
         "origin": [
           1470,
           820
@@ -335,7 +335,7 @@
           }
         }
       },
-      "syg-bootcamp3": {
+      "syg-bootcamp2": {
         "origin": [
           1470,
           1030
@@ -374,7 +374,7 @@
           }
         }
       },
-      "syg-duo1": {
+      "syg-duo3": {
         "origin": [
           160,
           600
@@ -416,7 +416,7 @@
           }
         }
       },
-      "syg-duo3": {
+      "syg-duo1": {
         "origin": [
           800,
           600
@@ -518,7 +518,7 @@
           }
         }
       },
-      "syg-bootcamp2": {
+      "syg-bootcamp3": {
         "origin": [
           1470,
           1240
@@ -557,7 +557,7 @@
           }
         }
       },
-      "syg-bootcamp1": {
+      "syg-bootcamp4": {
         "origin": [
           1470,
           1450

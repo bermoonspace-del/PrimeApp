@@ -24,19 +24,19 @@ const SYGANAK_ZONES=[
  {key:'syg-stream',label:'Stream',from:32,to:32},
  {key:'syg-squad1',label:'Squad 1',from:33,to:36},
  {key:'syg-vip1',label:'VIP 1',from:37,to:41},
- {key:'syg-duo3',label:'Duo 3',from:42,to:43},
+ {key:'syg-duo1',label:'Duo 1',from:42,to:43},
  {key:'syg-duo2',label:'Duo 2',from:44,to:45},
- {key:'syg-duo1',label:'Duo 1',from:46,to:47},
+ {key:'syg-duo3',label:'Duo 3',from:46,to:47},
  {key:'syg-comfort',label:'Comfort',from:48,to:59},
  {key:'syg-squad2',label:'Squad 2',from:60,to:63},
  {key:'syg-trio',label:'Trio',from:64,to:66},
  {key:'syg-duo5',label:'Duo 5',from:67,to:68},
  {key:'syg-duo4',label:'Duo 4',from:69,to:70},
  {key:'syg-private',label:'Private',from:71,to:76},
- {key:'syg-bootcamp1',label:'Bootcamp 1',from:77,to:81},
- {key:'syg-bootcamp2',label:'Bootcamp 2',from:82,to:86},
- {key:'syg-bootcamp3',label:'Bootcamp 3',from:87,to:91},
- {key:'syg-bootcamp4',label:'Bootcamp 4',from:92,to:96}
+ {key:'syg-bootcamp1',label:'Bootcamp 1',from:92,to:96},
+ {key:'syg-bootcamp2',label:'Bootcamp 2',from:87,to:91},
+ {key:'syg-bootcamp3',label:'Bootcamp 3',from:82,to:86},
+ {key:'syg-bootcamp4',label:'Bootcamp 4',from:77,to:81}
 ];
 
 let currentPCs = [];
